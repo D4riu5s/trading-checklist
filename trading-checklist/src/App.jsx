@@ -226,14 +226,9 @@ export default function TradingChecklistApp() {
                         }}
                       />
 
-                      <span
-                        style={{
-                          fontSize: '16px',
-                          color: isChecked ? 'white' : '#d1d5db',
-                        }}
-                      >
-                        5% {item}
-                      </span>
+                      <span>
+  {item}
+</span>
                     </label>
                   );
                 })}
