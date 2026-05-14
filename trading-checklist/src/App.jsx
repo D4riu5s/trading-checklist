@@ -104,12 +104,13 @@ export default function TradingChecklistApp() {
             style={{
               fontSize: '48px',
               marginBottom: '20px',
+              lineHeight: '1.3',
             }}
           >
             Trading Checklist
           </h1>
 
-          <h2 style={{ fontSize: '70px', margin: 0, lineheight: '1.3' }}>{percentage}%</h2>
+          <h2 style={{ fontSize: '70px', margin: 0 }}>{percentage}%</h2>
 
           <h3
             style={{
