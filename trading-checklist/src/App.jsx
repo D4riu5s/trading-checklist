@@ -7,7 +7,7 @@ export default function TradingChecklistApp() {
       items: [
         'Trend',
         'Exhaustion',
-        'At AOI / rejected',
+        'At S/R - rejected',
         'Rejection from previous structure',
         'Candlestick formation',
         'Break & retest pattern',
@@ -20,7 +20,7 @@ export default function TradingChecklistApp() {
       items: [
         'Trend',
         'Exhaustion',
-        'At AOI / rejected',
+        'At S/R - rejected',
         'Rejection from previous structure',
         'Candlestick formation',
         'Break & retest pattern',
