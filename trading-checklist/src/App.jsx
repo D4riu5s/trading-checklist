@@ -6,7 +6,7 @@ export default function TradingChecklistApp() {
       title: 'Weekly',
       items: [
         'Trend',
-        'Extenuare',
+        'Exhaust',
         'At AOI / rejected',
         'Rejection from previous structure',
         'Formatiune candela',
