@@ -73,6 +73,10 @@ export default function TradingChecklistApp() {
     }));
   };
 
+  const clearAllChecks = () => {
+    setChecked({});
+  };
+
   return (
     <div
       style={{
@@ -145,6 +149,20 @@ export default function TradingChecklistApp() {
           <p style={{ marginTop: '15px', color: '#9ca3af' }}>
             {checkedItems} / {totalItems} conditions checked
           </p>
+          <button
+            onClick={clearAllChecks}
+            style={{
+              background: '#1f2937',
+              color: 'white',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              marginTop: '20px',
+            }}
+          >
+            Clear All Checks
+          </button>
         </div>
 
         <div
