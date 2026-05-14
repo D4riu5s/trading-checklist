@@ -6,12 +6,12 @@ export default function TradingChecklistApp() {
       title: 'Weekly',
       items: [
         'Trend',
-        'Exhaust',
+        'Exhaustion',
         'At AOI / rejected',
         'Rejection from previous structure',
-        'Formatiune candela',
+        'Candlestick formation',
         'Break & retest pattern',
-        'In LH/HL',
+        'At LH/HL',
         'Trendline',
       ],
     },
@@ -19,12 +19,12 @@ export default function TradingChecklistApp() {
       title: 'Daily',
       items: [
         'Trend',
-        'Extenuare',
+        'Exhaustion',
         'At AOI / rejected',
         'Rejection from previous structure',
         'Candlestick formation',
         'Break & retest pattern',
-        'In LH/HL',
+        'At LH/HL',
         'Trendline',
       ],
     },
@@ -32,13 +32,13 @@ export default function TradingChecklistApp() {
       title: 'H4',
       items: [
         'Break & retest pattern + S/R',
-        'Formatiune candela',
+        'Candlestick formation',
         'Trendline',
       ],
     },
     {
       title: 'H2 / H1',
-      items: ['Formatiune candela (confirmare)'],
+      items: ['Candlestick formation (confirmation)'],
     },
   ];
 
@@ -55,7 +55,7 @@ export default function TradingChecklistApp() {
   const checkedItems = Object.values(checked).filter(Boolean).length;
   const percentage = Math.round((checkedItems / totalItems) * 100);
 
-  let setupLabel = 'Bad Setup';
+  let setupLabel = 'Weak Setup';
   let setupColor = '#ff4d4d';
 
   if (percentage >= 80) {
