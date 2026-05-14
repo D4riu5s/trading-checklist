@@ -59,7 +59,7 @@ export default function TradingChecklistApp() {
   let setupColor = '#ff4d4d';
 
   if (percentage >= 80) {
-    setupLabel = 'Excellent Setup';
+    setupLabel = 'Strong Setup';
     setupColor = '#00ff99';
   } else if (percentage >= 60) {
     setupLabel = 'Good Setup';
@@ -109,7 +109,7 @@ export default function TradingChecklistApp() {
             Trading Checklist
           </h1>
 
-          <h2 style={{ fontSize: '70px', margin: 0 }}>{percentage}%</h2>
+          <h2 style={{ fontSize: '70px', margin: 0, lineheight: '1.3' }}>{percentage}%</h2>
 
           <h3
             style={{
