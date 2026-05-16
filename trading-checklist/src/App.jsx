@@ -392,6 +392,62 @@ const [savedTrades, setSavedTrades] = useState([]);
         <p>Date: {trade.tradeDate}</p>
 
         <p>Setup Score: {trade.percentage}%</p>
+        
+        <div
+  style={{
+    marginTop: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+  }}
+>
+  {sections.map((section) => (
+    <div key={section.title}>
+      <h4
+        style={{
+          color: '#9ca3af',
+          marginBottom: '10px',
+        }}
+      >
+        {section.title}
+      </h4>
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+        }}
+      >
+        {section.items.map((item) => {
+          const itemId = `${section.title}-${item.name}`;
+          const wasChecked = trade.checked[itemId];
+
+          return (
+            <div
+              key={itemId}
+              style={{
+                padding: '10px',
+                borderRadius: '10px',
+                background: wasChecked
+                  ? '#1e293b'
+                  : '#172033',
+                border: wasChecked
+                  ? '1px solid #00ff99'
+                  : '1px solid #2d3748',
+                color: wasChecked
+                  ? '#00ff99'
+                  : '#9ca3af',
+              }}
+            >
+              {item.name}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  ))}
+</div>
       </div>
     ))}
   </div>
