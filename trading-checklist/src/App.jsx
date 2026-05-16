@@ -395,11 +395,7 @@ const [openedTrade, setOpenedTrade] = useState(null);
         <p>Setup Score: {trade.percentage}%</p>
 
         <button
-  onClick={() =>
-    setOpenedTrade(
-      openedTrade === trade.id ? null : trade.id
-    )
-  }
+  onClick={() => setOpenedTrade(trade.id)}
   style={{
     marginTop: '15px',
     background: '#1e293b',
@@ -410,12 +406,10 @@ const [openedTrade, setOpenedTrade] = useState(null);
     cursor: 'pointer',
   }}
 >
-  {openedTrade === trade.id
-    ? 'Hide Details'
-    : 'View Details'}
+  View Details
 </button>
         
-        {openedTrade === trade.id && (
+        false && (
   <div
   style={{
     marginTop: '20px',
@@ -471,9 +465,133 @@ const [openedTrade, setOpenedTrade] = useState(null);
     </div>
   ))}
 </div>
-        )}
+
       </div>
     ))}
+    {openedTrade && (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(0,0,0,0.75)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 999,
+      padding: '20px',
+    }}
+  >
+    <div
+      style={{
+        background: '#121a2b',
+        width: '100%',
+        maxWidth: '900px',
+        maxHeight: '90vh',
+        overflowY: 'auto',
+        borderRadius: '20px',
+        padding: '25px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '25px',
+        }}
+      >
+        <h2>Trade Details</h2>
+
+        <button
+          onClick={() => setOpenedTrade(null)}
+          style={{
+            background: '#1e293b',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '10px',
+            cursor: 'pointer',
+          }}
+        >
+          Close
+        </button>
+      </div>
+
+      {savedTrades
+        .filter((trade) => trade.id === openedTrade)
+        .map((trade) => (
+          <div key={trade.id}>
+            <h3>
+              {trade.pair} • {trade.tradeResult}
+            </h3>
+
+            <p>Date: {trade.tradeDate}</p>
+
+            <p>Setup Score: {trade.percentage}%</p>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns:
+                  'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '20px',
+                marginTop: '25px',
+              }}
+            >
+              {sections.map((section) => (
+                <div key={section.title}>
+                  <h4
+                    style={{
+                      color: '#9ca3af',
+                      marginBottom: '12px',
+                    }}
+                  >
+                    {section.title}
+                  </h4>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px',
+                    }}
+                  >
+                    {section.items.map((item) => {
+                      const itemId = `${section.title}-${item.name}`;
+                      const wasChecked =
+                        trade.checked[itemId];
+
+                      return (
+                        <div
+                          key={itemId}
+                          style={{
+                            padding: '8px 10px',
+                            borderRadius: '10px',
+                            background: wasChecked
+                              ? '#1e293b'
+                              : '#172033',
+                            border: wasChecked
+                              ? '1px solid #00ff99'
+                              : '1px solid #2d3748',
+                            color: wasChecked
+                              ? '#00ff99'
+                              : '#9ca3af',
+                            fontSize: '14px',
+                          }}
+                        >
+                          {item.name}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+    </div>
+  </div>
+)}
   </div>
 </div>
         </div>
