@@ -34,6 +34,7 @@ export default function TradingChecklistApp() {
       items: [
         { name: 'Break & retest pattern + S/R', weight: 5.5 },
         { name: 'Trendline', weight: 2.75 },
+        { name: 'Trend', weight: 2.75 },
       ],
     },
     {
