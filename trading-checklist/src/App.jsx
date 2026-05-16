@@ -55,23 +55,13 @@ export default function TradingChecklistApp() {
 
   const [checked, setChecked] = useState({});
 
-  const totalWeight = allItems.reduce(
-    (acc, item) => acc + item.weight,
-    0
-  );
+  const percentage = allItems.reduce((acc, item) => {
+  if (checked[item.id]) {
+    return acc + item.weight;
+  }
 
-  const checkedWeight = allItems.reduce((acc, item) => {
-    if (checked[item.id]) {
-      return acc + item.weight;
-    }
-
-    return acc;
-  }, 0);
-
-  const percentage = (
-  (checkedWeight / totalWeight) * 100
-).toFixed(2);
-
+  return acc;
+}, 0).toFixed(1);
   const checkedItems = Object.values(checked).filter(Boolean).length;
 
   let setupLabel = 'Weak Setup';
