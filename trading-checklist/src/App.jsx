@@ -1,3 +1,10 @@
+import { db } from './firebase';
+import {
+  collection,
+  addDoc,
+  getDocs,
+} from 'firebase/firestore';
+
 import React, { useState } from 'react';
 
 export default function TradingChecklistApp() {
@@ -60,6 +67,23 @@ const [tradeDate, setTradeDate] = useState('');
 const [tradeResult, setTradeResult] = useState('Win');
 const [savedTrades, setSavedTrades] = useState([]);
 const [openedTrade, setOpenedTrade] = useState(null);
+
+React.useEffect(() => {
+  loadTrades();
+}, []);
+
+const loadTrades = async () => {
+  const querySnapshot = await getDocs(
+    collection(db, 'trades')
+  );
+
+  const trades = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  setSavedTrades(trades.reverse());
+};
   
 
   const percentage = allItems.reduce((acc, item) => {
@@ -89,15 +113,30 @@ const [openedTrade, setOpenedTrade] = useState(null);
     }));
   };
 
-  const saveTrade = () => {
+  const saveTrade = async () => {
   const trade = {
-    id: Date.now(),
     pair,
     tradeDate,
     tradeResult,
     percentage,
     checked,
+    createdAt: Date.now(),
   };
+
+  await addDoc(collection(db, 'trades'), trade);
+
+  setSavedTrades((prev) => [
+    {
+      id: Date.now(),
+      ...trade,
+    },
+    ...prev,
+  ]);
+
+  setPair('');
+  setTradeDate('');
+  setTradeResult('Win');
+};
 
   setSavedTrades((prev) => [trade, ...prev]);
 
@@ -541,4 +580,3 @@ const [openedTrade, setOpenedTrade] = useState(null);
       </div>
     </div>
   );
-}
