@@ -2,77 +2,77 @@ import React, { useState } from 'react';
 
 export default function TradingChecklistApp() {
   const sections = [
-  {
-    title: 'Weekly',
-    items: [
-      { name: 'Trend', weight: 5 },
-      { name: 'Exhaustion', weight: 8 },
-      { name: 'At S/R - rejected', weight: 15 },
-      { name: 'Rejection from previous structure', weight: 12 },
-      { name: 'Candlestick formation', weight: 10 },
-      { name: 'Break & retest pattern', weight: 12 },
-      { name: 'At LH/HL', weight: 6 },
-      { name: 'Trendline', weight: 3 },
-    ],
-  },
-  {
-    title: 'Daily',
-    items: [
-      { name: 'Trend', weight: 5 },
-      { name: 'Exhaustion', weight: 8 },
-      { name: 'At S/R - rejected', weight: 15 },
-      { name: 'Rejection from previous structure', weight: 12 },
-      { name: 'Candlestick formation', weight: 10 },
-      { name: 'Break & retest pattern', weight: 12 },
-      { name: 'At LH/HL', weight: 6 },
-      { name: 'Trendline', weight: 3 },
-      { name: 'EMA retest', weight: 5 },
-    ],
-  },
-  {
-    title: 'H4',
-    items: [
-      { name: 'Break & retest pattern + S/R', weight: 15 },
-      { name: 'Candlestick formation', weight: 10 },
-      { name: 'Trendline', weight: 3 },
-    ],
-  },
-  {
-    title: 'H2 / H1',
-    items: [
-      { name: 'Candlestick formation (confirmation)', weight: 15 },
-    ],
-  },
-];
+    {
+      title: 'Weekly',
+      items: [
+        { name: 'Trend', weight: 5 },
+        { name: 'Exhaustion', weight: 8 },
+        { name: 'At S/R - rejected', weight: 15 },
+        { name: 'Rejection from previous structure', weight: 12 },
+        { name: 'Candlestick formation', weight: 10 },
+        { name: 'Break & retest pattern', weight: 12 },
+        { name: 'At LH/HL', weight: 6 },
+        { name: 'Trendline', weight: 3 },
+      ],
+    },
+    {
+      title: 'Daily',
+      items: [
+        { name: 'Trend', weight: 5 },
+        { name: 'Exhaustion', weight: 8 },
+        { name: 'At S/R - rejected', weight: 15 },
+        { name: 'Rejection from previous structure', weight: 12 },
+        { name: 'Candlestick formation', weight: 10 },
+        { name: 'Break & retest pattern', weight: 12 },
+        { name: 'At LH/HL', weight: 6 },
+        { name: 'Trendline', weight: 3 },
+        { name: 'EMA retest', weight: 5 },
+      ],
+    },
+    {
+      title: 'H4',
+      items: [
+        { name: 'Break & retest pattern + S/R', weight: 15 },
+        { name: 'Candlestick formation', weight: 10 },
+        { name: 'Trendline', weight: 3 },
+      ],
+    },
+    {
+      title: 'H2 / H1',
+      items: [
+        { name: 'Candlestick formation (confirmation)', weight: 15 },
+      ],
+    },
+  ];
 
   const allItems = sections.flatMap((section) =>
-  section.items.map((item) => ({
-    id: `${section.title}-${item.name}`,
-    label: item.name,
-    weight: item.weight,
-  }))
-);
+    section.items.map((item) => ({
+      id: `${section.title}-${item.name}`,
+      label: item.name,
+      weight: item.weight,
+    }))
+  );
 
   const [checked, setChecked] = useState({});
 
   const totalWeight = allItems.reduce(
-  (acc, item) => acc + item.weight,
-  0
-);
+    (acc, item) => acc + item.weight,
+    0
+  );
 
-const checkedWeight = allItems.reduce((acc, item) => {
-  if (checked[item.id]) {
-    return acc + item.weight;
-  }
+  const checkedWeight = allItems.reduce((acc, item) => {
+    if (checked[item.id]) {
+      return acc + item.weight;
+    }
 
-  return acc;
-}, 0);
+    return acc;
+  }, 0);
 
-const percentage = Math.round(
-  (checkedWeight / totalWeight) * 100
-);
+  const percentage = Math.round(
+    (checkedWeight / totalWeight) * 100
+  );
 
-const checkedItems = Object.values(checked).filter(Boolean).length;
+  const checkedItems = Object.values(checked).filter(Boolean).length;
 
   let setupLabel = 'Weak Setup';
   let setupColor = '#ff4d4d';
@@ -133,7 +133,9 @@ const checkedItems = Object.values(checked).filter(Boolean).length;
             Trading Checklist
           </h1>
 
-          <h2 style={{ fontSize: '70px', margin: 0 }}>{percentage}%</h2>
+          <h2 style={{ fontSize: '70px', margin: 0 }}>
+            {percentage}%
+          </h2>
 
           <h3
             style={{
@@ -166,8 +168,9 @@ const checkedItems = Object.values(checked).filter(Boolean).length;
           </div>
 
           <p style={{ marginTop: '15px', color: '#9ca3af' }}>
-            {checkedItems} / {totalItems} conditions checked
+            {checkedItems} conditions checked
           </p>
+
           <button
             onClick={clearAllChecks}
             style={{
@@ -212,7 +215,13 @@ const checkedItems = Object.values(checked).filter(Boolean).length;
                 {section.title}
               </h2>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '15px',
+                }}
+              >
                 {section.items.map((item) => {
                   const id = `${section.title}-${item.name}`;
                   const isChecked = checked[id] || false;
@@ -224,7 +233,9 @@ const checkedItems = Object.values(checked).filter(Boolean).length;
                         display: 'flex',
                         alignItems: 'center',
                         gap: '12px',
-                        background: isChecked ? '#1e293b' : '#172033',
+                        background: isChecked
+                          ? '#1e293b'
+                          : '#172033',
                         padding: '14px',
                         borderRadius: '12px',
                         cursor: 'pointer',
@@ -245,9 +256,7 @@ const checkedItems = Object.values(checked).filter(Boolean).length;
                         }}
                       />
 
-                      <span>
-  {item.name}
-</span>
+                      <span>{item.name}</span>
                     </label>
                   );
                 })}
