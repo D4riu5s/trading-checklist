@@ -70,7 +70,7 @@ export default function TradingChecklistApp() {
 
   const percentage = (
   (checkedWeight / totalWeight) * 100
-).toFixed(1);
+).toFixed(2);
 
   const checkedItems = Object.values(checked).filter(Boolean).length;
 
