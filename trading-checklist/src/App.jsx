@@ -61,7 +61,7 @@ export default function TradingChecklistApp() {
   }
 
   return acc;
-}, 0).toFixed(2);
+}, 0).toFixed(0);
   const checkedItems = Object.values(checked).filter(Boolean).length;
 
   let setupLabel = 'Weak Setup';
