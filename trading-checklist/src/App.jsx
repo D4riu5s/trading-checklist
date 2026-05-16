@@ -5,41 +5,41 @@ export default function TradingChecklistApp() {
     {
       title: 'Weekly',
       items: [
-        { name: 'Trend', weight: 11 },
-        { name: 'Exhaustion', weight: 11 },
-        { name: 'At S/R - rejected', weight: 11 },
-        { name: 'Rejection from previous structure', weight: 11 },
-        { name: 'Candlestick formation', weight: 11 },
-        { name: 'Break & retest pattern', weight: 11 },
-        { name: 'At LH/HL', weight: 11 },
-        { name: 'Trendline', weight: 6 },
+        { name: 'Trend', weight: 5.5 },
+        { name: 'Exhaustion', weight: 5.5 },
+        { name: 'At S/R - rejected', weight: 5.5 },
+        { name: 'Rejection from previous structure', weight: 5.5 },
+        { name: 'Candlestick formation', weight: 5.5 },
+        { name: 'Break & retest pattern', weight: 5.5 },
+        { name: 'At LH/HL', weight: 5.5 },
+        { name: 'Trendline', weight: 2.75 },
       ],
     },
     {
       title: 'Daily',
       items: [
-        { name: 'Trend', weight: 11 },
-        { name: 'Exhaustion', weight: 11 },
-        { name: 'At S/R - rejected', weight: 11 },
-        { name: 'Rejection from previous structure', weight: 11 },
-        { name: 'Candlestick formation', weight: 11 },
-        { name: 'Break & retest pattern', weight: 11 },
-        { name: 'At LH/HL', weight: 11 },
-        { name: 'EMA retest', weight: 11 },
-        { name: 'Trendline', weight: 6 },
+        { name: 'Trend', weight: 5.5 },
+        { name: 'Exhaustion', weight: 5.5 },
+        { name: 'At S/R - rejected', weight: 5.5 },
+        { name: 'Rejection from previous structure', weight: 5.5 },
+        { name: 'Candlestick formation', weight: 5.5 },
+        { name: 'Break & retest pattern', weight: 5.5 },
+        { name: 'At LH/HL', weight: 5.5 },
+        { name: 'EMA retest', weight: 5.5 },
+        { name: 'Trendline', weight: 2.75 },
       ],
     },
     {
       title: 'H4',
       items: [
-        { name: 'Break & retest pattern + S/R', weight: 11 },
-        { name: 'Trendline', weight: 6 },
+        { name: 'Break & retest pattern + S/R', weight: 5.5 },
+        { name: 'Trendline', weight: 2.75 },
       ],
     },
     {
       title: 'H2 / H1',
       items: [
-        { name: 'Candlestick formation (confirmation)', weight: 11 },
+        { name: 'Candlestick formation (confirmation)', weight: 5.5 },
       ],
     },
   ];
@@ -67,9 +67,9 @@ export default function TradingChecklistApp() {
     return acc;
   }, 0);
 
-  const percentage = Math.round(
-    (checkedWeight / totalWeight) * 100
-  );
+  const percentage = (
+  (checkedWeight / totalWeight) * 100
+).toFixed(1);
 
   const checkedItems = Object.values(checked).filter(Boolean).length;
 
