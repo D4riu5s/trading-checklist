@@ -55,6 +55,12 @@ export default function TradingChecklistApp() {
 
   const [checked, setChecked] = useState({});
 
+  const [pair, setPair] = useState('');
+const [tradeDate, setTradeDate] = useState('');
+const [tradeResult, setTradeResult] = useState('Win');
+const [savedTrades, setSavedTrades] = useState([]);
+  
+
   const percentage = allItems.reduce((acc, item) => {
   if (checked[item.id]) {
     return acc + item.weight;
@@ -81,6 +87,23 @@ export default function TradingChecklistApp() {
       [id]: !prev[id],
     }));
   };
+
+  const saveTrade = () => {
+  const trade = {
+    id: Date.now(),
+    pair,
+    tradeDate,
+    tradeResult,
+    percentage,
+    checked,
+  };
+
+  setSavedTrades((prev) => [trade, ...prev]);
+
+  setPair('');
+  setTradeDate('');
+  setTradeResult('Win');
+};
 
   const clearAllChecks = () => {
     setChecked({});
@@ -253,6 +276,126 @@ export default function TradingChecklistApp() {
               </div>
             </div>
           ))}
+          <div
+  style={{
+    marginTop: '40px',
+    background: '#121a2b',
+    padding: '25px',
+    borderRadius: '20px',
+  }}
+>
+  <h2 style={{ marginBottom: '20px' }}>
+    Save Trade
+  </h2>
+
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '15px',
+    }}
+  >
+    <input
+      type="text"
+      placeholder="Pair (ex: EURUSD)"
+      value={pair}
+      onChange={(e) => setPair(e.target.value)}
+      style={{
+        padding: '14px',
+        borderRadius: '12px',
+        border: 'none',
+        background: '#1e293b',
+        color: 'white',
+      }}
+    />
+
+    <input
+      type="date"
+      value={tradeDate}
+      onChange={(e) => setTradeDate(e.target.value)}
+      style={{
+        padding: '14px',
+        borderRadius: '12px',
+        border: 'none',
+        background: '#1e293b',
+        color: 'white',
+      }}
+    />
+
+    <select
+      value={tradeResult}
+      onChange={(e) => setTradeResult(e.target.value)}
+      style={{
+        padding: '14px',
+        borderRadius: '12px',
+        border: 'none',
+        background: '#1e293b',
+        color: 'white',
+      }}
+    >
+      <option>Win</option>
+      <option>Lose</option>
+      <option>Breakeven</option>
+    </select>
+
+    <button
+      onClick={saveTrade}
+      style={{
+        background: '#00ff99',
+        color: '#0b1020',
+        border: 'none',
+        padding: '15px',
+        borderRadius: '12px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        fontSize: '18px',
+      }}
+    >
+      Save Trade
+    </button>
+  </div>
+</div>
+
+<div
+  style={{
+    marginTop: '40px',
+  }}
+>
+  <h2
+    style={{
+      marginBottom: '20px',
+    }}
+  >
+    Trade History
+  </h2>
+
+  <div
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+    }}
+  >
+    {savedTrades.map((trade) => (
+      <div
+        key={trade.id}
+        style={{
+          background: '#121a2b',
+          padding: '20px',
+          borderRadius: '16px',
+        }}
+      >
+        <h3>
+          {trade.pair} • {trade.tradeResult}
+        </h3>
+
+        <p>Date: {trade.tradeDate}</p>
+
+        <p>Setup Score: {trade.percentage}%</p>
+      </div>
+    ))}
+  </div>
+</div>
         </div>
       </div>
     </div>
