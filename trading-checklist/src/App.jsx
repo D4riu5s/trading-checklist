@@ -2,59 +2,77 @@ import React, { useState } from 'react';
 
 export default function TradingChecklistApp() {
   const sections = [
-    {
-      title: 'Weekly',
-      items: [
-        'Trend',
-        'Exhaustion',
-        'At S/R - rejected',
-        'Rejection from previous structure',
-        'Candlestick formation',
-        'Break & retest pattern',
-        'At LH/HL',
-        'Trendline',
-      ],
-    },
-    {
-      title: 'Daily',
-      items: [
-        'Trend',
-        'Exhaustion',
-        'At S/R - rejected',
-        'Rejection from previous structure',
-        'Candlestick formation',
-        'Break & retest pattern',
-        'At LH/HL',
-        'Trendline',
-        'EMA retest',
-      ],
-    },
-    {
-      title: 'H4',
-      items: [
-        'Break & retest pattern + S/R',
-        'Candlestick formation',
-        'Trendline',
-      ],
-    },
-    {
-      title: 'H2 / H1',
-      items: ['Candlestick formation (confirmation)'],
-    },
-  ];
+  {
+    title: 'Weekly',
+    items: [
+      { name: 'Trend', weight: 5 },
+      { name: 'Exhaustion', weight: 8 },
+      { name: 'At S/R - rejected', weight: 15 },
+      { name: 'Rejection from previous structure', weight: 12 },
+      { name: 'Candlestick formation', weight: 10 },
+      { name: 'Break & retest pattern', weight: 12 },
+      { name: 'At LH/HL', weight: 6 },
+      { name: 'Trendline', weight: 3 },
+    ],
+  },
+  {
+    title: 'Daily',
+    items: [
+      { name: 'Trend', weight: 5 },
+      { name: 'Exhaustion', weight: 8 },
+      { name: 'At S/R - rejected', weight: 15 },
+      { name: 'Rejection from previous structure', weight: 12 },
+      { name: 'Candlestick formation', weight: 10 },
+      { name: 'Break & retest pattern', weight: 12 },
+      { name: 'At LH/HL', weight: 6 },
+      { name: 'Trendline', weight: 3 },
+      { name: 'EMA retest', weight: 5 },
+    ],
+  },
+  {
+    title: 'H4',
+    items: [
+      { name: 'Break & retest pattern + S/R', weight: 15 },
+      { name: 'Candlestick formation', weight: 10 },
+      { name: 'Trendline', weight: 3 },
+    ],
+  },
+  {
+    title: 'H2 / H1',
+    items: [
+      { name: 'Candlestick formation (confirmation)', weight: 15 },
+    ],
+  },
+];
 
   const allItems = sections.flatMap((section) =>
-    section.items.map((item) => ({
-      id: `${section.title}-${item}`,
-      label: item,
-    }))
-  );
+  section.items.map((item) => ({
+    id: `${section.title}-${item.name}`,
+    label: item.name,
+    weight: item.weight,
+  }))
+);
 
   const [checked, setChecked] = useState({});
 
-  const totalItems = allItems.length;
-  const checkedItems = Object.values(checked).filter(Boolean).length;
-  const percentage = Math.round((checkedItems / totalItems) * 100);
+  const totalWeight = allItems.reduce(
+  (acc, item) => acc + item.weight,
+  0
+);
+
+const checkedWeight = allItems.reduce((acc, item) => {
+  if (checked[item.id]) {
+    return acc + item.weight;
+  }
+
+  return acc;
+}, 0);
+
+const percentage = Math.round(
+  (checkedWeight / totalWeight) * 100
+);
+
+const checkedItems = Object.values(checked).filter(Boolean).length;
 
   let setupLabel = 'Weak Setup';
   let setupColor = '#ff4d4d';
@@ -196,7 +214,7 @@ export default function TradingChecklistApp() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 {section.items.map((item) => {
-                  const id = `${section.title}-${item}`;
+                  const id = `${section.title}-${item.name}`;
                   const isChecked = checked[id] || false;
 
                   return (
@@ -228,7 +246,7 @@ export default function TradingChecklistApp() {
                       />
 
                       <span>
-  {item}
+  {item.name}
 </span>
                     </label>
                   );
