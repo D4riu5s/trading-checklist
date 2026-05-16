@@ -68,7 +68,7 @@ const [tradeResult, setTradeResult] = useState('Win');
 const [savedTrades, setSavedTrades] = useState([]);
 const [openedTrade, setOpenedTrade] = useState(null);
 const [historyOpen, setHistoryOpen] = useState(false);
-const [historyOpen, setHistoryOpen] = useState(false);
+
 
 React.useEffect(() => {
   loadTrades();
