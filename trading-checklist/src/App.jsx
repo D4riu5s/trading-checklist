@@ -38,7 +38,7 @@ export default function TradingChecklistApp() {
       ],
     },
     {
-      title: 'H2 / H1',
+      title: 'H4 / H2 / H1',
       items: [
         { name: 'Candlestick formation (confirmation)', weight: 5.5 },
       ],
