@@ -26,6 +26,7 @@ export default function TradingChecklistApp() {
         'Break & retest pattern',
         'At LH/HL',
         'Trendline',
+        'EMA retest',
       ],
     },
     {
