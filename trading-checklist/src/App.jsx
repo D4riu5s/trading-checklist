@@ -138,13 +138,6 @@ const loadTrades = async () => {
   setTradeResult('Win');
 };
 
-  setSavedTrades((prev) => [trade, ...prev]);
-
-  setPair('');
-  setTradeDate('');
-  setTradeResult('Win');
-};
-
   const clearAllChecks = () => {
     setChecked({});
   };
@@ -580,3 +573,4 @@ const loadTrades = async () => {
       </div>
     </div>
   );
+}
