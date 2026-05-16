@@ -59,6 +59,7 @@ export default function TradingChecklistApp() {
 const [tradeDate, setTradeDate] = useState('');
 const [tradeResult, setTradeResult] = useState('Win');
 const [savedTrades, setSavedTrades] = useState([]);
+const [openedTrade, setOpenedTrade] = useState(null);
   
 
   const percentage = allItems.reduce((acc, item) => {
@@ -392,8 +393,30 @@ const [savedTrades, setSavedTrades] = useState([]);
         <p>Date: {trade.tradeDate}</p>
 
         <p>Setup Score: {trade.percentage}%</p>
+
+        <button
+  onClick={() =>
+    setOpenedTrade(
+      openedTrade === trade.id ? null : trade.id
+    )
+  }
+  style={{
+    marginTop: '15px',
+    background: '#1e293b',
+    color: 'white',
+    border: 'none',
+    padding: '10px 15px',
+    borderRadius: '10px',
+    cursor: 'pointer',
+  }}
+>
+  {openedTrade === trade.id
+    ? 'Hide Details'
+    : 'View Details'}
+</button>
         
-        <div
+        {openedTrade === trade.id && (
+  <div
   style={{
     marginTop: '20px',
     display: 'flex',
@@ -448,6 +471,7 @@ const [savedTrades, setSavedTrades] = useState([]);
     </div>
   ))}
 </div>
+        )}
       </div>
     ))}
   </div>
