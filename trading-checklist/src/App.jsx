@@ -67,6 +67,8 @@ const [tradeDate, setTradeDate] = useState('');
 const [tradeResult, setTradeResult] = useState('Win');
 const [savedTrades, setSavedTrades] = useState([]);
 const [openedTrade, setOpenedTrade] = useState(null);
+const [historyOpen, setHistoryOpen] = useState(false);
+const [historyOpen, setHistoryOpen] = useState(false);
 
 React.useEffect(() => {
   loadTrades();
@@ -394,55 +396,142 @@ const loadTrades = async () => {
     marginTop: '40px',
   }}
 >
-  <h2
+  <div
+  style={{
+    marginTop: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+  }}
+>
+  <button
+    onClick={() => setHistoryOpen(true)}
     style={{
-      marginBottom: '20px',
+      background: '#1e293b',
+      color: 'white',
+      border: 'none',
+      padding: '16px 30px',
+      borderRadius: '14px',
+      cursor: 'pointer',
+      fontSize: '18px',
+      fontWeight: 'bold',
+      boxShadow: '0 0 20px rgba(0,0,0,0.3)',
     }}
   >
     Trade History
-  </h2>
+  </button>
+</div>
 
+{historyOpen && (
   <div
     style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(0,0,0,0.75)',
       display: 'flex',
-      flexDirection: 'column',
-      gap: '20px',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 998,
+      padding: '20px',
     }}
   >
-    {savedTrades.map((trade) => (
+    <div
+      style={{
+        background: '#121a2b',
+        width: '100%',
+        maxWidth: '950px',
+        maxHeight: '90vh',
+        overflowY: 'auto',
+        borderRadius: '20px',
+        padding: '25px',
+      }}
+    >
       <div
-        key={trade.id}
         style={{
-          background: '#121a2b',
-          padding: '20px',
-          borderRadius: '16px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '25px',
         }}
       >
-        <h3>
-          {trade.pair} • {trade.tradeResult}
-        </h3>
-
-        <p>Date: {trade.tradeDate}</p>
-
-        <p>Setup Score: {trade.percentage}%</p>
+        <h2>Trade History</h2>
 
         <button
-  onClick={() => setOpenedTrade(trade.id)}
-  style={{
-    marginTop: '15px',
-    background: '#1e293b',
-    color: 'white',
-    border: 'none',
-    padding: '10px 15px',
-    borderRadius: '10px',
-    cursor: 'pointer',
-  }}
->
-  View Details
-</button>
+          onClick={() => setHistoryOpen(false)}
+          style={{
+            background: '#1e293b',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '10px',
+            cursor: 'pointer',
+          }}
+        >
+          Close
+        </button>
+      </div>
 
-</div>
-    ))}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '15px',
+        }}
+      >
+        {savedTrades.map((trade) => (
+          <div
+            key={trade.id}
+            style={{
+              background: '#172033',
+              padding: '18px',
+              borderRadius: '16px',
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '15px',
+            }}
+          >
+            <div>
+              <h3 style={{ margin: 0 }}>
+                {trade.pair}
+              </h3>
+
+              <p style={{ color: '#9ca3af' }}>
+                {trade.tradeResult}
+              </p>
+            </div>
+
+            <div>
+              <p>Date:</p>
+              <strong>{trade.tradeDate}</strong>
+            </div>
+
+            <div>
+              <p>Setup Score:</p>
+              <strong>{trade.percentage}%</strong>
+            </div>
+
+            <button
+              onClick={() => setOpenedTrade(trade.id)}
+              style={{
+                background: '#00ff99',
+                color: '#0b1020',
+                border: 'none',
+                padding: '12px 18px',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+              }}
+            >
+              View Details
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
     {openedTrade && (
   <div
     style={{
@@ -571,6 +660,5 @@ const loadTrades = async () => {
 </div>
         </div>
       </div>
-    </div>
   );
 }
