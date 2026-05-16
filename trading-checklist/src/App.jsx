@@ -410,8 +410,6 @@ const [openedTrade, setOpenedTrade] = useState(null);
 </button>
 
 </div>
-
-      </div>
     ))}
     {openedTrade && (
   <div
