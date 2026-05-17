@@ -132,7 +132,9 @@ const loadTrades = async () => {
   try {
     await deleteDoc(doc(db, 'trades', id))
 
-    setTrades(trades.filter((trade) => trade.id !== id))
+    setSavedTrades(
+      savedTrades.filter((trade) => trade.id !== id)
+    )
   } catch (error) {
     console.error('Error deleting trade:', error)
   }
