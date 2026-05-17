@@ -82,6 +82,8 @@ const [tradeResult, setTradeResult] = useState('Win');
 const [savedTrades, setSavedTrades] = useState([]);
 const [openedTrade, setOpenedTrade] = useState(null);
 const [historyOpen, setHistoryOpen] = useState(false);
+const [deletePopupOpen, setDeletePopupOpen] = useState(false);
+const [tradeToDelete, setTradeToDelete] = useState(null);
 
 
 React.useEffect(() => {
@@ -139,7 +141,7 @@ const loadTrades = async () => {
     createdAt: Date.now(),
   };
 
-  
+
   await addDoc(collection(db, 'trades'), trade);
 
   setSavedTrades((prev) => [
@@ -533,7 +535,10 @@ const loadTrades = async () => {
   }}
 >
   <button
-    onClick={() => deleteTrade(trade.id)}
+    onClick={() => {
+  setTradeToDelete(trade.id);
+  setDeletePopupOpen(true);
+}}
     style={{
       background: '#ff3b30',
       color: 'white',
@@ -696,6 +701,87 @@ const loadTrades = async () => {
   </div>
 </div>
         </div>
+        {deletePopupOpen && (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(0,0,0,0.75)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 9999,
+    }}
+  >
+    <div
+      style={{
+        background: '#121a2b',
+        padding: '30px',
+        borderRadius: '20px',
+        width: '90%',
+        maxWidth: '400px',
+        textAlign: 'center',
+      }}
+    >
+      <h2 style={{ marginBottom: '15px' }}>
+        Delete Trade
+      </h2>
+
+      <p
+        style={{
+          color: '#9ca3af',
+          marginBottom: '25px',
+        }}
+      >
+        Are you sure you want to delete this trade?
+      </p>
+
+      <div
+        style={{
+          display: 'flex',
+          gap: '15px',
+          justifyContent: 'center',
+        }}
+      >
+        <button
+          onClick={() => {
+            deleteTrade(tradeToDelete);
+            setDeletePopupOpen(false);
+          }}
+          style={{
+            background: '#ff3b30',
+            color: 'white',
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          }}
+        >
+          Yes
+        </button>
+
+        <button
+          onClick={() => {
+            setDeletePopupOpen(false);
+            setTradeToDelete(null);
+          }}
+          style={{
+            background: '#1e293b',
+            color: 'white',
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          }}
+        >
+          No
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       </div>
   );
 }
