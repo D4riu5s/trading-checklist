@@ -11,13 +11,15 @@ import {
 import React, { useState } from 'react';
 
 export default function TradingChecklistApp() {
-  const deleteTrade = async (id) => {
+  const deleteTrade = async (tradeId) => {
   try {
-    await deleteDoc(doc(db, 'trades', String(id)));
+    await deleteDoc(doc(db, 'trades', tradeId));
 
     setSavedTrades((prev) =>
-      prev.filter((trade) => trade.id !== String(id))
+      prev.filter((trade) => trade.id !== tradeId)
     );
+
+    console.log('Trade deleted:', tradeId);
   } catch (error) {
     console.error('Error deleting trade:', error);
   }
@@ -83,7 +85,7 @@ const [savedTrades, setSavedTrades] = useState([]);
 const [openedTrade, setOpenedTrade] = useState(null);
 const [historyOpen, setHistoryOpen] = useState(false);
 const [deletePopupOpen, setDeletePopupOpen] = useState(false);
-const [tradeToDelete, setTradeToDelete] = useState('');
+const [tradeToDelete, setTradeToDelete] = useState(null);
 
 
 React.useEffect(() => {
@@ -536,9 +538,9 @@ const loadTrades = async () => {
 >
   <button
   onClick={() => {
-    setTradeToDelete(trade.id.toString());
-    setDeletePopupOpen(true);
-  }}
+  setTradeToDelete(trade.id);
+  setDeletePopupOpen(true);
+}}
     style={{
       background: '#ff3b30',
       color: 'white',
@@ -745,10 +747,11 @@ const loadTrades = async () => {
       >
         <button
   onClick={async () => {
-    await deleteTrade(tradeToDelete);
-    setDeletePopupOpen(false);
-    setTradeToDelete('');
-  }}
+  await deleteTrade(tradeToDelete);
+
+  setDeletePopupOpen(false);
+  setTradeToDelete(null);
+}}
           style={{
             background: '#ff3b30',
             color: 'white',
