@@ -144,15 +144,18 @@ const loadTrades = async () => {
   };
 
 
-  await addDoc(collection(db, 'trades'), trade);
+  const docRef = await addDoc(
+  collection(db, 'trades'),
+  trade
+);
 
-  setSavedTrades((prev) => [
-    {
-      id: Date.now(),
-      ...trade,
-    },
-    ...prev,
-  ]);
+setSavedTrades((prev) => [
+  {
+    id: docRef.id,
+    ...trade,
+  },
+  ...prev,
+]);
 
   setPair('');
   setTradeDate('');
