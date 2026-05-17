@@ -11,6 +11,17 @@ import {
 import React, { useState } from 'react';
 
 export default function TradingChecklistApp() {
+  const deleteTrade = async (id) => {
+  try {
+    await deleteDoc(doc(db, 'trades', id))
+
+    setSavedTrades(
+      savedTrades.filter((trade) => trade.id !== id)
+    )
+  } catch (error) {
+    console.error('Error deleting trade:', error)
+  }
+}
   const sections = [
     {
       title: 'Weekly',
@@ -128,18 +139,7 @@ const loadTrades = async () => {
     createdAt: Date.now(),
   };
 
-  const deleteTrade = async (id) => {
-  try {
-    await deleteDoc(doc(db, 'trades', id))
-
-    setSavedTrades(
-      savedTrades.filter((trade) => trade.id !== id)
-    )
-  } catch (error) {
-    console.error('Error deleting trade:', error)
-  }
-}
-
+  
   await addDoc(collection(db, 'trades'), trade);
 
   setSavedTrades((prev) => [
