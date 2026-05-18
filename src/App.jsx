@@ -187,7 +187,10 @@ setSavedTrades((prev) => [
 
   return (
     <>
-    {showStickyScore && (
+    {showStickyScore &&
+ !historyOpen &&
+ !openedTrade &&
+ !deletePopupOpen && (
   <div
     style={{
       position: 'fixed',
