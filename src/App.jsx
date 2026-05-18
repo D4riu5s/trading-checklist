@@ -636,13 +636,13 @@ setSavedTrades((prev) => [
       background: '#ff3b30',
       color: 'white',
       border: 'none',
-      padding: '12px 16px',
+      padding: '10px 14px',
       borderRadius: '12px',
       cursor: 'pointer',
       fontWeight: 'bold',
     }}
   >
-    Delete
+    🗑️
   </button>
 
   <button
