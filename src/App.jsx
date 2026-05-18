@@ -86,10 +86,27 @@ const [openedTrade, setOpenedTrade] = useState(null);
 const [historyOpen, setHistoryOpen] = useState(false);
 const [deletePopupOpen, setDeletePopupOpen] = useState(false);
 const [tradeToDelete, setTradeToDelete] = useState(null);
+const [showStickyScore, setShowStickyScore] = useState(false);
 
 
 React.useEffect(() => {
   loadTrades();
+}, []);
+
+React.useEffect(() => {
+  const handleScroll = () => {
+    if (window.scrollY > 250) {
+      setShowStickyScore(true);
+    } else {
+      setShowStickyScore(false);
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+  };
 }, []);
 
 const loadTrades = async () => {
@@ -167,7 +184,78 @@ setSavedTrades((prev) => [
   };
 
   return (
+    <>
+    {showStickyScore && (
+  <div
+    style={{
+      position: 'fixed',
+      top: '15px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '90%',
+      maxWidth: '500px',
+      background: 'rgba(18, 26, 43, 0.92)',
+      backdropFilter: 'blur(12px)',
+      padding: '16px',
+      borderRadius: '20px',
+      zIndex: 9999,
+      border: `2px solid ${setupColor}`,
+      boxShadow: `0 0 25px ${setupColor}40`,
+    }}
+  >
     <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '10px',
+      }}
+    >
+      <span
+        style={{
+          color: 'white',
+          fontWeight: 'bold',
+          fontSize: '17px',
+        }}
+      >
+        Score: {percentage}%
+      </span>
+
+      <span
+        style={{
+          color: setupColor,
+          fontWeight: 'bold',
+          fontSize: '16px',
+        }}
+      >
+        {setupLabel}
+      </span>
+    </div>
+
+    <div
+      style={{
+        width: '100%',
+        height: '12px',
+        background: '#1e293b',
+        borderRadius: '999px',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          width: `${percentage}%`,
+          height: '100%',
+          background: setupColor,
+          borderRadius: '999px',
+          transition: '0.3s ease',
+          boxShadow: `0 0 12px ${setupColor}`,
+        }}
+      />
+    </div>
+  </div>
+)}
+
+<div
       style={{
         minHeight: '100vh',
         background: '#0b1020',
@@ -790,5 +878,5 @@ setSavedTrades((prev) => [
   </div>
 )}
       </div>
-  );
-}
+  </>
+  ):
