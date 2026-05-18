@@ -879,4 +879,5 @@ setSavedTrades((prev) => [
 )}
       </div>
   </>
-  ):
+  );
+}
