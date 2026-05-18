@@ -1,5 +1,7 @@
 import { db } from './firebase';
 
+import { FaTrash } from 'react-icons/fa';
+
 import {
   collection,
   addDoc,
@@ -629,21 +631,25 @@ setSavedTrades((prev) => [
 >
   <button
   onClick={() => {
-  setTradeToDelete(trade.id);
-  setDeletePopupOpen(true);
-}}
-    style={{
-      background: '#ff3b30',
-      color: 'white',
-      border: 'none',
-      padding: '10px 14px',
-      borderRadius: '12px',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-    }}
-  >
-    🗑️
-  </button>
+    setTradeToDelete(trade.id);
+    setDeletePopupOpen(true);
+  }}
+  style={{
+    background: '#ff3b30',
+    color: 'white',
+    border: 'none',
+    width: '42px',
+    height: '42px',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '15px',
+  }}
+>
+  <FaTrash />
+</button>
 
   <button
     onClick={() => setOpenedTrade(trade.id)}
