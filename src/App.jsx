@@ -1000,7 +1000,7 @@ setSavedTrades((prev) => [
 
 <div
   style={{
-    marginTop: '35px',
+    marginBottom: '20px',
     width: '100%',
     maxWidth: '700px',
     marginLeft: 'auto',
