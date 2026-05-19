@@ -124,6 +124,7 @@ const [historyOpen, setHistoryOpen] = useState(false);
 const [deletePopupOpen, setDeletePopupOpen] = useState(false);
 const [tradeToDelete, setTradeToDelete] = useState(null);
 const [showStickyScore, setShowStickyScore] = useState(false);
+const [isEditingTrade, setIsEditingTrade] = useState(false);
 
 
 React.useEffect(() => {
@@ -745,19 +746,50 @@ setSavedTrades((prev) => [
       >
         <h2>Trade Details</h2>
 
-        <button
-          onClick={() => setOpenedTrade(null)}
-          style={{
-            background: '#1e293b',
-            color: 'white',
-            border: 'none',
-            padding: '10px 15px',
-            borderRadius: '10px',
-            cursor: 'pointer',
-          }}
-        >
-          Close
-        </button>
+        ```jsx id="q8jlwm"
+<div
+  style={{
+    display: 'flex',
+    gap: '12px',
+    alignItems: 'center',
+  }}
+>
+  <button
+    onClick={() =>
+      setIsEditingTrade(true)
+    }
+    style={{
+      background: '#3b82f6',
+      color: 'white',
+      border: 'none',
+      padding: '10px 15px',
+      borderRadius: '10px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+    }}
+  >
+    Edit
+  </button>
+
+  <button
+    onClick={() => {
+      setOpenedTrade(null);
+      setIsEditingTrade(false);
+    }}
+    style={{
+      background: '#1e293b',
+      color: 'white',
+      border: 'none',
+      padding: '10px 15px',
+      borderRadius: '10px',
+      cursor: 'pointer',
+    }}
+  >
+    Close
+  </button>
+</div>
+```
+
       </div>
 
       {savedTrades
@@ -782,96 +814,122 @@ setSavedTrades((prev) => [
               }}
             >
               {sections.map((section) => (
-                <div key={section.title}>
-                  <h4
-                    style={{
-                      color: '#9ca3af',
-                      marginBottom: '12px',
-                    }}
-                  >
-                    {section.title}
-                  </h4>
-
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px',
-                    }}
-                  >
-                    {section.items.map((item) => {
-                      const itemId = `${section.title}-${item.name}`;
-                      const wasChecked =
-                        trade.checked[itemId];
-
-                      return (
-  <label
-    key={itemId}
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      padding: '10px 12px',
-      borderRadius: '12px',
-      background: wasChecked
-        ? '#1e293b'
-        : '#172033',
-      border: wasChecked
-        ? '1px solid #00ff99'
-        : '1px solid #2d3748',
-      color: wasChecked
-        ? '#00ff99'
-        : '#9ca3af',
-      cursor: 'pointer',
-      transition: '0.2s',
-    }}
-  >
-    <input
-      type="checkbox"
-      checked={wasChecked || false}
-      onChange={(e) => {
-        const updatedTrades = savedTrades.map(
-          (t) => {
-            if (t.id !== trade.id) return t;
-
-            const updatedChecked = {
-  ...t.checked,
-  [itemId]: e.target.checked,
-};
-
-const updatedPercentage = allItems
-  .reduce((acc, currentItem) => {
-    if (
-      updatedChecked[
-        `${currentItem.id}`
-      ]
-    ) {
-      return acc + currentItem.weight;
-    }
-
-    return acc;
-  }, 0)
-  .toFixed(0);
-
-return {
-  ...t,
-  checked: updatedChecked,
-  percentage: updatedPercentage,
-};
-          }
-        );
-
-        setSavedTrades(updatedTrades);
+  <div key={section.title}>
+    <h4
+      style={{
+        color: '#9ca3af',
+        marginBottom: '12px',
       }}
-    />
+    >
+      {section.title}
+    </h4>
 
-    <span>{item.name}</span>
-  </label>
-);
-                    })}
-                    <div
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+      }}
+    >
+      {section.items.map((item) => {
+        const itemId = `${section.title}-${item.name}`;
+        const wasChecked =
+          trade.checked[itemId];
+
+        return (
+          <label
+            key={itemId}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '10px 12px',
+              borderRadius: '12px',
+              background: wasChecked
+                ? '#1e293b'
+                : '#172033',
+              border: wasChecked
+                ? '1px solid #00ff99'
+                : '1px solid #2d3748',
+              color: wasChecked
+                ? '#00ff99'
+                : '#9ca3af',
+              cursor: isEditingTrade
+                ? 'pointer'
+                : 'default',
+              transition: '0.2s',
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={wasChecked || false}
+              disabled={!isEditingTrade}
+              onChange={(e) => {
+                const updatedTrades =
+                  savedTrades.map((t) => {
+                    if (
+                      t.id !== trade.id
+                    )
+                      return t;
+
+                    const updatedChecked =
+                      {
+                        ...t.checked,
+                        [itemId]:
+                          e.target.checked,
+                      };
+
+                    const updatedPercentage =
+                      allItems
+                        .reduce(
+                          (
+                            acc,
+                            currentItem
+                          ) => {
+                            if (
+                              updatedChecked[
+                                currentItem.id
+                              ]
+                            ) {
+                              return (
+                                acc +
+                                currentItem.weight
+                              );
+                            }
+
+                            return acc;
+                          },
+                          0
+                        )
+                        .toFixed(0);
+
+                    return {
+                      ...t,
+                      checked:
+                        updatedChecked,
+                      percentage:
+                        updatedPercentage,
+                    };
+                  });
+
+                setSavedTrades(
+                  updatedTrades
+                );
+              }}
+            />
+
+            <span>{item.name}</span>
+          </label>
+        );
+      })}
+    </div>
+  </div>
+))}
+
+<div
   style={{
-    marginTop: '30px',
+    marginTop: '35px',
+    gridColumn: '1 / -1',
   }}
 >
   <h3
@@ -884,17 +942,18 @@ return {
 
   <textarea
     value={trade.note || ''}
+    disabled={!isEditingTrade}
     onChange={(e) => {
-      const updatedTrades = savedTrades.map(
-        (t) => {
-          if (t.id !== trade.id) return t;
+      const updatedTrades =
+        savedTrades.map((t) => {
+          if (t.id !== trade.id)
+            return t;
 
           return {
             ...t,
             note: e.target.value,
           };
-        }
-      );
+        });
 
       setSavedTrades(updatedTrades);
     }}
@@ -908,38 +967,48 @@ return {
       color: 'white',
       border: 'none',
       resize: 'vertical',
+      opacity: !isEditingTrade
+        ? 0.7
+        : 1,
     }}
   />
-</div>
-<button
-  onClick={async () => {
-    const currentTrade = savedTrades.find(
-      (t) => t.id === trade.id
-    );
 
-    await updateDoc(
-      doc(db, 'trades', trade.id),
-      currentTrade
-    );
-  }}
-  style={{
-    marginTop: '25px',
-    background: '#00ff99',
-    color: '#0b1020',
-    border: 'none',
-    padding: '15px',
-    borderRadius: '14px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    fontSize: '16px',
-    width: '100%',
-  }}
->
-  Save Changes
-</button>
-                  </div>
-                </div>
-              ))}
+  {isEditingTrade && (
+    <button
+      onClick={async () => {
+        const currentTrade =
+          savedTrades.find(
+            (t) => t.id === trade.id
+          );
+
+        await updateDoc(
+          doc(
+            db,
+            'trades',
+            trade.id
+          ),
+          currentTrade
+        );
+
+        setIsEditingTrade(false);
+      }}
+      style={{
+        marginTop: '25px',
+        background: '#00ff99',
+        color: '#0b1020',
+        border: 'none',
+        padding: '15px',
+        borderRadius: '14px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        fontSize: '16px',
+        width: '100%',
+      }}
+    >
+      Save Changes
+    </button>
+  )}
+</div>
             </div>
           </div>
         ))}
