@@ -1209,6 +1209,10 @@ onClick={() => {
           No
         </button>
       </div>
+    </div>
+  </div>
+)}
+
 {unsavedChangesPopup && (
   <div
     style={{
@@ -1349,9 +1353,6 @@ onClick={() => {
           Cancel
         </button>
       </div>
-    </div>
-  </div>
-)}
     </div>
   </div>
 )}
