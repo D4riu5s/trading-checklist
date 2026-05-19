@@ -7,6 +7,7 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
+  updateDoc,
   doc
 } from 'firebase/firestore'
 
@@ -26,6 +27,39 @@ export default function TradingChecklistApp() {
     console.error('Error deleting trade:', error);
   }
 };
+
+const updateTrade = async () => {
+  if (!editingTrade) return;
+
+  try {
+    const updatedTrade = {
+      ...editingTrade,
+      note: tradeNote,
+      checked,
+      percentage,
+      tradeResult,
+    };
+
+    await updateDoc(
+      doc(db, 'trades', editingTrade.id),
+      updatedTrade
+    );
+
+    setSavedTrades((prev) =>
+      prev.map((trade) =>
+        trade.id === editingTrade.id
+          ? updatedTrade
+          : trade
+      )
+    );
+
+    setEditPopupOpen(false);
+    setEditingTrade(null);
+  } catch (error) {
+    console.error('Error updating trade:', error);
+  }
+};
+
   const sections = [
     {
       title: 'Weekly',
@@ -89,6 +123,9 @@ const [historyOpen, setHistoryOpen] = useState(false);
 const [deletePopupOpen, setDeletePopupOpen] = useState(false);
 const [tradeToDelete, setTradeToDelete] = useState(null);
 const [showStickyScore, setShowStickyScore] = useState(false);
+const [editPopupOpen, setEditPopupOpen] = useState(false);
+const [editingTrade, setEditingTrade] = useState(null);
+const [tradeNote, setTradeNote] = useState('');
 
 
 React.useEffect(() => {
@@ -654,6 +691,29 @@ setSavedTrades((prev) => [
   <FaTrash />
 </button>
 
+<button
+  onClick={() => {
+    setEditingTrade(trade);
+    setTradeNote(trade.note || '');
+    setEditPopupOpen(true);
+  }}
+  style={{
+    background: '#3b82f6',
+    color: 'white',
+    border: 'none',
+    width: '42px',
+    height: '42px',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '15px',
+  }}
+>
+  <FaEdit />
+</button>
+
   <button
     onClick={() => setOpenedTrade(trade.id)}
     style={{
@@ -887,6 +947,170 @@ setSavedTrades((prev) => [
   </div>
 )}
       </div>
+      {editPopupOpen && editingTrade && (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(0,0,0,0.75)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 9999,
+      padding: '20px',
+    }}
+  >
+    <div
+      style={{
+        background: '#121a2b',
+        width: '100%',
+        maxWidth: '700px',
+        maxHeight: '90vh',
+        overflowY: 'auto',
+        borderRadius: '20px',
+        padding: '25px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '25px',
+        }}
+      >
+        <h2>Edit Trade</h2>
+
+        <button
+          onClick={() => {
+            setEditPopupOpen(false);
+            setEditingTrade(null);
+          }}
+          style={{
+            background: '#1e293b',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '10px',
+            cursor: 'pointer',
+          }}
+        >
+          Close
+        </button>
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+        }}
+      >
+        <div>
+          <p>Trade Result</p>
+
+          <select
+            value={tradeResult}
+            onChange={(e) =>
+              setTradeResult(e.target.value)
+            }
+            style={{
+              width: '100%',
+              padding: '12px',
+              borderRadius: '12px',
+              background: '#1e293b',
+              color: 'white',
+              border: 'none',
+            }}
+          >
+            <option>Win</option>
+            <option>Loss</option>
+            <option>BE</option>
+          </select>
+        </div>
+
+        <div>
+          <p>Notes</p>
+
+          <textarea
+            value={tradeNote}
+            onChange={(e) =>
+              setTradeNote(e.target.value)
+            }
+            placeholder="Add notes about this trade..."
+            style={{
+              width: '100%',
+              minHeight: '140px',
+              padding: '15px',
+              borderRadius: '15px',
+              background: '#1e293b',
+              color: 'white',
+              border: 'none',
+              resize: 'vertical',
+            }}
+          />
+        </div>
+
+        <div>
+          <h3 style={{ marginBottom: '15px' }}>
+            Checklist
+          </h3>
+
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+            }}
+          >
+            {allItems.map((item) => (
+              <label
+                key={item.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  background: '#172033',
+                  padding: '14px',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked[item.id] || false}
+                  onChange={() =>
+                    toggleCheck(item.id)
+                  }
+                />
+
+                <span>
+                  {item.label}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <button
+          onClick={updateTrade}
+          style={{
+            background: '#00ff99',
+            color: '#0b1020',
+            border: 'none',
+            padding: '15px',
+            borderRadius: '14px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '16px',
+          }}
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+)}
   </>
   );
 }
