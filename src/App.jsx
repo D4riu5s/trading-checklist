@@ -789,7 +789,7 @@ setSavedTrades((prev) => [
       fontWeight: 'bold',
     }}
   >
-    Edit
+    <FaEdit />
   </button>
 
   <button
@@ -817,9 +817,78 @@ setSavedTrades((prev) => [
         .filter((trade) => trade.id === openedTrade)
         .map((trade) => (
           <div key={trade.id}>
-            <h3>
-              {trade.pair} • {trade.tradeResult}
-            </h3>
+            ```jsx id="h7jlwm"
+<div
+  style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '15px',
+    flexWrap: 'wrap',
+  }}
+>
+  <h2 style={{ margin: 0 }}>
+    {trade.pair}
+  </h2>
+
+  {isEditingTrade ? (
+    <select
+      value={trade.tradeResult}
+      onChange={(e) => {
+        const updatedTrades =
+          savedTrades.map((t) => {
+            if (t.id !== trade.id)
+              return t;
+
+            return {
+              ...t,
+              tradeResult:
+                e.target.value,
+            };
+          });
+
+        setSavedTrades(updatedTrades);
+      }}
+      style={{
+        background: '#1e293b',
+        color: 'white',
+        border: '1px solid #334155',
+        padding: '10px 15px',
+        borderRadius: '10px',
+      }}
+    >
+      <option value="Win">
+        Win
+      </option>
+
+      <option value="Lose">
+        Lose
+      </option>
+
+      <option value="Breakeven">
+        Breakeven
+      </option>
+    </select>
+  ) : (
+    <span
+      style={{
+        color:
+          trade.tradeResult === 'Win'
+            ? '#00ff99'
+            : trade.tradeResult ===
+              'Lose'
+            ? '#ff4d4d'
+            : '#ffd633',
+        fontWeight: 'bold',
+        fontSize: '24px',
+      }}
+    >
+      • {trade.tradeResult}
+    </span>
+  )}
+</div>
+```
+
 
             <p>Date: {trade.tradeDate}</p>
 
