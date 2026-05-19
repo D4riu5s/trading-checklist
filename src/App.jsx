@@ -35,7 +35,7 @@ const updateTrade = async () => {
     const updatedTrade = {
       ...editingTrade,
       note: tradeNote,
-      checked,
+      checked: editingChecked,
       percentage,
       tradeResult,
     };
@@ -113,6 +113,7 @@ const updateTrade = async () => {
   );
 
   const [checked, setChecked] = useState({});
+  const [editingChecked, setEditingChecked] = useState({});
 
   const [pair, setPair] = useState('');
 const [tradeDate, setTradeDate] = useState('');
@@ -694,6 +695,8 @@ setSavedTrades((prev) => [
 <button
   onClick={() => {
     setEditingTrade(trade);
+    setEditingChecked(trade.checked || {});
+setTradeResult(trade.tradeResult || 'Win');
     setTradeNote(trade.note || '');
     setEditPopupOpen(true);
   }}
@@ -1080,8 +1083,11 @@ setSavedTrades((prev) => [
                   type="checkbox"
                   checked={checked[item.id] || false}
                   onChange={() =>
-                    toggleCheck(item.id)
-                  }
+  setEditingChecked((prev) => ({
+    ...prev,
+    [item.id]: !prev[item.id],
+  }))
+}
                 />
 
                 <span>
