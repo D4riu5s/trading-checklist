@@ -508,22 +508,6 @@ setSavedTrades((prev) => [
       }}
     />
 
-    <select
-      value={tradeResult}
-      onChange={(e) => setTradeResult(e.target.value)}
-      style={{
-        padding: '14px',
-        borderRadius: '12px',
-        border: 'none',
-        background: '#1e293b',
-        color: 'white',
-      }}
-    >
-      <option>Win</option>
-      <option>Lose</option>
-      <option>Breakeven</option>
-    </select>
-
     <button
       onClick={saveTrade}
       style={{
@@ -861,7 +845,7 @@ setSavedTrades((prev) => [
       </option>
 
       <option value="Lose">
-        Lose
+        Loss
       </option>
 
       <option value="Breakeven">
