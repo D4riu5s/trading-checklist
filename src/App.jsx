@@ -1001,9 +1001,13 @@ setSavedTrades((prev) => [
 <div
   style={{
     marginTop: '35px',
-    gridColumn: '1 / -1',
+    width: '100%',
+    maxWidth: '700px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
   }}
 >
+
   <h3
     style={{
       marginBottom: '12px',
