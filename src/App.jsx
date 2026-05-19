@@ -1012,7 +1012,7 @@ setSavedTrades((prev) => [
 <div
   style={{
     width: '100%',
-    maxWidth: '900px',
+    maxWidth: '760px',
     margin: '0 auto',
   }}
 >
@@ -1052,6 +1052,7 @@ setSavedTrades((prev) => [
       color: 'white',
       border: 'none',
       resize: 'vertical',
+      boxSizing: 'border-box',
       opacity: !isEditingTrade
         ? 0.7
         : 1,
