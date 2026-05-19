@@ -1,6 +1,6 @@
 import { db } from './firebase';
 
-import { FaTrash } from 'react-icons/fa';
+import { FaTrash, FaEdit } from 'react-icons/fa';
 
 import {
   collection,
