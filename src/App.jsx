@@ -126,6 +126,14 @@ const [tradeToDelete, setTradeToDelete] = useState(null);
 const [showStickyScore, setShowStickyScore] = useState(false);
 const [isEditingTrade, setIsEditingTrade] = useState(false);
 
+const [originalTrade, setOriginalTrade] =
+  useState(null);
+
+const [
+  unsavedChangesPopup,
+  setUnsavedChangesPopup,
+] = useState(false);
+
 
 React.useEffect(() => {
   loadTrades();
@@ -760,9 +768,20 @@ setSavedTrades((prev) => [
   </button>
 
   <button
-    onClick={() =>
-      setIsEditingTrade(true)
-    }
+onClick={() => {
+  const currentTrade =
+    savedTrades.find(
+      (t) => t.id === openedTrade
+    );
+
+  setOriginalTrade(
+    JSON.parse(
+      JSON.stringify(currentTrade)
+    )
+  );
+
+  setIsEditingTrade(true);
+}}
     style={{
       background: '#3b82f6',
       color: 'white',
@@ -777,10 +796,16 @@ setSavedTrades((prev) => [
   </button>
 
   <button
-    onClick={() => {
-      setOpenedTrade(null);
-      setIsEditingTrade(false);
-    }}
+onClick={() => {
+  if (isEditingTrade) {
+    setUnsavedChangesPopup(true);
+    return;
+  }
+
+  setOpenedTrade(null);
+  setIsEditingTrade(false);
+}}
+
     style={{
       background: '#1e293b',
       color: 'white',
@@ -1145,6 +1170,151 @@ setSavedTrades((prev) => [
           justifyContent: 'center',
         }}
       >
+
+{unsavedChangesPopup && (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(0,0,0,0.75)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 9999,
+    }}
+  >
+    <div
+      style={{
+        background: '#121a2b',
+        padding: '30px',
+        borderRadius: '20px',
+        width: '90%',
+        maxWidth: '420px',
+        textAlign: 'center',
+      }}
+    >
+      <h2
+        style={{
+          marginBottom: '15px',
+        }}
+      >
+        Unsaved Changes
+      </h2>
+
+      <p
+        style={{
+          color: '#9ca3af',
+          marginBottom: '25px',
+        }}
+      >
+        Do you want to save your
+        changes before closing?
+      </p>
+
+      <div
+        style={{
+          display: 'flex',
+          gap: '12px',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+        }}
+      >
+        <button
+          onClick={async () => {
+            const currentTrade =
+              savedTrades.find(
+                (t) =>
+                  t.id === openedTrade
+              );
+
+            await updateDoc(
+              doc(
+                db,
+                'trades',
+                openedTrade
+              ),
+              currentTrade
+            );
+
+            setUnsavedChangesPopup(
+              false
+            );
+
+            setOpenedTrade(null);
+            setIsEditingTrade(false);
+          }}
+          style={{
+            background: '#00ff99',
+            color: '#0b1020',
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          }}
+        >
+          Save
+        </button>
+
+        <button
+          onClick={() => {
+            const revertedTrades =
+              savedTrades.map((t) => {
+                if (
+                  t.id !== openedTrade
+                )
+                  return t;
+
+                return originalTrade;
+              });
+
+            setSavedTrades(
+              revertedTrades
+            );
+
+            setUnsavedChangesPopup(
+              false
+            );
+
+            setOpenedTrade(null);
+            setIsEditingTrade(false);
+          }}
+          style={{
+            background: '#ff3b30',
+            color: 'white',
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          }}
+        >
+          Discard
+        </button>
+
+        <button
+          onClick={() =>
+            setUnsavedChangesPopup(
+              false
+            )
+          }
+          style={{
+            background: '#1e293b',
+            color: 'white',
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
         <button
   onClick={async () => {
   await deleteTrade(tradeToDelete);
