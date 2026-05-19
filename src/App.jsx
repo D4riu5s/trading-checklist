@@ -1009,7 +1009,7 @@ setSavedTrades((prev) => [
       marginBottom: '12px',
     }}
   >
-    Notes
+    Note
   </h3>
 
   <textarea
@@ -1032,7 +1032,7 @@ setSavedTrades((prev) => [
     placeholder="Add notes about this trade..."
     style={{
       width: '100%',
-      minHeight: '140px',
+      minHeight: '200px',
       padding: '15px',
       borderRadius: '15px',
       background: '#1e293b',
