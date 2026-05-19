@@ -739,7 +739,7 @@ setSavedTrades((prev) => [
 >
   <button
     onClick={() => {
-      setTradeToDelete(trade.id);
+      setTradeToDelete(openedTrade);
       setDeletePopupOpen(true);
     }}
     style={{
