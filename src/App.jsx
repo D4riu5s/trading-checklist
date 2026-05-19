@@ -817,7 +817,6 @@ setSavedTrades((prev) => [
         .filter((trade) => trade.id === openedTrade)
         .map((trade) => (
           <div key={trade.id}>
-            ```jsx id="h7jlwm"
 <div
   style={{
     display: 'flex',
@@ -887,7 +886,6 @@ setSavedTrades((prev) => [
     </span>
   )}
 </div>
-```
 
 
             <p>Date: {trade.tradeDate}</p>
