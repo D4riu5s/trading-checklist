@@ -1151,6 +1151,7 @@ setSavedTrades((prev) => [
 
   setDeletePopupOpen(false);
   setTradeToDelete(null);
+  setOpenedTrade(null);
 }}
           style={{
             background: '#ff3b30',
