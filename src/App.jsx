@@ -746,6 +746,7 @@ setSavedTrades((prev) => [
       >
         <h2>Trade Details</h2>
 
+```jsx
 <div
   style={{
     display: 'flex',
@@ -753,6 +754,28 @@ setSavedTrades((prev) => [
     alignItems: 'center',
   }}
 >
+  <button
+    onClick={() => {
+      setTradeToDelete(trade.id);
+      setDeletePopupOpen(true);
+    }}
+    style={{
+      background: '#ff3b30',
+      color: 'white',
+      border: 'none',
+      width: '42px',
+      height: '42px',
+      borderRadius: '12px',
+      cursor: 'pointer',
+      fontSize: '18px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+  >
+    <FaTrash />
+  </button>
+
   <button
     onClick={() =>
       setIsEditingTrade(true)
@@ -787,6 +810,8 @@ setSavedTrades((prev) => [
     Close
   </button>
 </div>
+```
+
 
       </div>
 
