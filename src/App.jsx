@@ -746,7 +746,6 @@ setSavedTrades((prev) => [
       >
         <h2>Trade Details</h2>
 
-        ```jsx id="q8jlwm"
 <div
   style={{
     display: 'flex',
@@ -788,7 +787,6 @@ setSavedTrades((prev) => [
     Close
   </button>
 </div>
-```
 
       </div>
 
