@@ -1170,7 +1170,45 @@ onClick={() => {
           justifyContent: 'center',
         }}
       >
+        <button
+  onClick={async () => {
+  await deleteTrade(tradeToDelete);
 
+  setDeletePopupOpen(false);
+  setTradeToDelete(null);
+  setOpenedTrade(null);
+}}
+          style={{
+            background: '#ff3b30',
+            color: 'white',
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          }}
+        >
+          Yes
+        </button>
+
+        <button
+  onClick={() => {
+    setDeletePopupOpen(false);
+    setTradeToDelete('');
+  }}
+          style={{
+            background: '#1e293b',
+            color: 'white',
+            border: 'none',
+            padding: '12px 20px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          }}
+        >
+          No
+        </button>
+      </div>
 {unsavedChangesPopup && (
   <div
     style={{
@@ -1314,46 +1352,6 @@ onClick={() => {
     </div>
   </div>
 )}
-
-        <button
-  onClick={async () => {
-  await deleteTrade(tradeToDelete);
-
-  setDeletePopupOpen(false);
-  setTradeToDelete(null);
-  setOpenedTrade(null);
-}}
-          style={{
-            background: '#ff3b30',
-            color: 'white',
-            border: 'none',
-            padding: '12px 20px',
-            borderRadius: '12px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-          }}
-        >
-          Yes
-        </button>
-
-        <button
-  onClick={() => {
-    setDeletePopupOpen(false);
-    setTradeToDelete('');
-  }}
-          style={{
-            background: '#1e293b',
-            color: 'white',
-            border: 'none',
-            padding: '12px 20px',
-            borderRadius: '12px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-          }}
-        >
-          No
-        </button>
-      </div>
     </div>
   </div>
 )}
