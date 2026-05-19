@@ -997,6 +997,7 @@ setSavedTrades((prev) => [
     </div>
   </div>
 ))}
+</div>
 
 <div
   style={{
@@ -1092,7 +1093,6 @@ setSavedTrades((prev) => [
   )}
 </div>
             </div>
-          </div>
         ))}
     </div>
   </div>
