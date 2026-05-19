@@ -746,7 +746,6 @@ setSavedTrades((prev) => [
       >
         <h2>Trade Details</h2>
 
-```jsx
 <div
   style={{
     display: 'flex',
@@ -763,11 +762,11 @@ setSavedTrades((prev) => [
       background: '#ff3b30',
       color: 'white',
       border: 'none',
-      width: '42px',
-      height: '42px',
+      padding: '10px 15px',
+      fontSize: '16px',
       borderRadius: '12px',
       cursor: 'pointer',
-      fontSize: '18px',
+      fontWeight: 'bold',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
@@ -810,7 +809,6 @@ setSavedTrades((prev) => [
     Close
   </button>
 </div>
-```
 
 
       </div>
