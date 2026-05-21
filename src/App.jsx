@@ -125,6 +125,7 @@ const [deletePopupOpen, setDeletePopupOpen] = useState(false);
 const [tradeToDelete, setTradeToDelete] = useState(null);
 const [showStickyScore, setShowStickyScore] = useState(false);
 const [isEditingTrade, setIsEditingTrade] = useState(false);
+const [activePage, setActivePage] = useState('checklist');
 
 const [originalTrade, setOriginalTrade] =
   useState(null);
@@ -313,6 +314,89 @@ setSavedTrades((prev) => [
         padding: '30px',
       }}
     >
+      <div
+  style={{
+    background: '#121a2b',
+    padding: '15px 25px',
+    borderBottom: '1px solid #2d3748',
+    marginBottom: '25px',
+  }}
+>
+  <div
+    style={{
+      maxWidth: '1100px',
+      margin: '0 auto',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    }}
+  >
+    <h2
+      style={{
+        margin: 0,
+        color: '#00ff99',
+      }}
+    >
+      TradeScore
+    </h2>
+
+    <div
+      style={{
+        display: 'flex',
+        gap: '15px',
+      }}
+    >
+      <button
+        onClick={() =>
+          setActivePage('checklist')
+        }
+        style={{
+          background:
+            activePage === 'checklist'
+              ? '#00ff99'
+              : '#1e293b',
+          color:
+            activePage === 'checklist'
+              ? '#0b1020'
+              : 'white',
+          border: 'none',
+          padding: '10px 18px',
+          borderRadius: '12px',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+        }}
+      >
+        Checklist
+      </button>
+
+      <button
+        onClick={() =>
+          setActivePage('history')
+        }
+        style={{
+          background:
+            activePage === 'history'
+              ? '#00ff99'
+              : '#1e293b',
+          color:
+            activePage === 'history'
+              ? '#0b1020'
+              : 'white',
+          border: 'none',
+          padding: '10px 18px',
+          borderRadius: '12px',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+        }}
+      >
+        Trade History
+      </button>
+    </div>
+  </div>
+</div>
+
+{activePage === 'checklist' && (
+
       <div
         style={{
           width: '1100px',
@@ -564,30 +648,15 @@ setSavedTrades((prev) => [
   </button>
 </div>
 
-{historyOpen && (
-  <div
-    style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(0,0,0,0.75)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 998,
-      padding: '20px',
-    }}
-  >
+{activePage === 'history' && (
     <div
-      style={{
-        background: '#121a2b',
-        width: '100%',
-        maxWidth: '950px',
-        maxHeight: '90vh',
-        overflowY: 'auto',
-        borderRadius: '20px',
-        padding: '25px',
-      }}
-    >
+  style={{
+    background: '#121a2b',
+    width: '100%',
+    borderRadius: '20px',
+    padding: '25px',
+  }}
+>
       <div
         style={{
           display: 'flex',
@@ -597,21 +666,6 @@ setSavedTrades((prev) => [
         }}
       >
         <h2>Trade History</h2>
-
-        <button
-          onClick={() => setHistoryOpen(false)}
-          style={{
-            background: '#1e293b',
-            color: 'white',
-            border: 'none',
-            padding: '10px 15px',
-            borderRadius: '10px',
-            cursor: 'pointer',
-          }}
-        >
-          Close
-        </button>
-      </div>
 
       <div
         style={{
@@ -1128,6 +1182,9 @@ onClick={() => {
   </div>
 </div>
         </div>
+
+        )}
+
         {deletePopupOpen && (
   <div
     style={{
