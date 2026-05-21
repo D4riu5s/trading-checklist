@@ -327,7 +327,8 @@ setSavedTrades((prev) => [
       maxWidth: '1100px',
       margin: '0 auto',
       display: 'flex',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
+gap: '25px',
       alignItems: 'center',
     }}
   >
