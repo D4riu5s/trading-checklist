@@ -315,8 +315,7 @@ setSavedTrades((prev) => [
     >
       <div
         style={{
-          maxWidth: '1100px',
-          margin: '0 auto',
+          width: '100%',
         }}
       >
         <div
