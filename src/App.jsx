@@ -20,6 +20,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  GoogleAuthProvider,
+signInWithPopup,
 } from 'firebase/auth';
 
 export default function TradingChecklistApp() {
@@ -159,15 +161,6 @@ React.useEffect(() => {
 }, []);
 
 React.useEffect(() => {
-  const handleScroll = () => {
-    if (window.scrollY > 250) {
-      setShowStickyScore(true);
-    } else {
-      setShowStickyScore(false);
-    }
-  };
-
-  React.useEffect(() => {
   const unsubscribe =
     onAuthStateChanged(
       auth,
@@ -179,10 +172,25 @@ React.useEffect(() => {
   return unsubscribe;
 }, []);
 
-  window.addEventListener('scroll', handleScroll);
+  React.useEffect(() => {
+  const handleScroll = () => {
+    if (window.scrollY > 250) {
+      setShowStickyScore(true);
+    } else {
+      setShowStickyScore(false);
+    }
+  };
+
+  window.addEventListener(
+    'scroll',
+    handleScroll
+  );
 
   return () => {
-    window.removeEventListener('scroll', handleScroll);
+    window.removeEventListener(
+      'scroll',
+      handleScroll
+    );
   };
 }, []);
 
@@ -260,7 +268,50 @@ setSavedTrades((prev) => [
     setChecked({});
   };
 
-  if (!user) {
+const registerUser = async () => {
+  try {
+    await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+const loginUser = async () => {
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+const logoutUser = async () => {
+  await signOut(auth);
+};
+
+const loginWithGoogle = async () => {
+  try {
+    const provider =
+      new GoogleAuthProvider();
+
+    await signInWithPopup(
+      auth,
+      provider
+    );
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+};
+
+if (!user) {
   return (
     <div
       style={{
@@ -351,6 +402,23 @@ setSavedTrades((prev) => [
             : 'Login'}
         </button>
 
+        <button
+  onClick={loginWithGoogle}
+  style={{
+    width: '100%',
+    padding: '15px',
+    marginTop: '12px',
+    border: 'none',
+    borderRadius: '12px',
+    background: '#ffffff',
+    color: '#000',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+  }}
+>
+  Continue with Google
+</button>
+
         <p
           style={{
             marginTop: '20px',
@@ -372,34 +440,6 @@ setSavedTrades((prev) => [
     </div>
   );
 }
-
-const registerUser = async () => {
-  try {
-    await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-  } catch (error) {
-    alert(error.message);
-  }
-};
-
-const loginUser = async () => {
-  try {
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-  } catch (error) {
-    alert(error.message);
-  }
-};
-
-const logoutUser = async () => {
-  await signOut(auth);
-};
 
   return (
     <>
