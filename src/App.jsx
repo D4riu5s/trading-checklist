@@ -401,6 +401,7 @@ gap: '25px',
       <div
         style={{
           width: '1100px',
+          maxWidth: '1100px',
           margin: '0 auto',
         }}
       >
