@@ -504,7 +504,7 @@ gap: '25px',
                   marginBottom: '20px',
                   fontSize: '28px',
                   borderBottom: '1px solid #2d3748',
-                  paddingBottom: '10px',
+                  paddingBottom: '15px',
                 }}
               >
                 {section.title}
