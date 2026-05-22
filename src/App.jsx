@@ -401,7 +401,7 @@ gap: '25px',
 
       <div
         style={{
-          width: '1100px',
+          width: '100%',
           maxWidth: '1100px',
           margin: '0 auto',
         }}
@@ -484,7 +484,8 @@ gap: '25px',
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gridTemplateColumns:
+  'repeat(auto-fit, minmax(250px, 1fr))',
             gap: '25px',
           }}
         >
