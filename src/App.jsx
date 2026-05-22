@@ -22,6 +22,9 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
 signInWithPopup,
+browserLocalPersistence,
+  browserSessionPersistence,
+  setPersistence,
 } from 'firebase/auth';
 
 export default function TradingChecklistApp() {
@@ -155,6 +158,9 @@ const [
   setUnsavedChangesPopup,
 ] = useState(false);
 
+const [rememberMe, setRememberMe] =
+  useState(true);
+
 
 React.useEffect(() => {
   loadTrades();
@@ -282,6 +288,13 @@ const registerUser = async () => {
 
 const loginUser = async () => {
   try {
+    await setPersistence(
+      auth,
+      rememberMe
+        ? browserLocalPersistence
+        : browserSessionPersistence
+    );
+
     await signInWithEmailAndPassword(
       auth,
       email,
@@ -379,6 +392,26 @@ if (!user) {
             boxSizing: 'border-box',
           }}
         />
+
+        <label
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    marginBottom: '20px',
+    color: 'white',
+  }}
+>
+  <input
+    type="checkbox"
+    checked={rememberMe}
+    onChange={(e) =>
+      setRememberMe(e.target.checked)
+    }
+  />
+
+  Remember Me
+</label>
 
         <button
           onClick={
@@ -604,6 +637,21 @@ gap: '25px',
       >
         Trade History
       </button>
+
+      <button
+  onClick={logoutUser}
+  style={{
+    background: '#ff3b30',
+    color: 'white',
+    border: 'none',
+    padding: '10px 16px',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+  }}
+>
+  Logout
+</button>
     </div>
   </div>
 </div>
