@@ -514,7 +514,7 @@ gap: '25px',
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '10px',
+                  gap: '15px',
                 }}
               >
                 {section.items.map((item) => {
