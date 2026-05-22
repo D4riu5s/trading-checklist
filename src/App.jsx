@@ -233,7 +233,7 @@ setSavedTrades((prev) => [
   return (
     <>
     {showStickyScore &&
- !historyOpen &&
+ activePage === 'checklist' &&
  !openedTrade &&
  !deletePopupOpen && (
   <div
@@ -627,11 +627,6 @@ gap: '25px',
 )}
 
 {activePage === 'history' && (
-  <>
-  <h1 style={{ color: 'red' }}>
-  HISTORY PAGE TEST
-</h1>
-
     <div
   style={{
     background: '#121a2b',
@@ -649,6 +644,7 @@ gap: '25px',
         }}
       >
         <h2>Trade History</h2>
+        </div>
 
       <div
         style={{
@@ -738,7 +734,6 @@ gap: '25px',
         ))}
       </div>
     </div>
-  </div>
 )}
 
     {openedTrade && (
@@ -1157,16 +1152,11 @@ onClick={() => {
     </button>
   )}
 </div>
-            </div>
+                        </div>
         ))}
     </div>
   </div>
 )}
-  </div>
-</div>
-        </div>
-
-        )}
 
         {deletePopupOpen && (
   <div
