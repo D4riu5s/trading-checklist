@@ -485,7 +485,7 @@ gap: '25px',
           style={{
             display: 'grid',
             gridTemplateColumns:
-  'repeat(auto-fit, minmax(250px, 1fr))',
+  'repeat(auto-fit, minmax(400px, 1fr))',
             gap: '25px',
           }}
         >
@@ -494,7 +494,7 @@ gap: '25px',
               key={section.title}
               style={{
                 background: '#121a2b',
-                padding: '25px',
+                padding: '18px',
                 borderRadius: '20px',
                 boxShadow: '0 0 20px rgba(0,0,0,0.3)',
               }}
@@ -514,7 +514,7 @@ gap: '25px',
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '15px',
+                  gap: '10px',
                 }}
               >
                 {section.items.map((item) => {
