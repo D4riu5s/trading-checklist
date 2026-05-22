@@ -693,6 +693,7 @@ alignItems: 'center',
   style={{
     display: 'flex',
     gap: '10px',
+    marginLeft: 'auto',
   }}
 >
   <button
