@@ -633,6 +633,8 @@ gap: '25px',
     width: '100%',
     borderRadius: '20px',
     padding: '25px',
+    boxSizing: 'border-box',
+overflowX: 'hidden',
   }}
 >
       <div
@@ -660,11 +662,11 @@ gap: '25px',
               background: '#172033',
               padding: '18px',
               borderRadius: '16px',
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '15px',
+              display: 'grid',
+gridTemplateColumns:
+  'repeat(auto-fit, minmax(140px, 1fr))',
+gap: '15px',
+alignItems: 'center',
             }}
           >
             <div>
