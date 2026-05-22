@@ -13,6 +13,15 @@ import {
 
 import React, { useState } from 'react';
 
+import { auth } from './firebase';
+
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from 'firebase/auth';
+
 export default function TradingChecklistApp() {
   const deleteTrade = async (tradeId) => {
   try {
@@ -127,6 +136,15 @@ const [showStickyScore, setShowStickyScore] = useState(false);
 const [isEditingTrade, setIsEditingTrade] = useState(false);
 const [activePage, setActivePage] = useState('checklist');
 
+const [user, setUser] = useState(null);
+
+const [email, setEmail] = useState('');
+
+const [password, setPassword] = useState('');
+
+const [isRegisterMode, setIsRegisterMode] =
+  useState(false);
+
 const [originalTrade, setOriginalTrade] =
   useState(null);
 
@@ -148,6 +166,18 @@ React.useEffect(() => {
       setShowStickyScore(false);
     }
   };
+
+  React.useEffect(() => {
+  const unsubscribe =
+    onAuthStateChanged(
+      auth,
+      (currentUser) => {
+        setUser(currentUser);
+      }
+    );
+
+  return unsubscribe;
+}, []);
 
   window.addEventListener('scroll', handleScroll);
 
@@ -199,13 +229,13 @@ const loadTrades = async () => {
 
   const saveTrade = async () => {
   const trade = {
-    pair,
-    tradeDate,
-    tradeResult,
-    percentage,
-    checked,
-    createdAt: Date.now(),
-  };
+  userId: user.uid,
+  pair,
+  tradeDate,
+  tradeResult,
+  percentage,
+  checked,
+};
 
 
   const docRef = await addDoc(
@@ -229,6 +259,147 @@ setSavedTrades((prev) => [
   const clearAllChecks = () => {
     setChecked({});
   };
+
+  if (!user) {
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#0b1020',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '20px',
+      }}
+    >
+      <div
+        style={{
+          background: '#121a2b',
+          padding: '40px',
+          borderRadius: '20px',
+          width: '100%',
+          maxWidth: '420px',
+        }}
+      >
+        <h1
+          style={{
+            textAlign: 'center',
+            color: '#00ff99',
+            marginBottom: '30px',
+          }}
+        >
+          TradeScore
+        </h1>
+
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) =>
+            setEmail(e.target.value)
+          }
+          style={{
+            width: '100%',
+            padding: '15px',
+            marginBottom: '15px',
+            borderRadius: '12px',
+            border: 'none',
+            background: '#1e293b',
+            color: 'white',
+            boxSizing: 'border-box',
+          }}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) =>
+            setPassword(e.target.value)
+          }
+          style={{
+            width: '100%',
+            padding: '15px',
+            marginBottom: '20px',
+            borderRadius: '12px',
+            border: 'none',
+            background: '#1e293b',
+            color: 'white',
+            boxSizing: 'border-box',
+          }}
+        />
+
+        <button
+          onClick={
+            isRegisterMode
+              ? registerUser
+              : loginUser
+          }
+          style={{
+            width: '100%',
+            padding: '15px',
+            border: 'none',
+            borderRadius: '12px',
+            background: '#00ff99',
+            color: '#0b1020',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+          }}
+        >
+          {isRegisterMode
+            ? 'Create Account'
+            : 'Login'}
+        </button>
+
+        <p
+          style={{
+            marginTop: '20px',
+            textAlign: 'center',
+            color: '#9ca3af',
+            cursor: 'pointer',
+          }}
+          onClick={() =>
+            setIsRegisterMode(
+              !isRegisterMode
+            )
+          }
+        >
+          {isRegisterMode
+            ? 'Already have an account? Login'
+            : "Don't have an account? Create one"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+const registerUser = async () => {
+  try {
+    await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+const loginUser = async () => {
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+const logoutUser = async () => {
+  await signOut(auth);
+};
 
   return (
     <>
