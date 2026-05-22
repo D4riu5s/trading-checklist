@@ -621,38 +621,17 @@ gap: '25px',
     </button>
   </div>
 </div>
-
-<div
-  style={{
-    marginTop: '40px',
-  }}
->
-  <div
-  style={{
-    marginTop: '40px',
-    display: 'flex',
-    justifyContent: 'center',
-  }}
->
-  <button
-    onClick={() => setHistoryOpen(true)}
-    style={{
-      background: '#1e293b',
-      color: 'white',
-      border: 'none',
-      padding: '16px 30px',
-      borderRadius: '14px',
-      cursor: 'pointer',
-      fontSize: '18px',
-      fontWeight: 'bold',
-      boxShadow: '0 0 20px rgba(0,0,0,0.3)',
-    }}
-  >
-    Trade History
-  </button>
+</div>
 </div>
 
+)}
+
 {activePage === 'history' && (
+  <>
+  <h1 style={{ color: 'red' }}>
+  HISTORY PAGE TEST
+</h1>
+
     <div
   style={{
     background: '#121a2b',
