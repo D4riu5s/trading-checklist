@@ -424,7 +424,7 @@ gap: '25px',
               lineHeight: '1.3',
             }}
           >
-            Trading Checklist
+            Checklist
           </h1>
 
           <h2 style={{ fontSize: '70px', margin: 0 }}>
