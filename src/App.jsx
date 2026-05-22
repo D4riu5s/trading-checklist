@@ -311,7 +311,7 @@ setSavedTrades((prev) => [
         background: '#0b1020',
         color: 'white',
         fontFamily: 'Arial, sans-serif',
-        padding: '30px',
+        padding: '0',
       }}
     >
       <div
@@ -324,6 +324,7 @@ setSavedTrades((prev) => [
 >
   <div
     style={{
+      Width: '100%',
       maxWidth: '1100px',
       margin: '0 auto',
       display: 'flex',
