@@ -479,22 +479,48 @@ if (!user) {
 </button>
 
         <p
-          style={{
-            marginTop: '20px',
-            textAlign: 'center',
-            color: '#9ca3af',
-            cursor: 'pointer',
-          }}
-          onClick={() =>
-            setIsRegisterMode(
-              !isRegisterMode
-            )
-          }
-        >
-          {isRegisterMode
-            ? 'Already have an account? Login'
-            : "Don't have an account? Create one"}
-        </p>
+  style={{
+    marginTop: '20px',
+    textAlign: 'center',
+    color: '#9ca3af',
+  }}
+>
+  {isRegisterMode ? (
+    <>
+      Already have an account?{' '}
+      <span
+        onClick={() =>
+          setIsRegisterMode(false)
+        }
+        style={{
+          color: '#3b82f6',
+          textDecoration: 'underline',
+          cursor: 'pointer',
+          fontWeight: '600',
+        }}
+      >
+        Login
+      </span>
+    </>
+  ) : (
+    <>
+      Don't have an account?{' '}
+      <span
+        onClick={() =>
+          setIsRegisterMode(true)
+        }
+        style={{
+          color: '#3b82f6',
+          textDecoration: 'underline',
+          cursor: 'pointer',
+          fontWeight: '600',
+        }}
+      >
+        Create one
+      </span>
+    </>
+  )}
+</p>
       </div>
     </div>
   );
