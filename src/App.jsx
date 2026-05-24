@@ -253,11 +253,12 @@ const loadTrades = async () => {
   };
 
   const saveTrade = async () => {
+
   const trade = {
   userId: user.uid,
   pair,
   tradeDate,
-  tradeResult,
+  tradeResult: 'On Going',
   percentage,
   checked,
 };
@@ -969,9 +970,21 @@ alignItems: 'center',
                 {trade.pair}
               </h3>
 
-              <p style={{ color: '#9ca3af' }}>
-                {trade.tradeResult}
-              </p>
+              <p
+  style={{
+    color:
+      trade.tradeResult === 'Win'
+        ? '#00ff99'
+        : trade.tradeResult === 'Lose'
+        ? '#ff4d4d'
+        : trade.tradeResult === 'Breakeven'
+        ? '#ffd633'
+        : '#3b82f6',
+    fontWeight: 'bold',
+  }}
+>
+  {trade.tradeResult}
+</p>
             </div>
 
             <div>
@@ -1195,6 +1208,10 @@ onClick={() => {
         borderRadius: '10px',
       }}
     >
+      <option value="On Going">
+        On Going
+      </option>
+
       <option value="Win">
         Win
       </option>
@@ -1211,12 +1228,13 @@ onClick={() => {
     <span
       style={{
         color:
-          trade.tradeResult === 'Win'
-            ? '#00ff99'
-            : trade.tradeResult ===
-              'Lose'
-            ? '#ff4d4d'
-            : '#ffd633',
+  trade.tradeResult === 'Win'
+    ? '#00ff99'
+    : trade.tradeResult === 'Loss'
+    ? '#ff4d4d'
+    : trade.tradeResult === 'Breakeven'
+    ? '#ffd633'
+    : '#3b82f6',
         fontWeight: 'bold',
         fontSize: '24px',
       }}
