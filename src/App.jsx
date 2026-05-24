@@ -638,7 +638,7 @@ gap: '25px',
       }}
     >
       <FaClipboardCheck /> Checklist
-      {!isMobile && <FaClipboardCheck />}
+      {!isMobile && 'Checklist'}
     </button>
 
     <button
@@ -665,7 +665,7 @@ gap: '25px',
       }}
     >
       <FaHistory /> Trade History
-      {!isMobile && <FaHistory />}
+      {!isMobile && 'Trade History'}
     </button>
   </div>
 
@@ -689,7 +689,7 @@ gap: '25px',
     }}
   >
     <FaSignOutAlt /> Logout
-    {!isMobile && <FaSignOutAlt />}
+    {!isMobile && 'Logout'}
   </button>
 </div>
   </div>
