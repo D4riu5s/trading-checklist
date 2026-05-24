@@ -628,7 +628,6 @@ gap: '25px',
             ? '#0b1020'
             : 'white',
         border: 'none',
-        padding: '10px 18px',
         padding: isMobile
             ? '10px'
             : '10px 18px',
@@ -655,7 +654,6 @@ gap: '25px',
             ? '#0b1020'
             : 'white',
         border: 'none',
-        padding: '10px 18px',
         padding: isMobile
             ? '10px'
             : '10px 18px',
@@ -676,7 +674,6 @@ gap: '25px',
       background: '#ff3b30',
       color: 'white',
       border: 'none',
-      padding: '10px 16px',
       padding: isMobile
           ? '10px'
           : '10px 18px',
