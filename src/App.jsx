@@ -224,15 +224,6 @@ const loadTrades = async () => {
   setSavedTrades(trades.reverse());
 };
 
-  const trades = querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
-
-  setSavedTrades(trades.reverse());
-};
-  
-
   const percentage = allItems.reduce((acc, item) => {
   if (checked[item.id]) {
     return acc + item.weight;
@@ -1670,3 +1661,4 @@ onClick={() => {
       </div>
   </>
   );
+}
