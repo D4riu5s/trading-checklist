@@ -8,7 +8,9 @@ import {
   getDocs,
   deleteDoc,
   updateDoc,
-  doc
+  doc,
+  query,
+  where,
 } from 'firebase/firestore'
 
 import React, { useState } from 'react';
@@ -163,8 +165,10 @@ const [rememberMe, setRememberMe] =
 
 
 React.useEffect(() => {
-  loadTrades();
-}, []);
+  if (user) {
+    loadTrades();
+  }
+}, [user]);
 
 React.useEffect(() => {
   const unsubscribe =
@@ -201,9 +205,24 @@ React.useEffect(() => {
 }, []);
 
 const loadTrades = async () => {
-  const querySnapshot = await getDocs(
-    collection(db, 'trades')
+  if (!user) return;
+
+  const q = query(
+    collection(db, 'trades'),
+    where('userId', '==', user.uid)
   );
+
+  const querySnapshot =
+    await getDocs(q);
+
+  const trades =
+    querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+  setSavedTrades(trades.reverse());
+};
 
   const trades = querySnapshot.docs.map((doc) => ({
     id: doc.id,
@@ -568,7 +587,7 @@ if (!user) {
 >
   <div
     style={{
-      Width: '100%',
+      width: '100%',
       maxWidth: '1100px',
       margin: '0 auto',
       display: 'flex',
@@ -1651,4 +1670,3 @@ onClick={() => {
       </div>
   </>
   );
-}
