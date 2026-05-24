@@ -142,6 +142,7 @@ const [tradeToDelete, setTradeToDelete] = useState(null);
 const [showStickyScore, setShowStickyScore] = useState(false);
 const [isEditingTrade, setIsEditingTrade] = useState(false);
 const [activePage, setActivePage] = useState('checklist');
+const isMobile = window.innerWidth < 768;
 
 const [user, setUser] = useState(null);
 
@@ -601,12 +602,16 @@ gap: '25px',
     display: 'flex',
     alignItems: 'center',
     width: '100%',
+    gap: '10px',
+    flexWrap: 'wrap',
   }}
 >
   <div
     style={{
       display: 'flex',
-      gap: '15px',
+      gap: '10px',
+      flexWrap: 'wrap',
+      alignItems: 'center',
     }}
   >
     <button
@@ -624,12 +629,16 @@ gap: '25px',
             : 'white',
         border: 'none',
         padding: '10px 18px',
+        padding: isMobile
+            ? '10px'
+            : '10px 18px',
         borderRadius: '12px',
         cursor: 'pointer',
         fontWeight: 'bold',
       }}
     >
       <FaClipboardCheck /> Checklist
+      {!isMobile && <FaClipboardCheck />}
     </button>
 
     <button
@@ -647,12 +656,16 @@ gap: '25px',
             : 'white',
         border: 'none',
         padding: '10px 18px',
+        padding: isMobile
+            ? '10px'
+            : '10px 18px',
         borderRadius: '12px',
         cursor: 'pointer',
         fontWeight: 'bold',
       }}
     >
       <FaHistory /> Trade History
+      {!isMobile && <FaHistory />}
     </button>
   </div>
 
@@ -664,6 +677,9 @@ gap: '25px',
       color: 'white',
       border: 'none',
       padding: '10px 16px',
+      padding: isMobile
+          ? '10px'
+          : '10px 18px',
       borderRadius: '12px',
       cursor: 'pointer',
       fontWeight: 'bold',
@@ -672,7 +688,8 @@ gap: '25px',
       gap: '8px',
     }}
   >
-    <FaSignOutAlt />
+    <FaSignOutAlt /> Logout
+    {!isMobile && <FaSignOutAlt />}
   </button>
 </div>
   </div>
