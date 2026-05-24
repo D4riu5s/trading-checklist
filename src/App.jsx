@@ -1,6 +1,6 @@
 import { db } from './firebase';
 
-import { FaTrash, FaEdit, FaSignOutAlt, FaClipboardCheck, FaHistory, FaGoogle } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaSignOutAlt, FaClipboardCheck, FaHistory, FaGoogle, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 import {
   collection,
@@ -142,6 +142,14 @@ const [tradeToDelete, setTradeToDelete] = useState(null);
 const [showStickyScore, setShowStickyScore] = useState(false);
 const [isEditingTrade, setIsEditingTrade] = useState(false);
 const [activePage, setActivePage] = useState('checklist');
+const [showPassword, setShowPassword] =
+  useState(false);
+const [confirmPassword, setConfirmPassword] =
+  useState('');
+
+const passwordsMatch =
+  password === confirmPassword;
+
 const isMobile = window.innerWidth < 768;
 
 const [user, setUser] = useState(null);
@@ -288,12 +296,21 @@ setSavedTrades((prev) => [
   };
 
 const registerUser = async () => {
+  if (password !== confirmPassword) {
+    alert(
+      'Passwords do not match'
+    );
+    return;
+  }
+
   try {
     await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
+
+    setConfirmPassword('');
   } catch (error) {
     alert(error.message);
   }
@@ -387,24 +404,111 @@ if (!user) {
           }}
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
-          style={{
-            width: '100%',
-            padding: '15px',
-            marginBottom: '20px',
-            borderRadius: '12px',
-            border: 'none',
-            background: '#1e293b',
-            color: 'white',
-            boxSizing: 'border-box',
-          }}
-        />
+        <div
+  style={{
+    position: 'relative',
+    marginBottom: '20px',
+  }}
+>
+  <input
+    type={
+      showPassword
+        ? 'text'
+        : 'password'
+    }
+    placeholder="Password"
+    value={password}
+    onChange={(e) =>
+      setPassword(e.target.value)
+    }
+    style={{
+      width: '100%',
+      padding: '15px',
+      paddingRight: '50px',
+      borderRadius: '12px',
+      border: 'none',
+      background: '#1e293b',
+      color: 'white',
+      boxSizing: 'border-box',
+    }}
+  />
+
+  <button
+    type="button"
+    onClick={() =>
+      setShowPassword(
+        !showPassword
+      )
+    }
+    style={{
+      position: 'absolute',
+      right: '15px',
+      top: '50%',
+      transform:
+        'translateY(-50%)',
+      background: 'transparent',
+      border: 'none',
+      color: '#9ca3af',
+      cursor: 'pointer',
+      fontSize: '18px',
+      display: 'flex',
+      alignItems: 'center',
+    }}
+  >
+    {showPassword ? (
+      <FaEyeSlash />
+    ) : (
+      <FaEye />
+    )}
+  </button>
+</div>
+
+{isRegisterMode && (
+  <>
+    <input
+      type="password"
+      placeholder="Confirm Password"
+      value={confirmPassword}
+      onChange={(e) =>
+        setConfirmPassword(
+          e.target.value
+        )
+      }
+      style={{
+        width: '100%',
+        padding: '15px',
+        marginBottom: '8px',
+        borderRadius: '12px',
+        border:
+          confirmPassword.length > 0
+            ? passwordsMatch
+              ? '2px solid #00ff99'
+              : '2px solid #ff3b30'
+            : 'none',
+        background: '#1e293b',
+        color: 'white',
+        boxSizing: 'border-box',
+      }}
+    />
+
+    {confirmPassword.length > 0 && (
+      <p
+        style={{
+          marginTop: '0',
+          marginBottom: '20px',
+          color: passwordsMatch
+            ? '#00ff99'
+            : '#ff3b30',
+          fontSize: '14px',
+        }}
+      >
+        {passwordsMatch
+          ? 'Passwords match'
+          : 'Passwords do not match'}
+      </p>
+    )}
+  </>
+)}
 
         <label
   style={{
@@ -444,7 +548,7 @@ if (!user) {
           }}
         >
           {isRegisterMode
-            ? 'Create Account'
+            ? 'Create account'
             : 'Login'}
         </button>
 
@@ -489,9 +593,10 @@ if (!user) {
     <>
       Already have an account?{' '}
       <span
-        onClick={() =>
-          setIsRegisterMode(false)
-        }
+        onClick={() => {
+  setIsRegisterMode(false);
+  setConfirmPassword('');
+}}
         style={{
           color: '#3b82f6',
           textDecoration: 'underline',
@@ -506,9 +611,10 @@ if (!user) {
     <>
       Don't have an account?{' '}
       <span
-        onClick={() =>
-          setIsRegisterMode(true)
-        }
+        onClick={() => {
+  setIsRegisterMode(true);
+  setConfirmPassword('');
+}}
         style={{
           color: '#3b82f6',
           textDecoration: 'underline',
