@@ -637,7 +637,7 @@ gap: '25px',
       }}
     >
       <FaClipboardCheck />
-      {!isMobile && 'Checklist'}
+      {!isMobile && ' Checklist'}
     </button>
 
     <button
@@ -663,7 +663,7 @@ gap: '25px',
       }}
     >
       <FaHistory />
-      {!isMobile && 'Trade History'}
+      {!isMobile && ' Trade History'}
     </button>
   </div>
 
