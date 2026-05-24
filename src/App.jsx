@@ -279,7 +279,8 @@ setSavedTrades((prev) => [
 
   setPair('');
   setTradeDate('');
-  setTradeResult('Win');
+  setChecked({});
+  setTradeResult('On going');
 };
 
   const clearAllChecks = () => {
