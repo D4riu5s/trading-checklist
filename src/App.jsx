@@ -365,7 +365,7 @@ if (!user) {
             marginBottom: '30px',
           }}
         >
-          TradeScore
+          MyEdge
         </h1>
 
         <input
@@ -596,7 +596,7 @@ gap: '25px',
         color: '#00ff99',
       }}
     >
-      TradeScore
+      MyEdge
     </h2>
 
     <div
