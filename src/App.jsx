@@ -234,14 +234,14 @@ const loadTrades = async () => {
 }, 0).toFixed(0);
   const checkedItems = Object.values(checked).filter(Boolean).length;
 
-  let setupLabel = 'Weak Setup';
+  let setupLabel = 'Weak setup';
   let setupColor = '#ff4d4d';
 
   if (percentage >= 80) {
-    setupLabel = 'Strong Setup';
+    setupLabel = 'Strong setup';
     setupColor = '#00ff99';
   } else if (percentage >= 60) {
-    setupLabel = 'Good Setup';
+    setupLabel = 'Good setup';
     setupColor = '#ffd633';
   }
 
@@ -258,7 +258,7 @@ const loadTrades = async () => {
   userId: user.uid,
   pair,
   tradeDate,
-  tradeResult: 'On Going',
+  tradeResult: 'On going',
   percentage,
   checked,
 };
@@ -773,7 +773,7 @@ gap: '25px',
               marginTop: '20px',
             }}
           >
-            Clear All Checks
+            Clear all checks
           </button>
         </div>
 
@@ -863,7 +863,7 @@ gap: '25px',
   }}
 >
   <h2 style={{ marginBottom: '20px' }}>
-    Save Trade
+    Save trade
   </h2>
 
   <div
@@ -993,7 +993,7 @@ alignItems: 'center',
             </div>
 
             <div>
-              <p>Setup Score:</p>
+              <p>Setup score:</p>
               <strong>{trade.percentage}%</strong>
             </div>
 
@@ -1038,7 +1038,7 @@ alignItems: 'center',
       fontWeight: 'bold',
     }}
   >
-    View Details
+    View details
   </button>
 </div>
           </div>
@@ -1208,7 +1208,7 @@ onClick={() => {
         borderRadius: '10px',
       }}
     >
-      <option value="On Going">
+      <option value="On going">
         On Going
       </option>
 
@@ -1216,7 +1216,7 @@ onClick={() => {
         Win
       </option>
 
-      <option value="Lose">
+      <option value="Loss">
         Loss
       </option>
 
@@ -1247,7 +1247,7 @@ onClick={() => {
 
             <p>Date: {trade.tradeDate}</p>
 
-            <p>Setup Score: {trade.percentage}%</p>
+            <p>Setup score: {trade.percentage}%</p>
 
             <div
               style={{
