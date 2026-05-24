@@ -144,8 +144,13 @@ const [isEditingTrade, setIsEditingTrade] = useState(false);
 const [activePage, setActivePage] = useState('checklist');
 const [showPassword, setShowPassword] =
   useState(false);
-const [confirmPassword, setConfirmPassword] =
+const [password, setPassword] =
   useState('');
+
+const [
+  confirmPassword,
+  setConfirmPassword
+] = useState('');
 
 const passwordsMatch =
   password === confirmPassword;
