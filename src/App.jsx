@@ -161,8 +161,6 @@ const [user, setUser] = useState(null);
 
 const [email, setEmail] = useState('');
 
-const [password, setPassword] = useState('');
-
 const [isRegisterMode, setIsRegisterMode] =
   useState(false);
 
