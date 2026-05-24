@@ -460,9 +460,21 @@ if (!user) {
     color: '#000',
     fontWeight: 'bold',
     cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
   }}
 >
-  <FaGoogle />
+  <img
+    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+    alt="Google"
+    style={{
+      width: '20px',
+      height: '20px',
+    }}
+  />
+
   Continue with Google
 </button>
 
