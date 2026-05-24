@@ -1,6 +1,6 @@
 import { db } from './firebase';
 
-import { FaTrash, FaEdit } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaSignOutAlt, FaClipboardCheck, FaHistory } from 'react-icons/fa';
 
 import {
   collection,
@@ -597,72 +597,84 @@ gap: '25px',
     </h2>
 
     <div
-      style={{
-        display: 'flex',
-        gap: '15px',
-      }}
-    >
-      <button
-        onClick={() =>
-          setActivePage('checklist')
-        }
-        style={{
-          background:
-            activePage === 'checklist'
-              ? '#00ff99'
-              : '#1e293b',
-          color:
-            activePage === 'checklist'
-              ? '#0b1020'
-              : 'white',
-          border: 'none',
-          padding: '10px 18px',
-          borderRadius: '12px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-        }}
-      >
-        Checklist
-      </button>
-
-      <button
-        onClick={() =>
-          setActivePage('history')
-        }
-        style={{
-          background:
-            activePage === 'history'
-              ? '#00ff99'
-              : '#1e293b',
-          color:
-            activePage === 'history'
-              ? '#0b1020'
-              : 'white',
-          border: 'none',
-          padding: '10px 18px',
-          borderRadius: '12px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-        }}
-      >
-        Trade History
-      </button>
-
-      <button
-  onClick={logoutUser}
   style={{
-    background: '#ff3b30',
-    color: 'white',
-    border: 'none',
-    padding: '10px 16px',
-    borderRadius: '10px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
   }}
 >
-  Logout
-</button>
-    </div>
+  <div
+    style={{
+      display: 'flex',
+      gap: '15px',
+    }}
+  >
+    <button
+      onClick={() =>
+        setActivePage('checklist')
+      }
+      style={{
+        background:
+          activePage === 'checklist'
+            ? '#00ff99'
+            : '#1e293b',
+        color:
+          activePage === 'checklist'
+            ? '#0b1020'
+            : 'white',
+        border: 'none',
+        padding: '10px 18px',
+        borderRadius: '12px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+      }}
+    >
+      <FaClipboardCheck /> Checklist
+    </button>
+
+    <button
+      onClick={() =>
+        setActivePage('history')
+      }
+      style={{
+        background:
+          activePage === 'history'
+            ? '#00ff99'
+            : '#1e293b',
+        color:
+          activePage === 'history'
+            ? '#0b1020'
+            : 'white',
+        border: 'none',
+        padding: '10px 18px',
+        borderRadius: '12px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+      }}
+    >
+      <FaHistory /> Trade History
+    </button>
+  </div>
+
+  <button
+    onClick={logoutUser}
+    style={{
+      marginLeft: 'auto',
+      background: '#ff3b30',
+      color: 'white',
+      border: 'none',
+      padding: '10px 16px',
+      borderRadius: '12px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+    }}
+  >
+    <FaSignOutAlt />
+  </button>
+</div>
   </div>
 </div>
 
