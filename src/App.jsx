@@ -1,6 +1,6 @@
 import { db } from './firebase';
 
-import { FaTrash, FaEdit, FaSignOutAlt, FaClipboardCheck, FaHistory } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaSignOutAlt, FaClipboardCheck, FaHistory, FaGoogle } from 'react-icons/fa';
 
 import {
   collection,
@@ -462,6 +462,7 @@ if (!user) {
     cursor: 'pointer',
   }}
 >
+  <FaGoogle />
   Continue with Google
 </button>
 
