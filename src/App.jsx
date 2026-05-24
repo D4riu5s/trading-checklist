@@ -362,7 +362,7 @@ if (!user) {
           style={{
             textAlign: 'center',
             color: '#00ff99',
-            marginBottom: '30px',
+            marginBottom: '40px',
           }}
         >
           MyEdge
