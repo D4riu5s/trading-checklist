@@ -240,17 +240,6 @@ const loadTrades = async () => {
 
   const checkedItems = Object.values(checked).filter(Boolean).length;
 
-  let setupLabel = 'Weak setup';
-  let setupColor = '#ff4d4d';
-
-  if (percentage >= 80) {
-    setupLabel = 'Strong setup';
-    setupColor = '#00ff99';
-  } else if (percentage >= 60) {
-    setupLabel = 'Good setup';
-    setupColor = '#ffd633';
-  }
-
   const normalItems =
   allItems.filter(
     (item) => !item.isBonus
@@ -278,7 +267,18 @@ const percentage =
       totalNormalWeight) *
     100
   ).toFixed(0);
-  
+
+  let setupLabel = 'Weak setup';
+  let setupColor = '#ff4d4d';
+
+  if (percentage >= 80) {
+    setupLabel = 'Strong setup';
+    setupColor = '#00ff99';
+  } else if (percentage >= 60) {
+    setupLabel = 'Good setup';
+    setupColor = '#ffd633';
+  }
+
   const bonusItems =
   allItems.filter(
     (item) => item.isBonus
