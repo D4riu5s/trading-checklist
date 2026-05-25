@@ -393,8 +393,9 @@ const loginUser = async () => {
       password
     );
   } catch (error) {
-    alert(error.message);
-  }
+  console.error(error);
+  alert(error.code);
+}
 };
 
 const logoutUser = async () => {
