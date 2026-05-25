@@ -1094,17 +1094,14 @@ gap: '25px',
                         borderRadius: '12px',
                         cursor: 'pointer',
                         transition: '0.2s',
-                        border:
-  isPurple
-    ? '2px solid #a855f7'
-    : isChecked
-    ? `1px solid ${setupColor}`
-    : '1px solid transparent',
-
-boxShadow:
-  isPurple
-    ? '0 0 10px rgba(168,85,247,0.35)'
-    : 'none',
+                        border: isPurple && isChecked
+                              ? '2px solid #a855f7'
+                              : isChecked
+                              ? `1px solid ${setupColor}`
+                              : '1px solid transparent',
+                        boxShadow: isPurple && isChecked
+                              ? '0 0 10px rgba(168,85,247,0.35)'
+                              : 'none',
                       }}
                     >
                       <input
