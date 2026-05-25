@@ -80,42 +80,42 @@ const updateTrade = async () => {
     {
       title: 'Weekly',
       items: [
-        { name: 'Trend', weight: 5.5 },
-        { name: 'Exhaustion', weight: 5.5 },
-        { name: 'At S/R - rejected', weight: 5.5 },
-        { name: 'Rejection from previous structure', weight: 5.5 },
-        { name: 'Candlestick formation', weight: 5.5 },
-        { name: 'Break & retest pattern', weight: 5.5 },
-        { name: 'At LH/HL', weight: 5.5 },
-        { name: 'Trendline', weight: 2.75 },
+        { name: 'Trend', weight: 0 },
+        { name: 'Exhaustion', weight: 12.5 },
+        { name: 'At S/R - rejected', weight: 12.5 },
+        { name: 'Candlestick formation', weight: 12.5 },
+        { name: 'Break & retest pattern', weight: 12.5 },
+        { name: 'At LH/HL', weight: 12.5 },
+        { name: 'Rejection from previous structure', weight: 0 },
+        { name: 'Trendline', weight: 0 },
       ],
     },
     {
       title: 'Daily',
       items: [
-        { name: 'Trend', weight: 5.5 },
-        { name: 'Exhaustion', weight: 5.5 },
-        { name: 'At S/R - rejected', weight: 5.5 },
-        { name: 'Rejection from previous structure', weight: 5.5 },
-        { name: 'Candlestick formation', weight: 5.5 },
-        { name: 'Break & retest pattern', weight: 5.5 },
-        { name: 'At LH/HL', weight: 5.5 },
-        { name: 'EMA retest', weight: 5.5 },
-        { name: 'Trendline', weight: 2.75 },
+        { name: 'Trend', weight: 0 },
+        { name: 'Exhaustion', weight: 12.5 },
+        { name: 'At S/R - rejected', weight: 12.5 },
+        { name: 'Candlestick formation', weight: 12.5 },
+        { name: 'Break & retest pattern', weight: 12.5 },
+        { name: 'At LH/HL', weight: 12.5 },
+        { name: 'EMA retest', weight: 12.5 },
+        { name: 'Rejection from previous structure', weight: 0 },
+        { name: 'Trendline', weight: 0 },
       ],
     },
     {
       title: 'H4',
       items: [
-        { name: 'Break & retest pattern + S/R', weight: 5.5 },
-        { name: 'Trendline', weight: 2.75 },
-        { name: 'Trend', weight: 2.75 },
+        { name: 'Break & retest pattern + S/R', weight: 12.5 },
+        { name: 'Trend', weight: 12.5 },
+        { name: 'Trendline', weight: 0 },
       ],
     },
     {
       title: 'H4 / H2 / H1',
       items: [
-        { name: 'Candlestick formation (confirmation)', weight: 5.5 },
+        { name: 'Candlestick formation (confirmation)', weight: 12.5 },
       ],
     },
   ];
@@ -966,6 +966,10 @@ gap: '25px',
                   const id = `${section.title}-${item.name}`;
                   const isChecked = checked[id] || false;
 
+                  const isPurple =
+  item.name === 'Trendline' ||
+  item.name === 'Rejection from previous structure';
+
                   return (
                     <label
                       key={id}
@@ -980,9 +984,17 @@ gap: '25px',
                         borderRadius: '12px',
                         cursor: 'pointer',
                         transition: '0.2s',
-                        border: isChecked
-                          ? `1px solid ${setupColor}`
-                          : '1px solid transparent',
+                        border:
+  isPurple
+    ? '2px solid #a855f7'
+    : isChecked
+    ? `1px solid ${setupColor}`
+    : '1px solid transparent',
+
+boxShadow:
+  isPurple
+    ? '0 0 10px rgba(168,85,247,0.35)'
+    : 'none',
                       }}
                     >
                       <input
