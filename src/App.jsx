@@ -49,12 +49,15 @@ const updateTrade = async () => {
 
   try {
     const updatedTrade = {
-      ...editingTrade,
-      note: tradeNote,
-      checked: editingChecked,
-      percentage,
-      tradeResult,
-    };
+  ...editingTrade,
+  note: tradeNote,
+  checked: editingChecked,
+  percentage:
+    editingTrade.percentage,
+  bonusPercentage:
+    editingTrade.bonusPercentage,
+  tradeResult,
+};
 
     await updateDoc(
       doc(db, 'trades', editingTrade.id),
@@ -326,6 +329,7 @@ const toggleCheck = (id) => {
   tradeDate,
   tradeResult: 'On going',
   percentage,
+  bonusPercentage,
   checked,
 };
 
@@ -1518,6 +1522,60 @@ onClick={() => {
             <p>Setup score: {trade.percentage}%</p>
 
             <div
+  style={{
+    marginTop: '15px',
+    marginBottom: '20px',
+  }}
+>
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      marginBottom: '8px',
+    }}
+  >
+    <span
+      style={{
+        color: '#a855f7',
+        fontWeight: 'bold',
+      }}
+    >
+      Bonus
+    </span>
+
+    <span
+      style={{
+        color: '#a855f7',
+        fontWeight: 'bold',
+      }}
+    >
+      {trade.bonusPercentage || 0}%
+    </span>
+  </div>
+
+  <div
+    style={{
+      width: '100%',
+      height: '8px',
+      background: '#1f2937',
+      borderRadius: '999px',
+      overflow: 'hidden',
+    }}
+  >
+    <div
+      style={{
+        width: `${trade.bonusPercentage || 0}%`,
+        height: '100%',
+        background: '#a855f7',
+        borderRadius: '999px',
+        boxShadow:
+          '0 0 10px #a855f7',
+      }}
+    />
+  </div>
+</div>
+
+            <div
               style={{
                 display: 'grid',
                 gridTemplateColumns:
@@ -1592,37 +1650,75 @@ onClick={() => {
                           e.target.checked,
                       };
 
-                    const updatedPercentage =
-                      allItems
-                        .reduce(
-                          (
-                            acc,
-                            currentItem
-                          ) => {
-                            if (
-                              updatedChecked[
-                                currentItem.id
-                              ]
-                            ) {
-                              return (
-                                acc +
-                                currentItem.weight
-                              );
-                            }
+                    const normalItems =
+  allItems.filter(
+    (item) => !item.isBonus
+  );
 
-                            return acc;
-                          },
-                          0
-                        )
-                        .toFixed(0);
+const totalNormalWeight =
+  normalItems.reduce(
+    (sum, item) =>
+      sum + item.weight,
+    0
+  );
+
+const checkedNormalWeight =
+  normalItems.reduce(
+    (sum, item) =>
+      updatedChecked[item.id]
+        ? sum + item.weight
+        : sum,
+    0
+  );
+
+const updatedPercentage =
+  totalNormalWeight > 0
+    ? (
+        (checkedNormalWeight /
+          totalNormalWeight) *
+        100
+      ).toFixed(0)
+    : 0;
+
+const bonusItems =
+  allItems.filter(
+    (item) => item.isBonus
+  );
+
+const totalBonusWeight =
+  bonusItems.reduce(
+    (sum, item) =>
+      sum + item.weight,
+    0
+  );
+
+const checkedBonusWeight =
+  bonusItems.reduce(
+    (sum, item) =>
+      updatedChecked[item.id]
+        ? sum + item.weight
+        : sum,
+    0
+  );
+
+const updatedBonusPercentage =
+  totalBonusWeight > 0
+    ? (
+        (checkedBonusWeight /
+          totalBonusWeight) *
+        100
+      ).toFixed(0)
+    : 0;
 
                     return {
-                      ...t,
-                      checked:
-                        updatedChecked,
-                      percentage:
-                        updatedPercentage,
-                    };
+  ...t,
+  checked:
+    updatedChecked,
+  percentage:
+    updatedPercentage,
+  bonusPercentage:
+    updatedBonusPercentage,
+};
                   });
 
                 setSavedTrades(
