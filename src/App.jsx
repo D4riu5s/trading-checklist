@@ -115,7 +115,7 @@ const updateTrade = async () => {
     {
       title: 'H4 / H2 / H1',
       items: [
-        { name: 'Candlestick formation (confirmation)', weight: 12.5 },
+        { name: 'Candlestick formation (confirmation)', weight: 7.1428571429 },
       ],
     },
   ];
