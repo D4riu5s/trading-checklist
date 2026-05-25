@@ -238,13 +238,6 @@ const loadTrades = async () => {
   setSavedTrades(trades.reverse());
 };
 
-  const percentage = allItems.reduce((acc, item) => {
-  if (checked[item.id]) {
-    return acc + item.weight;
-  }
-
-  return acc;
-}, 0).toFixed(0);
   const checkedItems = Object.values(checked).filter(Boolean).length;
 
   let setupLabel = 'Weak setup';
