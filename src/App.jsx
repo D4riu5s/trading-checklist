@@ -262,11 +262,13 @@ const checkedNormalWeight =
   );
 
 const percentage =
-  (
-    (checkedNormalWeight /
-      totalNormalWeight) *
-    100
-  ).toFixed(0);
+  totalNormalWeight > 0
+    ? (
+        (checkedNormalWeight /
+          totalNormalWeight) *
+        100
+      ).toFixed(0)
+    : 0;
 
   let setupLabel = 'Weak setup';
   let setupColor = '#ff4d4d';
