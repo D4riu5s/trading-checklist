@@ -86,8 +86,8 @@ const updateTrade = async () => {
         { name: 'Candlestick formation', weight:  7.1428571429 },
         { name: 'Break & retest pattern', weight: 7.1428571429 },
         { name: 'At LH/HL', weight: 7.1428571429 },
-        { name: 'Rejection from previous structure', weight: 0 },
-        { name: 'Trendline', weight: 0 },
+        { name: 'Rejection from previous structure', weight: 20 },
+        { name: 'Trendline', weight: 20 },
       ],
     },
     {
@@ -100,8 +100,8 @@ const updateTrade = async () => {
         { name: 'Break & retest pattern', weight: 7.1428571429 },
         { name: 'At LH/HL', weight: 7.1428571429 },
         { name: 'EMA retest', weight: 7.1428571429 },
-        { name: 'Rejection from previous structure', weight: 0 },
-        { name: 'Trendline', weight: 0 },
+        { name: 'Rejection from previous structure', weight: 20 },
+        { name: 'Trendline', weight: 20 },
       ],
     },
     {
@@ -109,7 +109,7 @@ const updateTrade = async () => {
       items: [
         { name: 'Break & retest pattern + S/R', weight: 7.1428571429 },
         { name: 'Trend', weight: 7.1428571429 },
-        { name: 'Trendline', weight: 0 },
+        { name: 'Trendline', weight: 20 },
       ],
     },
     {
@@ -262,6 +262,24 @@ const loadTrades = async () => {
       [id]: !prev[id],
     }));
   };
+
+  const bonusItems = allItems.filter(
+  (item) => item.weight === 0
+);
+
+const checkedBonusItems =
+  bonusItems.filter(
+    (item) => checked[item.id]
+  ).length;
+
+const bonusPercentage =
+  bonusItems.length > 0
+    ? (
+        (checkedBonusItems /
+          bonusItems.length) *
+        100
+      ).toFixed(0)
+    : 0;
 
   const saveTrade = async () => {
 
@@ -886,6 +904,63 @@ gap: '25px',
             {setupLabel}
           </h3>
 
+<div
+  style={{
+    marginTop: '20px',
+  }}
+>
+  <div
+    style={{
+      display: 'flex',
+      justifyContent:
+        'space-between',
+      alignItems: 'center',
+      marginBottom: '8px',
+    }}
+  >
+    <span
+      style={{
+        color: '#a855f7',
+        fontSize: '14px',
+        fontWeight: 'bold',
+      }}
+    >
+      Bonus
+    </span>
+
+    <span
+      style={{
+        color: '#a855f7',
+        fontSize: '14px',
+        fontWeight: 'bold',
+      }}
+    >
+      {bonusPercentage}%
+    </span>
+  </div>
+
+  <div
+    style={{
+      width: '100%',
+      height: '8px',
+      background: '#1f2937',
+      borderRadius: '999px',
+      overflow: 'hidden',
+    }}
+  >
+    <div
+      style={{
+        width: `${bonusPercentage}%`,
+        height: '100%',
+        background: '#a855f7',
+        borderRadius: '999px',
+        transition: '0.3s',
+        boxShadow:
+          '0 0 10px #a855f7',
+      }}
+    />
+  </div>
+</div>
           <div
             style={{
               width: '100%',
