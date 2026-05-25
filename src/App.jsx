@@ -311,6 +311,13 @@ const bonusPercentage =
       ).toFixed(0)
     : 0;
 
+const toggleCheck = (id) => {
+  setChecked((prev) => ({
+    ...prev,
+    [id]: !prev[id],
+  }));
+};
+
   const saveTrade = async () => {
 
   const trade = {
