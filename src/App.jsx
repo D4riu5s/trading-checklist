@@ -80,53 +80,55 @@ const updateTrade = async () => {
     {
       title: 'Weekly',
       items: [
-        { name: 'Trend', weight: 0 },
-        { name: 'Exhaustion', weight: 7.1428571429 },
-        { name: 'At S/R - rejected', weight: 7.1428571429 },
-        { name: 'Candlestick formation', weight:  7.1428571429 },
-        { name: 'Break & retest pattern', weight: 7.1428571429 },
-        { name: 'At LH/HL', weight: 7.1428571429 },
-        { name: 'Rejection from previous structure', weight: 20 },
-        { name: 'Trendline', weight: 20 },
+        { name: 'Trend', weight: 0, isBonus: false, },
+        { name: 'Exhaustion', weight: 7.1428571429, isBonus: false, },
+        { name: 'At S/R - rejected', weight: 7.1428571429, isBonus: false },
+        { name: 'Candlestick formation', weight:  7.1428571429, isBonus: false },
+        { name: 'Break & retest pattern', weight: 7.1428571429, isBonus: false },
+        { name: 'At LH/HL', weight: 7.1428571429, isBonus: false },
+        { name: 'Rejection from previous structure', weight: 20, isBonus: true },
+        { name: 'Trendline', weight: 20, isBonus: true },
       ],
     },
     {
       title: 'Daily',
       items: [
-        { name: 'Trend', weight: 0 },
-        { name: 'Exhaustion', weight: 7.1428571429 },
-        { name: 'At S/R - rejected', weight: 7.1428571429 },
-        { name: 'Candlestick formation', weight:  7.1428571429 },
-        { name: 'Break & retest pattern', weight: 7.1428571429 },
-        { name: 'At LH/HL', weight: 7.1428571429 },
-        { name: 'EMA retest', weight: 7.1428571429 },
-        { name: 'Rejection from previous structure', weight: 20 },
-        { name: 'Trendline', weight: 20 },
+        { name: 'Trend', weight: 0, isBonus: false, },
+        { name: 'Exhaustion', weight: 7.1428571429, isBonus: false, },
+        { name: 'At S/R - rejected', weight: 7.1428571429, isBonus: false },
+        { name: 'Candlestick formation', weight:  7.1428571429, isBonus: false },
+        { name: 'Break & retest pattern', weight: 7.1428571429, isBonus: false },
+        { name: 'At LH/HL', weight: 7.1428571429, isBonus: false },
+        { name: 'EMA retest', weight: 7.1428571429, isBonus: false },
+        { name: 'Rejection from previous structure', weight: 20, isBonus: true },
+        { name: 'Trendline', weight: 20, isBonus: true },
       ],
     },
     {
       title: 'H4',
       items: [
-        { name: 'Break & retest pattern + S/R', weight: 7.1428571429 },
-        { name: 'Trend', weight: 7.1428571429 },
-        { name: 'Trendline', weight: 20 },
+        { name: 'Break & retest pattern + S/R', weight: 7.1428571429, isBonus: false },
+        { name: 'Trend', weight: 7.1428571429, isBonus: false },
+        { name: 'Trendline', weight: 20, isBonus: true },
       ],
     },
     {
       title: 'H4 / H2 / H1',
       items: [
-        { name: 'Candlestick formation (confirmation)', weight: 7.1428571429 },
+        { name: 'Candlestick formation (confirmation)', weight: 7.1428571429, isBonus: false },
       ],
     },
   ];
 
-  const allItems = sections.flatMap((section) =>
+  const allItems = sections.flatMap(
+  (section) =>
     section.items.map((item) => ({
       id: `${section.title}-${item.name}`,
       label: item.name,
       weight: item.weight,
+      isBonus: item.isBonus,
     }))
-  );
+);
 
   const [checked, setChecked] = useState({});
   const [editingChecked, setEditingChecked] = useState({});
@@ -256,27 +258,60 @@ const loadTrades = async () => {
     setupColor = '#ffd633';
   }
 
-  const toggleCheck = (id) => {
-    setChecked((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
+  const normalItems =
+  allItems.filter(
+    (item) => !item.isBonus
+  );
 
-  const bonusItems = allItems.filter(
-  (item) => item.weight === 0
-);
+const totalNormalWeight =
+  normalItems.reduce(
+    (sum, item) =>
+      sum + item.weight,
+    0
+  );
 
-const checkedBonusItems =
-  bonusItems.filter(
-    (item) => checked[item.id]
-  ).length;
+const checkedNormalWeight =
+  normalItems.reduce(
+    (sum, item) =>
+      checked[item.id]
+        ? sum + item.weight
+        : sum,
+    0
+  );
+
+const percentage =
+  (
+    (checkedNormalWeight /
+      totalNormalWeight) *
+    100
+  ).toFixed(0);
+  
+  const bonusItems =
+  allItems.filter(
+    (item) => item.isBonus
+  );
+
+const totalBonusWeight =
+  bonusItems.reduce(
+    (sum, item) =>
+      sum + item.weight,
+    0
+  );
+
+const checkedBonusWeight =
+  bonusItems.reduce(
+    (sum, item) =>
+      checked[item.id]
+        ? sum + item.weight
+        : sum,
+    0
+  );
 
 const bonusPercentage =
-  bonusItems.length > 0
+  totalBonusWeight > 0
     ? (
-        (checkedBonusItems /
-          bonusItems.length) *
+        (checkedBonusWeight /
+          totalBonusWeight) *
         100
       ).toFixed(0)
     : 0;
@@ -1041,9 +1076,7 @@ gap: '25px',
                   const id = `${section.title}-${item.name}`;
                   const isChecked = checked[id] || false;
 
-                  const isPurple =
-  item.name === 'Trendline' ||
-  item.name === 'Rejection from previous structure';
+                  const isPurple = item.isBonus;
 
                   return (
                     <label
