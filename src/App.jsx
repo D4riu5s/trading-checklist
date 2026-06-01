@@ -1159,13 +1159,22 @@ gap: '25px',
                         }}
                       />
 
-                      <span>
-  {item.name}
+                      <div
+  style={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  }}
+>
+  <span>{item.name}</span>
 
   {item.isRequired && (
     <span
       style={{
-        marginLeft: '8px',
+        padding: '2px 8px',
+        borderRadius: '999px',
+        background: '#ff4d4d20',
         color: '#ff4d4d',
         fontSize: '10px',
         fontWeight: 'bold',
@@ -1174,7 +1183,7 @@ gap: '25px',
       REQUIRED
     </span>
   )}
-</span>
+</div>
                     </label>
                   );
                 })}
