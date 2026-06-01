@@ -966,9 +966,10 @@ gap: '25px',
           {hasMissingRequired && (
   <p
     style={{
-      color: '#77977a',
+      color: '#ff4d4d',
       fontSize: '14px',
       marginTop: '10px',
+      animation: 'pulseWarning 1.5s infinite',
     }}
   >
     Missing mandatory conditions
