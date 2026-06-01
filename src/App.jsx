@@ -275,8 +275,9 @@ const percentage =
 
 const requiredConditions = [
   'Weekly-Trend',
-  'Daily-Trend',
-  'H4-Trend',
+  'Daily-At S/R',
+  'H4-Break & retest pattern + S/R',
+  'H4/H2/H1-Candlestick formation (confirmation)',
 ];
 
 const hasMissingRequired =
@@ -965,7 +966,7 @@ gap: '25px',
           {hasMissingRequired && (
   <p
     style={{
-      color: '#a855f7',
+      color: '#77977a',
       fontSize: '14px',
       marginTop: '10px',
     }}
