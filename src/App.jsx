@@ -956,15 +956,17 @@ gap: '25px',
             {percentage}%
           </h2>
 
-          <h3
-            style={{
-              color: setupColor,
-              fontSize: '32px',
-              marginTop: '10px',
-            }}
-          >
-            {setupLabel}
-          </h3>
+          {checkedItems > 0 && (
+  <h3
+    style={{
+      color: setupColor,
+      fontSize: '32px',
+      marginTop: '10px',
+    }}
+  >
+    {setupLabel}
+  </h3>
+)}
 
           {checkedItems > 0 &&
  hasMissingRequired && (
