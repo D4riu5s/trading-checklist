@@ -288,7 +288,10 @@ const hasMissingRequired =
 let setupLabel = 'Weak setup';
 let setupColor = '#ff4d4d';
 
-if (hasMissingRequired) {
+if (
+  checkedItems > 0 &&
+  hasMissingRequired
+) {
   setupLabel = 'Invalid setup';
   setupColor = '#ff4d4d';
 }
@@ -963,13 +966,15 @@ gap: '25px',
             {setupLabel}
           </h3>
 
-          {hasMissingRequired && (
+          {checkedItems > 0 &&
+ hasMissingRequired && (
   <p
     style={{
       color: '#ff4d4d',
       fontSize: '14px',
       marginTop: '10px',
-      animation: 'pulseWarning 1.5s infinite',
+      animation:
+        'pulseWarning 1.5s infinite',
     }}
   >
     Missing mandatory conditions
