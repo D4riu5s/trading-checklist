@@ -279,6 +279,11 @@ const requiredConditions = [
   'H4-Trend',
 ];
 
+const hasMissingRequired =
+  requiredConditions.some(
+    (id) => !checked[id]
+  );
+
 let setupLabel = 'Weak setup';
 let setupColor = '#ff4d4d';
 
@@ -324,11 +329,6 @@ const bonusPercentage =
         100
       ).toFixed(0)
     : 0;
-
-const hasMissingRequired =
-  requiredConditions.some(
-    (id) => !checked[id]
-  );
 
 const toggleCheck = (id) => {
   setChecked((prev) => ({
