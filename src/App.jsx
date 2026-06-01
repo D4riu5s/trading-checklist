@@ -274,15 +274,20 @@ const percentage =
     : 0;
 
   let setupLabel = 'Weak setup';
-  let setupColor = '#ff4d4d';
+let setupColor = '#ff4d4d';
 
-  if (percentage >= 80) {
-    setupLabel = 'Strong setup';
-    setupColor = '#00ff99';
-  } else if (percentage >= 60) {
-    setupLabel = 'Good setup';
-    setupColor = '#ffd633';
-  }
+if (hasMissingRequired) {
+  setupLabel = 'Invalid setup';
+  setupColor = '#ff4d4d';
+}
+else if (percentage >= 80) {
+  setupLabel = 'Strong setup';
+  setupColor = '#00ff99';
+}
+else if (percentage >= 60) {
+  setupLabel = 'Good setup';
+  setupColor = '#ffd633';
+}
 
   const bonusItems =
   allItems.filter(
@@ -313,6 +318,17 @@ const bonusPercentage =
         100
       ).toFixed(0)
     : 0;
+
+    const requiredConditions = [
+  'Weekly-Trend',
+  'Daily-Trend',
+  'H4-Trend',
+];
+
+const hasMissingRequired =
+  requiredConditions.some(
+    (id) => !checked[id]
+  );
 
 const toggleCheck = (id) => {
   setChecked((prev) => ({
@@ -945,6 +961,18 @@ gap: '25px',
           >
             {setupLabel}
           </h3>
+
+          {hasMissingRequired && (
+  <p
+    style={{
+      color: '#a855f7',
+      fontSize: '14px',
+      marginTop: '10px',
+    }}
+  >
+    Missing mandatory conditions
+  </p>
+)}
 
 <div
   style={{
