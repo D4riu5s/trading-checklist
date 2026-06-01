@@ -1,5 +1,7 @@
 import { db } from './firebase';
 
+import './App.css';
+
 import { FaTrash, FaEdit, FaSignOutAlt, FaClipboardCheck, FaHistory, FaGoogle, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 import {
@@ -83,42 +85,42 @@ const updateTrade = async () => {
     {
       title: 'Weekly',
       items: [
-        { name: 'Trend', weight: 0, isBonus: false, },
-        { name: 'Exhaustion', weight: 7.1428571429, isBonus: false, },
-        { name: 'At S/R - rejected', weight: 7.1428571429, isBonus: false },
-        { name: 'Candlestick formation', weight:  7.1428571429, isBonus: false },
-        { name: 'Break & retest pattern', weight: 7.1428571429, isBonus: false },
-        { name: 'At LH/HL', weight: 7.1428571429, isBonus: false },
-        { name: 'Rejection from previous structure', weight: 20, isBonus: true },
-        { name: 'Trendline', weight: 20, isBonus: true },
+        { name: 'Trend', weight: 0, isBonus: false, isRequired: false, },
+        { name: 'Exhaustion', weight: 7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'At S/R - rejected', weight: 7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'Candlestick formation', weight:  7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'Break & retest pattern', weight: 7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'At LH/HL', weight: 7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'Rejection from previous structure', weight: 20, isBonus: true, isRequired: false, },
+        { name: 'Trendline', weight: 20, isBonus: true, isRequired: false, },
       ],
     },
     {
       title: 'Daily',
       items: [
-        { name: 'Trend', weight: 0, isBonus: false, },
-        { name: 'Exhaustion', weight: 7.1428571429, isBonus: false, },
-        { name: 'At S/R - rejected', weight: 7.1428571429, isBonus: false },
-        { name: 'Candlestick formation', weight:  7.1428571429, isBonus: false },
-        { name: 'Break & retest pattern', weight: 7.1428571429, isBonus: false },
-        { name: 'At LH/HL', weight: 7.1428571429, isBonus: false },
-        { name: 'EMA retest', weight: 7.1428571429, isBonus: false },
-        { name: 'Rejection from previous structure', weight: 20, isBonus: true },
-        { name: 'Trendline', weight: 20, isBonus: true },
+        { name: 'Trend', weight: 0, isBonus: false, isRequired: false, },
+        { name: 'Exhaustion', weight: 7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'At S/R - rejected', weight: 7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'Candlestick formation', weight:  7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'Break & retest pattern', weight: 7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'At LH/HL', weight: 7.1428571429, isBonus: false, isRequired: true, },
+        { name: 'EMA retest', weight: 7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'Rejection from previous structure', weight: 20, isBonus: true, isRequired: false, },
+        { name: 'Trendline', weight: 20, isBonus: true, isRequired: false, },
       ],
     },
     {
       title: 'H4',
       items: [
-        { name: 'Break & retest pattern + S/R', weight: 7.1428571429, isBonus: false },
-        { name: 'Trend', weight: 7.1428571429, isBonus: false },
-        { name: 'Trendline', weight: 20, isBonus: true },
+        { name: 'Break & retest pattern + S/R', weight: 7.1428571429, isBonus: false, isRequired: true, },
+        { name: 'Trend', weight: 7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'Trendline', weight: 20, isBonus: true, isRequired: false, },
       ],
     },
     {
       title: 'H4 / H2 / H1',
       items: [
-        { name: 'Candlestick formation (confirmation)', weight: 7.1428571429, isBonus: false },
+        { name: 'Candlestick formation (confirmation)', weight: 7.1428571429, isBonus: false, isRequired: true, },
       ],
     },
   ];
@@ -1157,7 +1159,22 @@ gap: '25px',
                         }}
                       />
 
-                      <span>{item.name}</span>
+                      <span>
+  {item.name}
+
+  {item.isRequired && (
+    <span
+      style={{
+        marginLeft: '8px',
+        color: '#ff4d4d',
+        fontSize: '10px',
+        fontWeight: 'bold',
+      }}
+    >
+      REQUIRED
+    </span>
+  )}
+</span>
                     </label>
                   );
                 })}
