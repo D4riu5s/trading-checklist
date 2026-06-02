@@ -1313,7 +1313,7 @@ alignItems: 'center',
     color:
       trade.tradeResult === 'Win'
         ? '#00ff99'
-        : trade.tradeResult === 'Lose'
+        : trade.tradeResult === 'Loss'
         ? '#ff4d4d'
         : trade.tradeResult === 'Breakeven'
         ? '#ffd633'
