@@ -275,16 +275,18 @@ const percentage =
       ).toFixed(0)
     : 0;
 
-const requiredConditions = [
-  'Weekly-Trend',
-  'Daily-At S/R',
-  'H4-Break & retest pattern + S/R',
-  'H4 / H2 / H1-Candlestick formation (confirmation)',
-];
+const requiredItems =
+  sections.flatMap((section) =>
+    section.items
+      .filter((item) => item.isRequired)
+      .map((item) => ({
+        id: `${section.title}-${item.name}`,
+      }))
+  );
 
 const hasMissingRequired =
-  requiredConditions.some(
-    (id) => !checked[id]
+  requiredItems.some(
+    (item) => !checked[item.id]
   );
 
 let setupLabel = 'Weak setup';
