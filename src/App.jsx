@@ -240,7 +240,13 @@ const loadTrades = async () => {
       ...doc.data(),
     }));
 
-  setSavedTrades(trades.reverse());
+  trades.sort(
+  (a, b) =>
+    new Date(b.tradeDate) -
+    new Date(a.tradeDate)
+);
+
+setSavedTrades(trades);
 };
 
   const checkedItems = Object.values(checked).filter(Boolean).length;
@@ -355,6 +361,7 @@ const toggleCheck = (id) => {
   percentage,
   bonusPercentage,
   checked,
+  createdAt: Date.now(),
 };
 
 
