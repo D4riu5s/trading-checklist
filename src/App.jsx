@@ -100,7 +100,7 @@ const updateTrade = async () => {
       items: [
         { name: 'Trend', weight: 0, isBonus: false, isRequired: false, },
         { name: 'Exhaustion', weight: 7.1428571429, isBonus: false, isRequired: false, },
-        { name: 'At S/R - rejected', weight: 7.1428571429, isBonus: false, isRequired: false, },
+        { name: 'At S/R', weight: 7.1428571429, isBonus: false, isRequired: false, },
         { name: 'Candlestick formation', weight:  7.1428571429, isBonus: false, isRequired: false, },
         { name: 'Break & retest pattern', weight: 7.1428571429, isBonus: false, isRequired: false, },
         { name: 'At LH/HL', weight: 7.1428571429, isBonus: false, isRequired: true, },
@@ -279,7 +279,7 @@ const requiredConditions = [
   'Weekly-Trend',
   'Daily-At S/R',
   'H4-Break & retest pattern + S/R',
-  'H4/H2/H1-Candlestick formation (confirmation)',
+  'H4 / H2 / H1-Candlestick formation (confirmation)',
 ];
 
 const hasMissingRequired =
