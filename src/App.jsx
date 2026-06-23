@@ -174,6 +174,9 @@ const [email, setEmail] = useState('');
 const [isRegisterMode, setIsRegisterMode] =
   useState(false);
 
+  const [loading, setLoading] =
+  useState(true);
+
 const [originalTrade, setOriginalTrade] =
   useState(null);
 
@@ -193,11 +196,12 @@ React.useEffect(() => {
 }, [user]);
 
 React.useEffect(() => {
-  const unsubscribe =
+   const unsubscribe =
     onAuthStateChanged(
       auth,
       (currentUser) => {
         setUser(currentUser);
+        setLoading(false);
       }
     );
 
@@ -729,6 +733,23 @@ if (!user) {
   );
 }
 
+if (loading) {
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#0b1020',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: 'white',
+      }}
+    >
+      Loading...
+    </div>
+  );
+}
+
   return (
     <>
     {showStickyScore &&
@@ -976,13 +997,17 @@ if (!user) {
     </div>
 
     <div
-      style={{
-        fontSize: '12px',
-        color: '#9ca3af',
-      }}
-    >
-      {user?.email}
-    </div>
+  style={{
+    fontSize: '12px',
+    color: '#9ca3af',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    maxWidth: '150px',
+  }}
+>
+  {user?.email}
+</div>
   </div>
 </div>
 
