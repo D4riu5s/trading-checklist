@@ -876,6 +876,7 @@ if (!user) {
         borderRadius: '12px',
         cursor: 'pointer',
         fontWeight: 'bold',
+        gap: '10px',
       }}
     >
       <FaSignOutAlt />
@@ -980,13 +981,6 @@ if (!user) {
       {user?.email}
     </div>
   </div>
-  <div
-  style={{
-    height: '1px',
-    background: '#2d3748',
-    marginBottom: '20px',
-  }}
-/>
 </div>
 
       <button
