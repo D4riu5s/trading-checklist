@@ -878,6 +878,7 @@ if (!user) {
         fontWeight: 'bold',
       }}
     >
+      <FaSignOutAlt />
       Logout
     </button>
   </div>
