@@ -1851,6 +1851,25 @@ onClick={() => {
 
             <p>Date: {trade.tradeDate}</p>
 
+            <p>
+  <strong>Direction:</strong>{' '}
+  <span
+    style={{
+      color:
+        openedTrade.tradeDirection === 'Long'
+          ? '#00ff99'
+          : '#ff3b30',
+      fontWeight: 'bold',
+    }}
+  >
+    {openedTrade.tradeDirection
+      ? openedTrade.tradeDirection === 'Long'
+        ? '📈 Long'
+        : '📉 Short'
+      : 'N/A'}
+  </span>
+</p>
+
             <p>Setup score: {trade.percentage}%</p>
 
             <div
