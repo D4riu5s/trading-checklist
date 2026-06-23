@@ -139,6 +139,8 @@ const updateTrade = async () => {
   const [editingChecked, setEditingChecked] = useState({});
 
   const [pair, setPair] = useState('');
+  const [tradeDirection, setTradeDirection] =
+  useState('Long');
 const [tradeDate, setTradeDate] = useState('');
 const [tradeResult, setTradeResult] = useState('Win');
 const [savedTrades, setSavedTrades] = useState([]);
@@ -368,6 +370,7 @@ const toggleCheck = (id) => {
   percentage,
   bonusPercentage,
   checked,
+  tradeDirection,
   createdAt: Date.now(),
 };
 
@@ -1400,6 +1403,73 @@ if (!user) {
         color: 'white',
       }}
     />
+
+    <div
+  style={{
+    marginBottom: '20px',
+  }}
+>
+  <p
+    style={{
+      marginBottom: '10px',
+      fontWeight: 'bold',
+    }}
+  >
+    Direction
+  </p>
+
+  <div
+    style={{
+      display: 'flex',
+      gap: '10px',
+    }}
+  >
+    <button
+      onClick={() =>
+        setTradeDirection('Long')
+      }
+      style={{
+        flex: 1,
+        background:
+          tradeDirection === 'Long'
+            ? '#00ff99'
+            : '#1e293b',
+        color:
+          tradeDirection === 'Long'
+            ? '#0b1020'
+            : 'white',
+        border: 'none',
+        padding: '12px',
+        borderRadius: '12px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+      }}
+    >
+      📈 Long
+    </button>
+
+    <button
+      onClick={() =>
+        setTradeDirection('Short')
+      }
+      style={{
+        flex: 1,
+        background:
+          tradeDirection === 'Short'
+            ? '#ff3b30'
+            : '#1e293b',
+        color: 'white',
+        border: 'none',
+        padding: '12px',
+        borderRadius: '12px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+      }}
+    >
+      📉 Short
+    </button>
+  </div>
+</div>
 
     <input
       type="date"
