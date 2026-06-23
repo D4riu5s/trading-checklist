@@ -1512,6 +1512,7 @@ if (!user) {
     background: '#121a2b',
     width: '100%',
     maxWidth: '1100px',
+    margin: '0 auto',
     borderRadius: '20px',
     padding: '25px',
     boxSizing: 'border-box',
