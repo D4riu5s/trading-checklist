@@ -1869,8 +1869,6 @@ onClick={() => {
   </span>
 </p>
 
-            <p>Setup score: {trade.percentage}%</p>
-
             <div
   style={{
     marginTop: '15px',
@@ -1887,7 +1885,12 @@ onClick={() => {
 >
   <span
     style={{
-      color: setupScoreColor,
+      color:
+  trade.percentage >= 80
+    ? '#00ff99'
+    : trade.percentage >= 60
+    ? '#ffd633'
+    : '#ff4d4d',
       fontWeight: 'bold',
     }}
   >
@@ -1896,7 +1899,12 @@ onClick={() => {
 
   <span
     style={{
-      color: setupScoreColor,
+      color:
+  trade.percentage >= 80
+    ? '#00ff99'
+    : trade.percentage >= 60
+    ? '#ffd633'
+    : '#ff4d4d',
       fontWeight: 'bold',
     }}
   >
@@ -1918,9 +1926,19 @@ onClick={() => {
     style={{
       width: `${trade.percentage || 0}%`,
       height: '100%',
-      background: setupScoreColor,
+      background:
+  trade.percentage >= 80
+    ? '#00ff99'
+    : trade.percentage >= 60
+    ? '#ffd633'
+    : '#ff4d4d',
       borderRadius: '999px',
-      boxShadow: `0 0 10px ${setupScoreColor}`,
+      boxShadow:
+  trade.percentage >= 80
+    ? '0 0 10px #00ff99'
+    : trade.percentage >= 60
+    ? '0 0 10px #ffd633'
+    : '0 0 10px #ff4d4d',
     }}
   />
 </div>
