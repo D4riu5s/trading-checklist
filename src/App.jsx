@@ -1576,6 +1576,13 @@ alignItems: 'center',
               <strong>{trade.tradeDate}</strong>
             </div>
 
+            <p>
+  <strong>Direction:</strong>{' '}
+  {openedTrade.tradeDirection === 'Long'
+    ? '📈 Long'
+    : '📉 Short'}
+</p>
+
             <div>
               <p>Setup score:</p>
               <strong>{trade.percentage}%</strong>
