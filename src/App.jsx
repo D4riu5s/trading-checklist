@@ -182,6 +182,13 @@ const [isRegisterMode, setIsRegisterMode] =
 const [originalTrade, setOriginalTrade] =
   useState(null);
 
+  const setupScoreColor =
+  trade.percentage >= 80
+    ? '#00ff99'
+    : trade.percentage >= 60
+    ? '#ffd633'
+    : '#ff4d4d';
+
 const [
   unsavedChangesPopup,
   setUnsavedChangesPopup,
@@ -1877,6 +1884,54 @@ onClick={() => {
     marginBottom: '20px',
   }}
 >
+
+<div
+  style={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: '8px',
+  }}
+>
+  <span
+    style={{
+      color: setupScoreColor,
+      fontWeight: 'bold',
+    }}
+  >
+    Setup Score
+  </span>
+
+  <span
+    style={{
+      color: setupScoreColor,
+      fontWeight: 'bold',
+    }}
+  >
+    {trade.percentage || 0}%
+  </span>
+</div>
+
+<div
+  style={{
+    width: '100%',
+    height: '8px',
+    background: '#1f2937',
+    borderRadius: '999px',
+    overflow: 'hidden',
+    marginBottom: '16px',
+  }}
+>
+  <div
+    style={{
+      width: `${trade.percentage || 0}%`,
+      height: '100%',
+      background: setupScoreColor,
+      borderRadius: '999px',
+      boxShadow: `0 0 10px ${setupScoreColor}`,
+    }}
+  />
+</div>
+
   <div
     style={{
       display: 'flex',
