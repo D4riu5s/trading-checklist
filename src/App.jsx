@@ -812,6 +812,121 @@ if (!user) {
     fontFamily: 'Arial, sans-serif',
   }}
 >
+  
+  <div
+  style={{
+    background: '#121a2b',
+    padding: '15px 25px',
+    borderBottom: '1px solid #2d3748',
+    marginBottom: '25px',
+  }}
+>
+  <div
+    style={{
+      width: '100%',
+      maxWidth: '1100px',
+      margin: '0 auto',
+      display: 'flex',
+      justifyContent: 'flex-start',
+      gap: '25px',
+      alignItems: 'center',
+    }}
+  >
+    <button
+      onClick={() =>
+        setSidebarOpen(!sidebarOpen)
+      }
+      style={{
+        background: 'transparent',
+        border: 'none',
+        color: 'white',
+        fontSize: '24px',
+        cursor: 'pointer',
+      }}
+    >
+      <FaBars />
+    </button>
+
+    <h2
+      style={{
+        margin: 0,
+        color: '#00ff99',
+      }}
+    >
+      MyEdge
+    </h2>
+
+    <div
+      style={{
+        display: 'flex',
+        gap: '10px',
+        marginLeft: '20px',
+      }}
+    >
+      <button
+        onClick={() =>
+          setActivePage('checklist')
+        }
+        style={{
+          background:
+            activePage === 'checklist'
+              ? '#00ff99'
+              : '#1e293b',
+          color:
+            activePage === 'checklist'
+              ? '#0b1020'
+              : 'white',
+          border: 'none',
+          padding: '10px 18px',
+          borderRadius: '12px',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+        }}
+      >
+        Checklist
+      </button>
+
+      <button
+        onClick={() =>
+          setActivePage('history')
+        }
+        style={{
+          background:
+            activePage === 'history'
+              ? '#00ff99'
+              : '#1e293b',
+          color:
+            activePage === 'history'
+              ? '#0b1020'
+              : 'white',
+          border: 'none',
+          padding: '10px 18px',
+          borderRadius: '12px',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+        }}
+      >
+        Trade History
+      </button>
+    </div>
+
+    <button
+      onClick={logoutUser}
+      style={{
+        marginLeft: 'auto',
+        background: '#ff3b30',
+        color: 'white',
+        border: 'none',
+        padding: '10px 18px',
+        borderRadius: '12px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+      }}
+    >
+      Logout
+    </button>
+  </div>
+</div>
 
   {sidebarOpen && (
   <>
