@@ -883,8 +883,8 @@ if (!user) {
   </div>
 </div>
 
-  {sidebarOpen && (
   <>
+  {sidebarOpen && (
     <div
       onClick={() =>
         setSidebarOpen(false)
@@ -900,23 +900,29 @@ if (!user) {
         zIndex: 9998,
       }}
     />
+  )}
 
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '280px',
-        height: '100vh',
-        background: '#121a2b',
-        borderRight:
-          '1px solid #2d3748',
-        padding: '25px',
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        zIndex: 9999,
-      }}
+  <div
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: sidebarOpen
+        ? '0'
+        : '-300px',
+      width: '280px',
+      height: '100vh',
+      background: '#121a2b',
+      borderRight:
+        '1px solid #2d3748',
+      padding: '25px',
+      boxSizing: 'border-box',
+      display: 'flex',
+      flexDirection: 'column',
+      zIndex: 9999,
+
+      transition:
+        'left 0.3s ease',
+    }}
     >
       <h2
         style={{
@@ -1018,7 +1024,6 @@ if (!user) {
       </button>
     </div>
   </>
-)}
 
 {activePage === 'checklist' && (
 
