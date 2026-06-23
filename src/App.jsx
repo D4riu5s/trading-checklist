@@ -455,6 +455,23 @@ const loginWithGoogle = async () => {
   }
 };
 
+if (loading) {
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#0b1020',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: 'white',
+      }}
+    >
+      Loading...
+    </div>
+  );
+}
+
 if (!user) {
   return (
     <div
@@ -729,23 +746,6 @@ if (!user) {
   )}
 </p>
       </div>
-    </div>
-  );
-}
-
-if (loading) {
-  return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: '#0b1020',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        color: 'white',
-      }}
-    >
-      Loading...
     </div>
   );
 }
