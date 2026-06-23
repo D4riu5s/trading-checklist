@@ -1166,26 +1166,27 @@ if (!user) {
   </p>
 )}
 
-          <div
-            style={{
-              width: '100%',
-              height: '18px',
-              background: '#1f2937',
-              borderRadius: '20px',
-              overflow: 'hidden',
-              marginTop: '25px',
-            }}
-          >
-            <div
-              style={{
-                width: `${percentage}%`,
-                height: '100%',
-                background: setupColor,
-                transition: '0.3s',
-              }}
-            />
+<div
+  style={{
+    width: '100%',
+    height: '18px',
+    background: '#1f2937',
+    borderRadius: '20px',
+    overflow: 'hidden',
+    marginTop: '25px',
+  }}
+>
+  <div
+    style={{
+      width: `${percentage}%`,
+      height: '100%',
+      background: setupColor,
+      transition: '0.3s',
+    }}
+  />
+</div>
 
-            <div
+<div
   style={{
     marginTop: '20px',
   }}
@@ -1193,8 +1194,7 @@ if (!user) {
   <div
     style={{
       display: 'flex',
-      justifyContent:
-        'space-between',
+      justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: '8px',
     }}
@@ -1242,7 +1242,6 @@ if (!user) {
     />
   </div>
 </div>
-          </div>
 
           <p style={{ marginTop: '15px', color: '#9ca3af' }}>
             {checkedItems} conditions checked
