@@ -1510,7 +1510,7 @@ if (!user) {
     <div
   style={{
     background: '#121a2b',
-    width: '100%',
+    maxWidth: '500px',
     borderRadius: '20px',
     padding: '25px',
     boxSizing: 'border-box',
