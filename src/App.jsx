@@ -2,7 +2,7 @@ import { db } from './firebase';
 
 import './App.css';
 
-import { FaTrash, FaEdit, FaSignOutAlt, FaClipboardCheck, FaHistory, FaGoogle, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaSignOutAlt, FaClipboardCheck, FaHistory, FaGoogle, FaEye, FaEyeSlash, FaBars } from 'react-icons/fa';
 
 import {
   collection,
@@ -165,6 +165,9 @@ const passwordsMatch =
 const isMobile = window.innerWidth < 768;
 
 const [user, setUser] = useState(null);
+
+const [sidebarOpen, setSidebarOpen] =
+  useState(false);
 
 const [email, setEmail] = useState('');
 
@@ -802,136 +805,111 @@ if (!user) {
 )}
 
 <div
-      style={{
-        minHeight: '100vh',
-        background: '#0b1020',
-        color: 'white',
-        fontFamily: 'Arial, sans-serif',
-        padding: '0',
-      }}
-    >
-      <div
   style={{
-    background: '#121a2b',
-    padding: '15px 25px',
-    borderBottom: '1px solid #2d3748',
-    marginBottom: '25px',
-  }}
->
-  <div
-    style={{
-      width: '100%',
-      maxWidth: '1100px',
-      margin: '0 auto',
-      display: 'flex',
-      justifyContent: 'flex-start',
-gap: '25px',
-      alignItems: 'center',
-    }}
-  >
-    <h2
-      style={{
-        margin: 0,
-        color: '#00ff99',
-      }}
-    >
-      MyEdge
-    </h2>
-
-    <div
-  style={{
+    minHeight: '100vh',
+    background: '#0b1020',
+    color: 'white',
+    fontFamily: 'Arial, sans-serif',
     display: 'flex',
-    alignItems: 'center',
-    width: '100%',
-    gap: '10px',
-    flexWrap: 'wrap',
   }}
 >
-  <div
+<div
+  style={{
+    width: '260px',
+    background: '#121a2b',
+    borderRight: '1px solid #2d3748',
+    padding: '25px',
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+  }}
+>
+  <h2
     style={{
-      display: 'flex',
-      gap: '10px',
-      flexWrap: 'wrap',
-      alignItems: 'center',
+      color: '#00ff99',
+      marginTop: 0,
+      marginBottom: '30px',
     }}
   >
-    <button
-      onClick={() =>
-        setActivePage('checklist')
-      }
-      style={{
-        background:
-          activePage === 'checklist'
-            ? '#00ff99'
-            : '#1e293b',
-        color:
-          activePage === 'checklist'
-            ? '#0b1020'
-            : 'white',
-        border: 'none',
-        padding: isMobile
-            ? '10px'
-            : '10px 18px',
-        borderRadius: '12px',
-        cursor: 'pointer',
-        fontWeight: 'bold',
-      }}
-    >
-      <FaClipboardCheck />
-      {!isMobile && ' Checklist'}
-    </button>
+    MyEdge
+  </h2>
 
-    <button
-      onClick={() =>
-        setActivePage('history')
-      }
-      style={{
-        background:
-          activePage === 'history'
-            ? '#00ff99'
-            : '#1e293b',
-        color:
-          activePage === 'history'
-            ? '#0b1020'
-            : 'white',
-        border: 'none',
-        padding: isMobile
-            ? '10px'
-            : '10px 18px',
-        borderRadius: '12px',
-        cursor: 'pointer',
-        fontWeight: 'bold',
-      }}
-    >
-      <FaHistory />
-      {!isMobile && ' Trade History'}
-    </button>
-  </div>
+  <button
+    onClick={() =>
+      setActivePage('checklist')
+    }
+    style={{
+      background:
+        activePage === 'checklist'
+          ? '#00ff99'
+          : '#1e293b',
+      color:
+        activePage === 'checklist'
+          ? '#0b1020'
+          : 'white',
+      border: 'none',
+      padding: '12px',
+      borderRadius: '12px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      marginBottom: '10px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+    }}
+  >
+    <FaClipboardCheck />
+    Checklist
+  </button>
+
+  <button
+    onClick={() =>
+      setActivePage('history')
+    }
+    style={{
+      background:
+        activePage === 'history'
+          ? '#00ff99'
+          : '#1e293b',
+      color:
+        activePage === 'history'
+          ? '#0b1020'
+          : 'white',
+      border: 'none',
+      padding: '12px',
+      borderRadius: '12px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      marginBottom: '10px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+    }}
+  >
+    <FaHistory />
+    Trade History
+  </button>
 
   <button
     onClick={logoutUser}
     style={{
-      marginLeft: 'auto',
+      marginTop: 'auto',
       background: '#ff3b30',
       color: 'white',
       border: 'none',
-      padding: isMobile
-          ? '10px'
-          : '10px 18px',
+      padding: '12px',
       borderRadius: '12px',
       cursor: 'pointer',
       fontWeight: 'bold',
       display: 'flex',
       alignItems: 'center',
-      gap: '8px',
+      gap: '10px',
     }}
   >
     <FaSignOutAlt />
-    {!isMobile && 'Logout'}
+    Logout
   </button>
-</div>
-  </div>
-</div>
+</div>      
 
 {activePage === 'checklist' && (
 
