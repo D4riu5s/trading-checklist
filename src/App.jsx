@@ -934,6 +934,53 @@ if (!user) {
         MyEdge
       </h2>
 
+      <div
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginBottom: '30px',
+    padding: '12px',
+    background: '#1e293b',
+    borderRadius: '14px',
+  }}
+>
+  <img
+    src={
+      user?.photoURL ||
+      'https://via.placeholder.com/50'
+    }
+    alt="Profile"
+    style={{
+      width: '50px',
+      height: '50px',
+      borderRadius: '50%',
+      objectFit: 'cover',
+      border: '2px solid #00ff99',
+    }}
+  />
+
+  <div>
+    <div
+      style={{
+        fontWeight: 'bold',
+        color: 'white',
+      }}
+    >
+      {user?.displayName || 'Trader'}
+    </div>
+
+    <div
+      style={{
+        fontSize: '12px',
+        color: '#9ca3af',
+      }}
+    >
+      {user?.email}
+    </div>
+  </div>
+</div>
+
       <button
         onClick={() => {
           setActivePage(
