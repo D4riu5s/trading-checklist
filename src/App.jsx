@@ -866,22 +866,25 @@ if (!user) {
     </div>
 
     <button
-      onClick={logoutUser}
-      style={{
-        marginLeft: 'auto',
-        background: '#ff3b30',
-        color: 'white',
-        border: 'none',
-        padding: '10px 18px',
-        borderRadius: '12px',
-        cursor: 'pointer',
-        fontWeight: 'bold',
-        gap: '10px',
-      }}
-    >
-      <FaSignOutAlt />
-      Logout
-    </button>
+  onClick={logoutUser}
+  style={{
+    marginLeft: 'auto',
+    background: '#ff3b30',
+    color: 'white',
+    border: 'none',
+    padding: '10px 18px',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+  }}
+>
+  <FaSignOutAlt />
+  Logout
+</button>
   </div>
 </div>
 
