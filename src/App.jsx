@@ -1429,21 +1429,19 @@ if (!user) {
         setTradeDirection('Long')
       }
       style={{
-        flex: 1,
-        background:
-          tradeDirection === 'Long'
-            ? '#00ff99'
-            : '#1e293b',
-        color:
-          tradeDirection === 'Long'
-            ? '#0b1020'
-            : 'white',
-        border: 'none',
-        padding: '12px',
-        borderRadius: '12px',
-        cursor: 'pointer',
-        fontWeight: 'bold',
-      }}
+  flex: 1,
+  background: '#1e293b',
+  color: 'white',
+  border:
+    tradeDirection === 'Long'
+      ? '2px solid #00ff99'
+      : '2px solid transparent',
+  padding: '12px',
+  borderRadius: '12px',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  transition: '0.2s',
+}}
     >
       📈 Long
     </button>
@@ -1453,18 +1451,19 @@ if (!user) {
         setTradeDirection('Short')
       }
       style={{
-        flex: 1,
-        background:
-          tradeDirection === 'Short'
-            ? '#ff3b30'
-            : '#1e293b',
-        color: 'white',
-        border: 'none',
-        padding: '12px',
-        borderRadius: '12px',
-        cursor: 'pointer',
-        fontWeight: 'bold',
-      }}
+  flex: 1,
+  background: '#1e293b',
+  color: 'white',
+  border:
+    tradeDirection === 'Short'
+      ? '2px solid #ff4d4d'
+      : '2px solid transparent',
+  padding: '12px',
+  borderRadius: '12px',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  transition: '0.2s',
+}}
     >
       📉 Short
     </button>
