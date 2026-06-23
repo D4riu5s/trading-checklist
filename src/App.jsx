@@ -1166,41 +1166,6 @@ if (!user) {
   </p>
 )}
 
-<div
-  style={{
-    marginTop: '20px',
-  }}
->
-  <div
-    style={{
-      display: 'flex',
-      justifyContent:
-        'space-between',
-      alignItems: 'center',
-      marginBottom: '8px',
-    }}
-  >
-    <span
-      style={{
-        color: '#a855f7',
-        fontSize: '14px',
-        fontWeight: 'bold',
-      }}
-    >
-      Bonus
-    </span>
-
-    <span
-      style={{
-        color: '#a855f7',
-        fontSize: '14px',
-        fontWeight: 'bold',
-      }}
-    >
-      {bonusPercentage}%
-    </span>
-  </div>
-
   <div
     style={{
       width: '100%',
@@ -1241,6 +1206,42 @@ if (!user) {
                 transition: '0.3s',
               }}
             />
+
+            <div
+  style={{
+    marginTop: '20px',
+  }}
+>
+  <div
+    style={{
+      display: 'flex',
+      justifyContent:
+        'space-between',
+      alignItems: 'center',
+      marginBottom: '8px',
+    }}
+  >
+    <span
+      style={{
+        color: '#a855f7',
+        fontSize: '14px',
+        fontWeight: 'bold',
+      }}
+    >
+      Bonus
+    </span>
+
+    <span
+      style={{
+        color: '#a855f7',
+        fontSize: '14px',
+        fontWeight: 'bold',
+      }}
+    >
+      {bonusPercentage}%
+    </span>
+  </div>
+  
           </div>
 
           <p style={{ marginTop: '15px', color: '#9ca3af' }}>
