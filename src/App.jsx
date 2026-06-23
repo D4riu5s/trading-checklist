@@ -1851,8 +1851,7 @@ onClick={() => {
 
             <p>Date: {trade.tradeDate}</p>
 
-            <p>
-  <strong>Direction:</strong>{' '}
+            <p>Direction:{' '}
   <span
     style={{
       color:
