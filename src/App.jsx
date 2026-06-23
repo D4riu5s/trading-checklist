@@ -810,106 +810,145 @@ if (!user) {
     background: '#0b1020',
     color: 'white',
     fontFamily: 'Arial, sans-serif',
-    display: 'flex',
   }}
 >
-<div
-  style={{
-    width: '260px',
-    background: '#121a2b',
-    borderRight: '1px solid #2d3748',
-    padding: '25px',
-    boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-  }}
->
-  <h2
-    style={{
-      color: '#00ff99',
-      marginTop: 0,
-      marginBottom: '30px',
-    }}
-  >
-    MyEdge
-  </h2>
 
-  <button
-    onClick={() =>
-      setActivePage('checklist')
-    }
-    style={{
-      background:
-        activePage === 'checklist'
-          ? '#00ff99'
-          : '#1e293b',
-      color:
-        activePage === 'checklist'
-          ? '#0b1020'
-          : 'white',
-      border: 'none',
-      padding: '12px',
-      borderRadius: '12px',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      marginBottom: '10px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-    }}
-  >
-    <FaClipboardCheck />
-    Checklist
-  </button>
+  {sidebarOpen && (
+  <>
+    <div
+      onClick={() =>
+        setSidebarOpen(false)
+      }
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background:
+          'rgba(0,0,0,0.5)',
+        zIndex: 9998,
+      }}
+    />
 
-  <button
-    onClick={() =>
-      setActivePage('history')
-    }
-    style={{
-      background:
-        activePage === 'history'
-          ? '#00ff99'
-          : '#1e293b',
-      color:
-        activePage === 'history'
-          ? '#0b1020'
-          : 'white',
-      border: 'none',
-      padding: '12px',
-      borderRadius: '12px',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      marginBottom: '10px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-    }}
-  >
-    <FaHistory />
-    Trade History
-  </button>
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '280px',
+        height: '100vh',
+        background: '#121a2b',
+        borderRight:
+          '1px solid #2d3748',
+        padding: '25px',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        zIndex: 9999,
+      }}
+    >
+      <h2
+        style={{
+          color: '#00ff99',
+          marginTop: 0,
+          marginBottom: '30px',
+        }}
+      >
+        MyEdge
+      </h2>
 
-  <button
-    onClick={logoutUser}
-    style={{
-      marginTop: 'auto',
-      background: '#ff3b30',
-      color: 'white',
-      border: 'none',
-      padding: '12px',
-      borderRadius: '12px',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-    }}
-  >
-    <FaSignOutAlt />
-    Logout
-  </button>
-</div>      
+      <button
+        onClick={() => {
+          setActivePage(
+            'checklist'
+          );
+          setSidebarOpen(false);
+        }}
+        style={{
+          background:
+            activePage ===
+            'checklist'
+              ? '#00ff99'
+              : '#1e293b',
+          color:
+            activePage ===
+            'checklist'
+              ? '#0b1020'
+              : 'white',
+          border: 'none',
+          padding: '12px',
+          borderRadius: '12px',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          marginBottom: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+        }}
+      >
+        <FaClipboardCheck />
+        Checklist
+      </button>
+
+      <button
+        onClick={() => {
+          setActivePage(
+            'history'
+          );
+          setSidebarOpen(false);
+        }}
+        style={{
+          background:
+            activePage ===
+            'history'
+              ? '#00ff99'
+              : '#1e293b',
+          color:
+            activePage ===
+            'history'
+              ? '#0b1020'
+              : 'white',
+          border: 'none',
+          padding: '12px',
+          borderRadius: '12px',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          marginBottom: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+        }}
+      >
+        <FaHistory />
+        Trade History
+      </button>
+
+      <button
+        onClick={() => {
+          logoutUser();
+          setSidebarOpen(false);
+        }}
+        style={{
+          marginTop: 'auto',
+          background: '#ff3b30',
+          color: 'white',
+          border: 'none',
+          padding: '12px',
+          borderRadius: '12px',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+        }}
+      >
+        <FaSignOutAlt />
+        Logout
+      </button>
+    </div>
+  </>
+)}
 
 {activePage === 'checklist' && (
 
@@ -2112,12 +2151,13 @@ const updatedBonusPercentage =
           }}
         >
           Cancel
-        </button>
+                </button>
       </div>
     </div>
   </div>
 )}
+
       </div>
-  </>
+    </>
   );
 }
