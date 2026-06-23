@@ -182,13 +182,6 @@ const [isRegisterMode, setIsRegisterMode] =
 const [originalTrade, setOriginalTrade] =
   useState(null);
 
-  const setupScoreColor =
-  trade.percentage >= 80
-    ? '#00ff99'
-    : trade.percentage >= 60
-    ? '#ffd633'
-    : '#ff4d4d';
-
 const [
   unsavedChangesPopup,
   setUnsavedChangesPopup,
