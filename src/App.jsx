@@ -456,7 +456,7 @@ if (!user) {
     <div
       style={{
         minHeight: '100vh',
-        background: '#0b1020',
+        background: '#000000',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
