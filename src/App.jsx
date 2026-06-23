@@ -978,6 +978,14 @@ if (!user) {
     >
       {user?.email}
     </div>
+
+    <div
+  style={{
+    height: '1px',
+    background: '#2d3748',
+    marginBottom: '20px',
+  }}
+/>
   </div>
 </div>
 
