@@ -1576,12 +1576,25 @@ alignItems: 'center',
               <strong>{trade.tradeDate}</strong>
             </div>
 
-            <p>
-  <strong>Direction:</strong>{' '}
-  {openedTrade.tradeDirection === 'Long'
-    ? '📈 Long'
-    : '📉 Short'}
-</p>
+            <div>
+  <p>Direction:</p>
+  <strong
+    style={{
+      color:
+        trade.tradeDirection ===
+        'Long'
+          ? '#00ff99'
+          : '#ff3b30',
+    }}
+  >
+    {trade.tradeDirection
+      ? trade.tradeDirection ===
+        'Long'
+        ? '📈 Long'
+        : '📉 Short'
+      : 'N/A'}
+  </strong>
+</div>
 
             <div>
               <p>Setup score:</p>
