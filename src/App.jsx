@@ -1166,28 +1166,6 @@ if (!user) {
   </p>
 )}
 
-  <div
-    style={{
-      width: '100%',
-      height: '8px',
-      background: '#1f2937',
-      borderRadius: '999px',
-      overflow: 'hidden',
-    }}
-  >
-    <div
-      style={{
-        width: `${bonusPercentage}%`,
-        height: '100%',
-        background: '#a855f7',
-        borderRadius: '999px',
-        transition: '0.3s',
-        boxShadow:
-          '0 0 10px #a855f7',
-      }}
-    />
-  </div>
-</div>
           <div
             style={{
               width: '100%',
@@ -1241,7 +1219,29 @@ if (!user) {
       {bonusPercentage}%
     </span>
   </div>
-  
+
+  <div
+    style={{
+      width: '100%',
+      height: '8px',
+      background: '#1f2937',
+      borderRadius: '999px',
+      overflow: 'hidden',
+    }}
+  >
+    <div
+      style={{
+        width: `${bonusPercentage}%`,
+        height: '100%',
+        background: '#a855f7',
+        borderRadius: '999px',
+        transition: '0.3s',
+        boxShadow:
+          '0 0 10px #a855f7',
+      }}
+    />
+  </div>
+</div>
           </div>
 
           <p style={{ marginTop: '15px', color: '#9ca3af' }}>
