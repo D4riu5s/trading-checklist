@@ -863,51 +863,6 @@ if (!user) {
         marginLeft: '20px',
       }}
     >
-      <button
-        onClick={() =>
-          setActivePage('checklist')
-        }
-        style={{
-          background:
-            activePage === 'checklist'
-              ? '#00ff99'
-              : '#1e293b',
-          color:
-            activePage === 'checklist'
-              ? '#0b1020'
-              : 'white',
-          border: 'none',
-          padding: '10px 18px',
-          borderRadius: '12px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-        }}
-      >
-        Checklist
-      </button>
-
-      <button
-        onClick={() =>
-          setActivePage('history')
-        }
-        style={{
-          background:
-            activePage === 'history'
-              ? '#00ff99'
-              : '#1e293b',
-          color:
-            activePage === 'history'
-              ? '#0b1020'
-              : 'white',
-          border: 'none',
-          padding: '10px 18px',
-          borderRadius: '12px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-        }}
-      >
-        Trade History
-      </button>
     </div>
 
     <button
