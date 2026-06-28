@@ -34,6 +34,16 @@ const Icon = {
   Filter: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>,
 };
 
+// ─── BRAND LOGO (the "MyEdge" upward blade) ──────────────────────────────────
+function BladeLogo({ size = 30 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <path d="M26 74 L60 26 L72 26 L38 74 Z" fill="var(--blade-main, #2de2a3)" />
+      <path d="M52 74 L74 43 L74 74 Z" fill="var(--blade-deep, #14b88a)" />
+    </svg>
+  );
+}
+
 // ─── CHECKLIST SECTIONS ───────────────────────────────────────────────────────
 const SECTIONS = [
   {
@@ -957,7 +967,7 @@ function AuthPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-logo">
-          <div className="auth-logo-icon">M</div>
+          <div className="auth-logo-icon"><BladeLogo size={30} /></div>
           <div className="auth-logo-text">My<span>Edge</span></div>
           <div className="auth-logo-sub">Trading Intelligence Platform</div>
         </div>
@@ -1033,7 +1043,7 @@ export default function App() {
 
   if (loading) return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
-      <div className="logo-icon" style={{ width: 48, height: 48, fontSize: 24, borderRadius: 14, animation: 'logoPulse 1.6s ease-in-out infinite' }}>M</div>
+      <div className="logo-icon" style={{ width: 48, height: 48, borderRadius: 14, animation: 'logoPulse 1.6s ease-in-out infinite' }}><BladeLogo size={28} /></div>
       <div style={{ color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, letterSpacing: '0.04em' }}>Loading your edge…</div>
     </div>
   );
@@ -1075,7 +1085,7 @@ export default function App() {
 
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-logo">
-          <div className="logo-icon">M</div>
+          <div className="logo-icon"><BladeLogo size={20} /></div>
           <div className="logo-text">My<span>Edge</span></div>
         </div>
 

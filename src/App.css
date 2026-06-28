@@ -122,11 +122,12 @@ body::before {
 .logo-icon {
   width: 34px; height: 34px;
   border-radius: 10px;
-  background: linear-gradient(140deg, var(--accent-bright) 0%, var(--accent-deep) 100%);
+  background: linear-gradient(180deg, #1a1a20, #101015);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-top-color: rgba(255,255,255,0.16);
   display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 17px; color: #04130d;
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(45,226,163,0.28), inset 0 1px 0 rgba(255,255,255,0.25);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
 }
 .logo-text { font-size: 18px; font-weight: 600; letter-spacing: -0.4px; }
 .logo-text span { color: var(--accent); }
@@ -580,10 +581,11 @@ body::before {
 .auth-logo { text-align: center; margin-bottom: 32px; }
 .auth-logo-icon {
   width: 54px; height: 54px; border-radius: 16px; margin: 0 auto 16px;
-  background: linear-gradient(140deg, var(--accent-bright) 0%, var(--accent-deep) 100%);
+  background: linear-gradient(180deg, #1a1a20, #101015);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-top-color: rgba(255,255,255,0.16);
   display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 27px; color: #04130d;
-  box-shadow: 0 6px 20px rgba(45,226,163,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.45);
 }
 .auth-logo-text { font-size: 25px; font-weight: 600; letter-spacing: -0.4px; }
 .auth-logo-text span { color: var(--accent); }
