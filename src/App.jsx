@@ -212,8 +212,15 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
   const [tradeDirection, setTradeDirection] = useState('Long');
   const [tradeDate, setTradeDate] = useState('');
   const [riskReward, setRiskReward] = useState('');
+  const [showSticky, setShowSticky] = useState(false);
 
   const score = useMemo(() => calcScore(checked), [checked]);
+
+  useEffect(() => {
+    const onScroll = () => setShowSticky(window.scrollY > 260);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const sectionProgress = (section) => {
     const ids = section.items.map(i => `${section.title}-${i.name}`);
@@ -247,6 +254,19 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
 
   return (
     <>
+      {/* Sticky score — appears when scrolling */}
+      {showSticky && score.checkedCount > 0 && (
+        <div className="sticky-score" style={{ borderColor: scoreColor }}>
+          <div className="sticky-score-top">
+            <span className="sticky-score-pct">Score: <span style={{ color: scoreColor }}>{score.percentage}%</span></span>
+            <span className="sticky-score-label" style={{ color: scoreColor }}>{score.setupLabel}</span>
+          </div>
+          <div className="sticky-score-bar">
+            <div className="sticky-score-fill" style={{ width: `${score.percentage}%`, background: scoreColor }} />
+          </div>
+        </div>
+      )}
+
       {/* Score Hero */}
       <div className="card score-hero">
         <div className="score-number" style={{ color: scoreColor }}>{score.percentage}%</div>
