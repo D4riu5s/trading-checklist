@@ -29,6 +29,9 @@ const Icon = {
   Backtest: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
   Bolt: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
   Inbox: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>,
+  Chevron: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>,
+  Search: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+  Filter: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>,
 };
 
 // ─── CHECKLIST SECTIONS ───────────────────────────────────────────────────────
@@ -150,25 +153,26 @@ function calcStats(trades) {
   };
 }
 
-// ─── PERIOD FILTER (7d, this month, 1y, 2y, 5y) ──────────────────────────────
+// ─── PERIOD FILTER (7d, 1mo, 6mo, 1y, 2y, 5y) ─────────────────────────────────
 function filterByPeriod(trades, period) {
   if (period === 'all') return trades;
-  const now = new Date();
-  if (period === 'month') {
-    return trades.filter(t => {
-      const d = new Date(t.tradeDate);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    });
-  }
-  const days = { '7': 7, '1y': 365, '2y': 730, '5y': 1825 }[period];
+  const days = { '7': 7, '1m': 30, '6m': 182, '1y': 365, '2y': 730, '5y': 1825 }[period];
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - days);
   return trades.filter(t => new Date(t.tradeDate) >= cutoff);
 }
 
 const PERIOD_OPTIONS = [
-  ['7', '7 days'], ['month', 'This month'], ['1y', '1 year'],
-  ['2y', '2 years'], ['5y', '5 years'], ['all', 'All time'],
+  ['7', '7 days'], ['1m', '1 month'], ['6m', '6 months'],
+  ['1y', '1 year'], ['2y', '2 years'], ['5y', '5 years'], ['all', 'All time'],
+];
+
+// ─── FX PAIRS (in user's preferred order) ─────────────────────────────────────
+const FX_PAIRS = [
+  'EURUSD', 'AUDUSD', 'GBPUSD', 'NZDUSD', 'USDCAD', 'AUDCAD', 'NZDCAD',
+  'GBPCAD', 'EURCAD', 'EURAUD', 'GBPAUD', 'EURGBP', 'EURNZD', 'GBPNZD',
+  'AUDNZD', 'USDJPY', 'AUDJPY', 'CADJPY', 'NZDJPY', 'EURJPY', 'GBPJPY',
+  'CHFJPY', 'USDCHF', 'AUDCHF', 'GBPCHF',
 ];
 
 // ─── SMALL COMPONENTS ────────────────────────────────────────────────────────
@@ -189,6 +193,130 @@ function StatBar({ label, value, color, sub }) {
 function ResultBadge({ result }) {
   const map = { Win: 'result-win', Loss: 'result-loss', Breakeven: 'result-be', 'On going': 'result-ongoing' };
   return <span className={`result-badge ${map[result] || 'result-ongoing'}`}>{result}</span>;
+}
+
+// ─── GENERIC DROPDOWN (closes on outside click) ───────────────────────────────
+function useOutsideClose(ref, onClose) {
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [ref, onClose]);
+}
+
+// Filter dropdown: a trigger button + a panel of options
+function FilterDropdown({ label, value, options, onChange, icon }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useOutsideClose(ref, () => setOpen(false));
+
+  const current = options.find(o => o[0] === value);
+  const currentLabel = current ? current[1] : label;
+
+  return (
+    <div className="dropdown" ref={ref}>
+      <button className={`dropdown-trigger ${open ? 'open' : ''}`} onClick={() => setOpen(!open)}>
+        {icon}
+        <span>{currentLabel}</span>
+        <span className="dropdown-chevron"><Icon.Chevron /></span>
+      </button>
+      {open && (
+        <div className="dropdown-panel">
+          {options.map(([val, lbl]) => (
+            <button key={val} className={`dropdown-option ${value === val ? 'selected' : ''}`}
+              onClick={() => { onChange(val); setOpen(false); }}>
+              {lbl}
+              {value === val && <Icon.Check />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Searchable pair selector (like MyFxbook)
+function PairSelect({ value, onChange, pairs = FX_PAIRS, placeholder = 'Select pair', allOption = false }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const ref = useRef(null);
+  const inputRef = useRef(null);
+  useOutsideClose(ref, () => { setOpen(false); setSearch(''); });
+
+  useEffect(() => { if (open) inputRef.current?.focus(); }, [open]);
+
+  const filtered = pairs.filter(p => p.toLowerCase().includes(search.toLowerCase()));
+  const displayValue = value === 'all' ? 'All pairs' : (value || placeholder);
+
+  return (
+    <div className="dropdown" ref={ref}>
+      <button className={`dropdown-trigger ${open ? 'open' : ''} ${!value || value === 'all' ? 'placeholder' : ''}`}
+        onClick={() => setOpen(!open)}>
+        <span>{displayValue}</span>
+        <span className="dropdown-chevron"><Icon.Chevron /></span>
+      </button>
+      {open && (
+        <div className="dropdown-panel">
+          <div className="dropdown-search">
+            <Icon.Search />
+            <input ref={inputRef} value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search pair..." onClick={e => e.stopPropagation()} />
+          </div>
+          <div className="dropdown-options-scroll">
+            {allOption && (
+              <button className={`dropdown-option ${value === 'all' ? 'selected' : ''}`}
+                onClick={() => { onChange('all'); setOpen(false); setSearch(''); }}>
+                All pairs
+                {value === 'all' && <Icon.Check />}
+              </button>
+            )}
+            {filtered.length === 0 ? (
+              <div className="dropdown-empty">No pairs found</div>
+            ) : (
+              filtered.map(p => (
+                <button key={p} className={`dropdown-option ${value === p ? 'selected' : ''}`}
+                  onClick={() => { onChange(p); setOpen(false); setSearch(''); }}>
+                  {p}
+                  {value === p && <Icon.Check />}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Result selector dropdown for history rows
+function ResultDropdown({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useOutsideClose(ref, () => setOpen(false));
+
+  const options = ['On going', 'Win', 'Loss', 'Breakeven'];
+  const map = { Win: 'result-win', Loss: 'result-loss', Breakeven: 'result-be', 'On going': 'result-ongoing' };
+
+  return (
+    <div className="dropdown" ref={ref}>
+      <button className={`result-badge result-trigger ${map[value]}`} onClick={(e) => { e.stopPropagation(); setOpen(!open); }}>
+        {value}
+        <span className="result-chevron"><Icon.Chevron /></span>
+      </button>
+      {open && (
+        <div className="dropdown-panel dropdown-panel-sm" onClick={e => e.stopPropagation()}>
+          {options.map(opt => (
+            <button key={opt} className={`dropdown-option ${value === opt ? 'selected' : ''}`}
+              onClick={() => { onChange(opt); setOpen(false); }}>
+              <span className={`result-dot ${map[opt]}`} />
+              {opt}
+              {value === opt && <Icon.Check />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function ConfirmModal({ title, message, onConfirm, onCancel }) {
@@ -231,10 +359,10 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
   const toggleCheck = (id) => setChecked(prev => ({ ...prev, [id]: !prev[id] }));
 
   const saveTrade = async () => {
-    if (!pair || !tradeDate) { alert('Please fill in pair and date.'); return; }
+    if (!pair || !tradeDate) { alert('Please select a pair and date.'); return; }
     const trade = {
       userId: user.uid,
-      pair: pair.toUpperCase(),
+      pair: pair,
       tradeDate,
       tradeResult: 'On going',
       percentage: score.percentage,
@@ -320,7 +448,7 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
           <div className="flex flex-col gap-3">
             <div className="form-group">
               <label className="form-label">Pair</label>
-              <input className="form-input" placeholder="e.g. EURUSD" value={pair} onChange={e => setPair(e.target.value)} />
+              <PairSelect value={pair} onChange={setPair} placeholder="Select pair" />
             </div>
             <div className="form-group">
               <label className="form-label">Direction</label>
@@ -408,11 +536,7 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
 
         <div style={{ marginBottom: 20 }}>
           <StatBar label="Setup score" value={score.percentage} color={scoreColor} />
-          <div className="bonus-row" style={{ margin: '12px 0 0' }}>
-            <span className="bonus-label">Bonus</span>
-            <div className="bonus-track"><div className="bonus-fill" style={{ width: `${score.bonusPercentage}%` }} /></div>
-            <span className="bonus-pct">{score.bonusPercentage}%</span>
-          </div>
+          <StatBar label="Bonus" value={score.bonusPercentage} color="var(--purple)" />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
@@ -488,6 +612,12 @@ function HistoryPage({ trades, setSavedTrades, mode }) {
     setSavedTrades(prev => prev.map(t => t.id === updated.id ? updated : t));
   };
 
+  const handleResultChange = async (trade, newResult) => {
+    const updated = { ...trade, tradeResult: newResult };
+    await updateDoc(doc(db, 'trades', trade.id), { tradeResult: newResult });
+    setSavedTrades(prev => prev.map(t => t.id === trade.id ? updated : t));
+  };
+
   const openedTrade = filtered.find(t => t.id === openedId);
 
   return (
@@ -509,7 +639,7 @@ function HistoryPage({ trades, setSavedTrades, mode }) {
               <span className="trade-dir" style={{ color: trade.tradeDirection === 'Long' ? 'var(--accent)' : 'var(--red)' }}>
                 {trade.tradeDirection === 'Long' ? '📈' : '📉'} {trade.tradeDirection}
               </span>
-              <ResultBadge result={trade.tradeResult} />
+              <ResultDropdown value={trade.tradeResult} onChange={(newResult) => handleResultChange(trade, newResult)} />
               <span style={{ fontSize: 14, fontWeight: 600, color: parseInt(trade.percentage) >= 80 ? 'var(--accent)' : parseInt(trade.percentage) >= 60 ? 'var(--yellow)' : 'var(--red)' }}>
                 {trade.percentage}%
               </span>
@@ -542,7 +672,6 @@ function DashboardPage({ trades, mode }) {
   const [pairFilter, setPairFilter] = useState('all');
 
   const modeTrades = trades.filter(t => t.tradeMode === mode);
-  const pairs = [...new Set(modeTrades.map(t => t.pair))];
 
   const filtered = useMemo(() => {
     let t = filterByPeriod(modeTrades, period);
@@ -564,20 +693,9 @@ function DashboardPage({ trades, mode }) {
   return (
     <>
       {/* Filters */}
-      <div className="flex flex-col gap-3 mb-4">
-        <div className="filter-bar">
-          {PERIOD_OPTIONS.map(([v, l]) => (
-            <button key={v} className={`filter-chip ${period === v ? 'active' : ''}`} onClick={() => setPeriod(v)}>{l}</button>
-          ))}
-        </div>
-        {pairs.length > 0 && (
-          <div className="filter-bar">
-            <button className={`filter-chip ${pairFilter === 'all' ? 'active' : ''}`} onClick={() => setPairFilter('all')}>All pairs</button>
-            {pairs.map(p => (
-              <button key={p} className={`filter-chip ${pairFilter === p ? 'active' : ''}`} onClick={() => setPairFilter(p)}>{p}</button>
-            ))}
-          </div>
-        )}
+      <div className="flex gap-3 mb-6" style={{ flexWrap: 'wrap' }}>
+        <FilterDropdown label="Period" value={period} options={PERIOD_OPTIONS} onChange={setPeriod} icon={<Icon.Filter />} />
+        <PairSelect value={pairFilter} onChange={setPairFilter} pairs={FX_PAIRS} allOption={true} />
       </div>
 
       {/* KPI Row */}

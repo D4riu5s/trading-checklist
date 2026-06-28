@@ -370,8 +370,9 @@ body::before {
   gap: 16px; align-items: center; padding: 15px 18px;
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-md); transition: all 0.13s; box-shadow: var(--shadow-card);
+  position: relative;
 }
-.trade-row:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+.trade-row:hover { border-color: var(--border-strong); }
 .trade-pair { font-size: 16px; font-weight: 600; }
 .trade-date { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 .trade-dir { font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
@@ -394,6 +395,78 @@ body::before {
 }
 .filter-chip:hover { border-color: var(--border-strong); color: var(--text-primary); }
 .filter-chip.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-border); }
+
+/* ─── DROPDOWNS ────────────────────────────────────────────────────────────── */
+.dropdown { position: relative; display: inline-block; }
+.dropdown-trigger {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 10px 14px; min-width: 150px;
+  background: var(--bg-card); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  font-size: 14px; font-weight: 500; font-family: var(--font);
+  cursor: pointer; transition: all 0.13s;
+}
+.dropdown-trigger:hover { background: var(--bg-hover); border-color: var(--text-muted); }
+.dropdown-trigger.open { border-color: var(--accent); }
+.dropdown-trigger.placeholder { color: var(--text-muted); font-weight: 400; }
+.dropdown-trigger > span:nth-child(2), .dropdown-trigger > span:first-child:not(.dropdown-chevron) { flex: 1; text-align: left; }
+.dropdown-trigger svg { width: 15px; height: 15px; }
+.dropdown-chevron { display: flex; margin-left: auto; transition: transform 0.18s; opacity: 0.6; }
+.dropdown-chevron svg { width: 14px; height: 14px; }
+.dropdown-trigger.open .dropdown-chevron { transform: rotate(180deg); }
+
+.dropdown-panel {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 80;
+  min-width: 100%; width: max-content; max-width: 280px;
+  background: var(--bg-surface); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md); padding: 6px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  animation: ddIn 0.15s cubic-bezier(.4,0,.2,1);
+}
+.dropdown-panel-sm { min-width: 160px; }
+@keyframes ddIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+.dropdown-search {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; margin-bottom: 4px;
+  background: var(--bg-elevated); border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.dropdown-search svg { width: 15px; height: 15px; color: var(--text-muted); flex-shrink: 0; }
+.dropdown-search input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text-primary); font-size: 13px; font-family: var(--font); min-width: 0;
+}
+.dropdown-search input::placeholder { color: var(--text-muted); }
+
+.dropdown-options-scroll { max-height: 260px; overflow-y: auto; }
+.dropdown-option {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  padding: 9px 11px; border: none; background: none;
+  color: var(--text-secondary); font-size: 13px; font-weight: 500;
+  font-family: var(--font); cursor: pointer; border-radius: var(--radius-sm);
+  text-align: left; transition: all 0.1s;
+}
+.dropdown-option:hover { background: var(--bg-hover); color: var(--text-primary); }
+.dropdown-option.selected { background: var(--accent-dim); color: var(--accent); }
+.dropdown-option svg { width: 14px; height: 14px; margin-left: auto; flex-shrink: 0; }
+.dropdown-empty { padding: 16px; text-align: center; color: var(--text-muted); font-size: 13px; }
+
+.result-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.result-dot.result-win { background: var(--accent); }
+.result-dot.result-loss { background: var(--red); }
+.result-dot.result-be { background: var(--yellow); }
+.result-dot.result-ongoing { background: var(--blue); }
+
+/* Result trigger badge with chevron */
+.result-trigger {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: none; cursor: pointer; font-family: var(--font);
+  transition: filter 0.13s;
+}
+.result-trigger:hover { filter: brightness(1.15); }
+.result-chevron { display: flex; opacity: 0.7; }
+.result-chevron svg { width: 11px; height: 11px; }
 
 /* ─── MODAL ────────────────────────────────────────────────────────────────── */
 .modal-overlay {
