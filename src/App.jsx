@@ -108,11 +108,12 @@ function calcScore(checkedMap) {
 
   let setupLabel = 'Weak setup';
   let setupColor = 'var(--red)';
-  if (checkedCount > 0 && hasMissingRequired) { setupLabel = 'Invalid setup'; setupColor = 'var(--red)'; }
-  else if (percentage >= 80) { setupLabel = 'Strong setup'; setupColor = 'var(--accent)'; }
-  else if (percentage >= 60) { setupLabel = 'Good setup'; setupColor = 'var(--yellow)'; }
+  let glowColor = 'rgba(255,84,112,0.18)';
+  if (checkedCount > 0 && hasMissingRequired) { setupLabel = 'Invalid setup'; setupColor = 'var(--red)'; glowColor = 'rgba(255,84,112,0.18)'; }
+  else if (percentage >= 80) { setupLabel = 'Strong setup'; setupColor = 'var(--accent)'; glowColor = 'rgba(45,226,163,0.22)'; }
+  else if (percentage >= 60) { setupLabel = 'Good setup'; setupColor = 'var(--yellow)'; glowColor = 'rgba(255,194,75,0.18)'; }
 
-  return { percentage, bonusPercentage, setupLabel, setupColor, hasMissingRequired, checkedCount };
+  return { percentage, bonusPercentage, setupLabel, setupColor, glowColor, hasMissingRequired, checkedCount };
 }
 
 // ─── DASHBOARD STATS ──────────────────────────────────────────────────────────
@@ -396,14 +397,14 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
       )}
 
       {/* Score Hero */}
-      <div className="card score-hero">
+      <div className="card score-hero" style={{ '--score-glow': score.glowColor }}>
         <div className="score-number" style={{ color: scoreColor }}>{score.percentage}%</div>
         {score.checkedCount > 0 && <div className="score-label" style={{ color: scoreColor }}>{score.setupLabel}</div>}
         {score.checkedCount > 0 && score.hasMissingRequired && (
           <div><div className="missing-required">⚠ Missing required conditions</div></div>
         )}
         <div className="score-bar-wrap">
-          <div className="score-bar-fill" style={{ width: `${score.percentage}%`, background: scoreColor }} />
+          <div className="score-bar-fill" style={{ width: `${score.percentage}%`, background: scoreColor, '--score-glow': score.glowColor }} />
         </div>
         <div className="bonus-row">
           <span className="bonus-label">Bonus</span>
@@ -643,7 +644,7 @@ function TradeList({ trades, setSavedTrades, emptyTitle = 'No trades saved yet',
               {trade.tradeDirection === 'Long' ? '📈' : '📉'} {trade.tradeDirection}
             </span>
             <ResultDropdown value={trade.tradeResult} onChange={(newResult) => handleResultChange(trade, newResult)} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: parseInt(trade.percentage) >= 80 ? 'var(--accent)' : parseInt(trade.percentage) >= 60 ? 'var(--yellow)' : 'var(--red)' }}>
+            <span className="num" style={{ fontSize: 14, fontWeight: 600, color: parseInt(trade.percentage) >= 80 ? 'var(--accent)' : parseInt(trade.percentage) >= 60 ? 'var(--yellow)' : 'var(--red)' }}>
               {trade.percentage}%
             </span>
             <div className="flex gap-2">
@@ -1031,8 +1032,9 @@ export default function App() {
   };
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', fontWeight: 600, fontSize: 22, letterSpacing: '-0.5px' }}>
-      MyEdge
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
+      <div className="logo-icon" style={{ width: 48, height: 48, fontSize: 24, borderRadius: 14, animation: 'logoPulse 1.6s ease-in-out infinite' }}>M</div>
+      <div style={{ color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, letterSpacing: '0.04em' }}>Loading your edge…</div>
     </div>
   );
 
