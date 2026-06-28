@@ -596,10 +596,10 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
 }
 
 // ─── HISTORY PAGE ─────────────────────────────────────────────────────────────
-function HistoryPage({ trades, setSavedTrades, mode }) {
+// ─── REUSABLE TRADE LIST (used in History + Dashboard) ────────────────────────
+function TradeList({ trades, setSavedTrades, emptyTitle = 'No trades saved yet', emptySub = 'Complete the checklist and save your first trade.' }) {
   const [openedId, setOpenedId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
-  const filtered = trades.filter(t => t.tradeMode === mode);
 
   const handleDelete = async (id) => {
     await deleteDoc(doc(db, 'trades', id));
@@ -618,39 +618,41 @@ function HistoryPage({ trades, setSavedTrades, mode }) {
     setSavedTrades(prev => prev.map(t => t.id === trade.id ? updated : t));
   };
 
-  const openedTrade = filtered.find(t => t.id === openedId);
+  const openedTrade = trades.find(t => t.id === openedId);
+
+  if (trades.length === 0) {
+    return (
+      <div className="card empty-state">
+        <Icon.Inbox />
+        <p>{emptyTitle}</p>
+        <p className="sub">{emptySub}</p>
+      </div>
+    );
+  }
 
   return (
     <>
-      {filtered.length === 0 ? (
-        <div className="card empty-state">
-          <Icon.Inbox />
-          <p>No trades saved yet</p>
-          <p className="sub">Complete the checklist and save your first trade.</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {filtered.map(trade => (
-            <div key={trade.id} className="trade-row">
-              <div>
-                <div className="trade-pair">{trade.pair}</div>
-                <div className="trade-date">{trade.tradeDate}</div>
-              </div>
-              <span className="trade-dir" style={{ color: trade.tradeDirection === 'Long' ? 'var(--accent)' : 'var(--red)' }}>
-                {trade.tradeDirection === 'Long' ? '📈' : '📉'} {trade.tradeDirection}
-              </span>
-              <ResultDropdown value={trade.tradeResult} onChange={(newResult) => handleResultChange(trade, newResult)} />
-              <span style={{ fontSize: 14, fontWeight: 600, color: parseInt(trade.percentage) >= 80 ? 'var(--accent)' : parseInt(trade.percentage) >= 60 ? 'var(--yellow)' : 'var(--red)' }}>
-                {trade.percentage}%
-              </span>
-              <div className="flex gap-2">
-                <button className="btn btn-danger btn-icon btn-sm" onClick={() => setDeleteId(trade.id)} title="Delete"><Icon.Trash /></button>
-                <button className="btn btn-secondary btn-sm" onClick={() => setOpenedId(trade.id)}><Icon.Eye /> View</button>
-              </div>
+      <div className="flex flex-col gap-3">
+        {trades.map(trade => (
+          <div key={trade.id} className="trade-row">
+            <div>
+              <div className="trade-pair">{trade.pair}</div>
+              <div className="trade-date">{trade.tradeDate}</div>
             </div>
-          ))}
-        </div>
-      )}
+            <span className="trade-dir" style={{ color: trade.tradeDirection === 'Long' ? 'var(--accent)' : 'var(--red)' }}>
+              {trade.tradeDirection === 'Long' ? '📈' : '📉'} {trade.tradeDirection}
+            </span>
+            <ResultDropdown value={trade.tradeResult} onChange={(newResult) => handleResultChange(trade, newResult)} />
+            <span style={{ fontSize: 14, fontWeight: 600, color: parseInt(trade.percentage) >= 80 ? 'var(--accent)' : parseInt(trade.percentage) >= 60 ? 'var(--yellow)' : 'var(--red)' }}>
+              {trade.percentage}%
+            </span>
+            <div className="flex gap-2">
+              <button className="btn btn-danger btn-icon btn-sm" onClick={() => setDeleteId(trade.id)} title="Delete"><Icon.Trash /></button>
+              <button className="btn btn-secondary btn-sm" onClick={() => setOpenedId(trade.id)}><Icon.Eye /> View</button>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {openedTrade && (
         <TradeDetailModal trade={openedTrade} onClose={() => setOpenedId(null)}
@@ -666,8 +668,14 @@ function HistoryPage({ trades, setSavedTrades, mode }) {
   );
 }
 
+// ─── HISTORY PAGE ─────────────────────────────────────────────────────────────
+function HistoryPage({ trades, setSavedTrades, mode }) {
+  const filtered = trades.filter(t => t.tradeMode === mode);
+  return <TradeList trades={filtered} setSavedTrades={setSavedTrades} />;
+}
+
 // ─── DASHBOARD PAGE ───────────────────────────────────────────────────────────
-function DashboardPage({ trades, mode }) {
+function DashboardPage({ trades, setSavedTrades, mode }) {
   const [period, setPeriod] = useState('all');
   const [pairFilter, setPairFilter] = useState('all');
 
@@ -731,6 +739,21 @@ function DashboardPage({ trades, mode }) {
           <StatBar label="📉 Short win rate" value={s.wrShort} color="var(--red)" />
         </div>
       </div>
+
+      {/* Trade history — follows the same period + pair filter */}
+      <div className="dashboard-history-header">
+        <h3 className="dashboard-history-title">
+          Trade history
+          {pairFilter !== 'all' && <span className="dashboard-history-pair">{pairFilter}</span>}
+        </h3>
+        <span className="dashboard-history-count">{filtered.length} {filtered.length === 1 ? 'trade' : 'trades'}</span>
+      </div>
+      <TradeList
+        trades={filtered}
+        setSavedTrades={setSavedTrades}
+        emptyTitle={pairFilter !== 'all' ? `No ${pairFilter} trades in this period` : 'No trades in this period'}
+        emptySub="Try adjusting the period or pair filter."
+      />
     </>
   );
 }
@@ -1095,8 +1118,8 @@ export default function App() {
           {activePage === 'checklist-backtest' && <ChecklistPage checked={backtestChecked} setChecked={setBacktestChecked} savedTrades={savedTrades} setSavedTrades={setSavedTrades} user={user} mode="backtest" />}
           {activePage === 'history-live' && <HistoryPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="live" />}
           {activePage === 'history-backtest' && <HistoryPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />}
-          {activePage === 'dashboard-live' && <DashboardPage trades={savedTrades} mode="live" />}
-          {activePage === 'dashboard-backtest' && <DashboardPage trades={savedTrades} mode="backtest" />}
+          {activePage === 'dashboard-live' && <DashboardPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="live" />}
+          {activePage === 'dashboard-backtest' && <DashboardPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />}
           {activePage === 'ai' && <AICoachPage user={user} />}
         </div>
       </main>

@@ -594,3 +594,19 @@ body::before {
 .w-full { width: 100%; }
 .divider { height: 1px; background: var(--border); margin: 20px 0; }
 .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+
+/* ─── DASHBOARD HISTORY ────────────────────────────────────────────────────── */
+.dashboard-history-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 32px 0 16px;
+}
+.dashboard-history-title {
+  font-size: 17px; font-weight: 600; color: var(--text-primary);
+  display: flex; align-items: center; gap: 10px;
+}
+.dashboard-history-pair {
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  background: var(--accent-dim); border: 1px solid var(--accent-border);
+  padding: 3px 10px; border-radius: 99px;
+}
+.dashboard-history-count { font-size: 13px; color: var(--text-muted); }
