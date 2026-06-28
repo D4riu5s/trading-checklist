@@ -17,7 +17,6 @@ const Icon = {
   Checklist: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><polyline points="7 9 10 12 17 8"/><line x1="7" y1="15" x2="17" y2="15"/></svg>,
   AI: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="8" r="4"/><path d="M12 12v4m-4 4h8"/><circle cx="12" cy="12" r="9"/></svg>,
   History: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>,
-  Backtest: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
   Dashboard: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>,
   Logout: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
   Send: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
@@ -27,10 +26,9 @@ const Icon = {
   Menu: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
   Eye: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
   EyeOff: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>,
-  Signal: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M1 6s2-2 5-2 5 2 5 2"/><path d="M1 10s3-3 5-3 5 3 5 3"/><circle cx="6" cy="14" r="1" fill="currentColor"/><path d="M16 6s2-2 5-2 5 2 5 2" opacity=".4"/><path d="M16 10s3-3 5-3 5 3 5 3" opacity=".4"/></svg>,
-  Long: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
-  Short: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>,
-  Star: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+  Backtest: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
+  Bolt: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+  Inbox: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>,
 };
 
 // ─── CHECKLIST SECTIONS ───────────────────────────────────────────────────────
@@ -124,7 +122,7 @@ function calcStats(trades) {
   const longs = trades.filter(t => t.tradeDirection === 'Long');
   const shorts = trades.filter(t => t.tradeDirection === 'Short');
   const longClosed = longs.filter(t => t.tradeResult !== 'On going');
-  const shortClosed = shorts.filter(t => t.tradeDirection === 'Short' && t.tradeResult !== 'On going');
+  const shortClosed = shorts.filter(t => t.tradeResult !== 'On going');
   const avgScore = trades.length ? Math.round(trades.reduce((s, t) => s + parseFloat(t.percentage || 0), 0) / trades.length) : 0;
   const pct = (n, d) => d ? Math.round(n / d * 100) : 0;
 
@@ -132,7 +130,6 @@ function calcStats(trades) {
   const good = closed.filter(t => parseInt(t.percentage) >= 60 && parseInt(t.percentage) < 80);
   const strong = closed.filter(t => parseInt(t.percentage) >= 80);
 
-  // Profit factor & expectancy (if RR available)
   const rrs = closed.filter(t => t.riskReward).map(t => parseFloat(t.riskReward) || 0);
   const avgRR = rrs.length ? (rrs.reduce((a, b) => a + b, 0) / rrs.length).toFixed(2) : 'N/A';
 
@@ -140,8 +137,7 @@ function calcStats(trades) {
     total: closed.length, totalAll: trades.length,
     wins: wins.length, losses: losses.length, be: be.length, ongoing: ongoing.length,
     winRate: pct(wins.length, closed.length),
-    lossRate: pct(losses.length, closed.length),
-    beRate: pct(be.length, closed.length),
+    longCount: longs.length, shortCount: shorts.length,
     longPct: pct(longs.length, trades.length),
     shortPct: pct(shorts.length, trades.length),
     wrLong: pct(longClosed.filter(t => t.tradeResult === 'Win').length, longClosed.length),
@@ -154,20 +150,34 @@ function calcStats(trades) {
   };
 }
 
+// ─── PERIOD FILTER (7d, this month, 1y, 2y, 5y) ──────────────────────────────
 function filterByPeriod(trades, period) {
   if (period === 'all') return trades;
+  const now = new Date();
+  if (period === 'month') {
+    return trades.filter(t => {
+      const d = new Date(t.tradeDate);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+  }
+  const days = { '7': 7, '1y': 365, '2y': 730, '5y': 1825 }[period];
   const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - parseInt(period));
+  cutoff.setDate(cutoff.getDate() - days);
   return trades.filter(t => new Date(t.tradeDate) >= cutoff);
 }
+
+const PERIOD_OPTIONS = [
+  ['7', '7 days'], ['month', 'This month'], ['1y', '1 year'],
+  ['2y', '2 years'], ['5y', '5 years'], ['all', 'All time'],
+];
 
 // ─── SMALL COMPONENTS ────────────────────────────────────────────────────────
 function StatBar({ label, value, color, sub }) {
   return (
     <div className="stat-bar-row">
       <div className="stat-bar-header">
-        <span style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{label}</span>
-        <span style={{ color, fontWeight: 700, fontSize: 12 }}>{value}% {sub && <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>({sub})</span>}</span>
+        <span style={{ color: 'var(--text-secondary)' }}>{label}</span>
+        <span style={{ color, fontWeight: 700 }}>{value}% {sub && <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>({sub})</span>}</span>
       </div>
       <div className="stat-track">
         <div className="stat-fill" style={{ width: `${value}%`, background: color }} />
@@ -188,8 +198,8 @@ function ConfirmModal({ title, message, onConfirm, onCancel }) {
         <h3 style={{ marginBottom: 10 }}>{title}</h3>
         <p className="text-secondary text-sm" style={{ marginBottom: 24, lineHeight: 1.7 }}>{message}</p>
         <div className="flex gap-3" style={{ justifyContent: 'center' }}>
-          <button className="btn btn-danger" onClick={onConfirm}>Confirma</button>
-          <button className="btn btn-secondary" onClick={onCancel}>Anuleaza</button>
+          <button className="btn btn-danger" onClick={onConfirm}>Delete</button>
+          <button className="btn btn-secondary" onClick={onCancel}>Cancel</button>
         </div>
       </div>
     </div>
@@ -202,20 +212,19 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
   const [tradeDirection, setTradeDirection] = useState('Long');
   const [tradeDate, setTradeDate] = useState('');
   const [riskReward, setRiskReward] = useState('');
-  const [showStickyScore, setShowStickyScore] = useState(false);
 
   const score = useMemo(() => calcScore(checked), [checked]);
 
-  useEffect(() => {
-    const onScroll = () => setShowStickyScore(window.scrollY > 280);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  const sectionProgress = (section) => {
+    const ids = section.items.map(i => `${section.title}-${i.name}`);
+    const done = ids.filter(id => checked[id]).length;
+    return `${done}/${ids.length}`;
+  };
 
   const toggleCheck = (id) => setChecked(prev => ({ ...prev, [id]: !prev[id] }));
 
   const saveTrade = async () => {
-    if (!pair || !tradeDate) { alert('Completeaza pair-ul si data.'); return; }
+    if (!pair || !tradeDate) { alert('Please fill in pair and date.'); return; }
     const trade = {
       userId: user.uid,
       pair: pair.toUpperCase(),
@@ -238,40 +247,22 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
 
   return (
     <>
-      {showStickyScore && (
-        <div className="sticky-score" style={{ borderColor: scoreColor }}>
-          <div className="sticky-score-inner">
-            <span style={{ fontWeight: 700, fontSize: 15 }}>Score: <span style={{ color: scoreColor }}>{score.percentage}%</span></span>
-            <span style={{ color: scoreColor, fontWeight: 700, fontSize: 13 }}>{score.setupLabel}</span>
-          </div>
-          <div className="score-bar-wrap">
-            <div className="score-bar-fill" style={{ width: `${score.percentage}%`, background: scoreColor }} />
-          </div>
-        </div>
-      )}
-
       {/* Score Hero */}
-      <div className="card" style={{ textAlign: 'center', marginBottom: 20 }}>
-        <div className="score-number" style={{ background: `linear-gradient(135deg, ${score.setupColor} 0%, #00ccff 100%)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-          {score.percentage}%
-        </div>
-        {score.checkedCount > 0 && (
-          <div className="score-label mt-2" style={{ color: scoreColor }}>{score.setupLabel}</div>
-        )}
+      <div className="card score-hero">
+        <div className="score-number" style={{ color: scoreColor }}>{score.percentage}%</div>
+        {score.checkedCount > 0 && <div className="score-label" style={{ color: scoreColor }}>{score.setupLabel}</div>}
         {score.checkedCount > 0 && score.hasMissingRequired && (
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
-            <div className="missing-required">⚠ Conditii obligatorii lipsa</div>
-          </div>
+          <div><div className="missing-required">⚠ Missing required conditions</div></div>
         )}
-        <div className="score-bar-wrap" style={{ marginTop: 20 }}>
+        <div className="score-bar-wrap">
           <div className="score-bar-fill" style={{ width: `${score.percentage}%`, background: scoreColor }} />
         </div>
-        <div className="bonus-bar-wrap" style={{ marginTop: 12 }}>
+        <div className="bonus-row">
           <span className="bonus-label">Bonus</span>
           <div className="bonus-track"><div className="bonus-fill" style={{ width: `${score.bonusPercentage}%` }} /></div>
           <span className="bonus-pct">{score.bonusPercentage}%</span>
         </div>
-        <p className="text-muted text-sm mt-3">{score.checkedCount} conditii bifate</p>
+        <p className="score-meta">{score.checkedCount} conditions checked</p>
         <button className="btn btn-secondary btn-sm mt-3" onClick={() => setChecked({})}>Clear all</button>
       </div>
 
@@ -279,7 +270,10 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
       <div className="checklist-grid">
         {SECTIONS.map(section => (
           <div className="section-card" key={section.title}>
-            <div className="section-header">{section.title}</div>
+            <div className="section-header">
+              <span className="section-name">{section.title}</span>
+              <span className="section-progress">{sectionProgress(section)}</span>
+            </div>
             <div className="section-items">
               {section.items.map(item => {
                 const id = `${section.title}-${item.name}`;
@@ -291,8 +285,8 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
                       <Icon.Check />
                     </div>
                     <span className="check-name">{item.name}</span>
-                    {item.isRequired && <span className="required-badge">Required</span>}
-                    {item.isBonus && !item.isRequired && <span className="bonus-badge">Bonus</span>}
+                    {item.isRequired && <span className="tag tag-required">Required</span>}
+                    {item.isBonus && !item.isRequired && <span className="tag tag-bonus">Bonus</span>}
                   </label>
                 );
               })}
@@ -302,14 +296,14 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
 
         {/* Save Trade */}
         <div className="card">
-          <div className="card-title">Salveaza trade</div>
+          <div className="card-title">{mode === 'backtest' ? 'Save backtest' : 'Save trade'}</div>
           <div className="flex flex-col gap-3">
             <div className="form-group">
               <label className="form-label">Pair</label>
-              <input className="form-input" placeholder="ex: EURUSD" value={pair} onChange={e => setPair(e.target.value)} />
+              <input className="form-input" placeholder="e.g. EURUSD" value={pair} onChange={e => setPair(e.target.value)} />
             </div>
             <div className="form-group">
-              <label className="form-label">Directie</label>
+              <label className="form-label">Direction</label>
               <div className="dir-btns">
                 <button className={`dir-btn ${tradeDirection === 'Long' ? 'active-long' : ''}`} onClick={() => setTradeDirection('Long')}>📈 Long</button>
                 <button className={`dir-btn ${tradeDirection === 'Short' ? 'active-short' : ''}`} onClick={() => setTradeDirection('Short')}>📉 Short</button>
@@ -317,18 +311,18 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
             </div>
             <div className="form-row">
               <div className="form-group">
-                <label className="form-label">Data</label>
+                <label className="form-label">Date</label>
                 <input className="form-input" type="date" value={tradeDate} onChange={e => setTradeDate(e.target.value)} />
               </div>
               {mode === 'backtest' && (
                 <div className="form-group">
-                  <label className="form-label">Risk:Reward</label>
-                  <input className="form-input" placeholder="ex: 2.5" value={riskReward} onChange={e => setRiskReward(e.target.value)} />
+                  <label className="form-label">Risk : Reward</label>
+                  <input className="form-input" placeholder="e.g. 2.5" value={riskReward} onChange={e => setRiskReward(e.target.value)} />
                 </div>
               )}
             </div>
             <button className="btn btn-primary btn-lg btn-full mt-2" onClick={saveTrade}>
-              {mode === 'backtest' ? '🔬 Salveaza Backtest' : '💾 Salveaza Trade'}
+              {mode === 'backtest' ? 'Save backtest' : 'Save trade'}
             </button>
           </div>
         </div>
@@ -363,14 +357,15 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
   const scoreColor = score.setupColor;
 
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}>
       <div className="modal">
         <div className="modal-header">
-          <h2 className="modal-title">Trade Details — {trade.pair}</h2>
+          <h2 className="modal-title">Trade details</h2>
           <div className="flex gap-2">
-            <button className="btn btn-danger btn-icon" onClick={() => onDelete(trade.id)}><Icon.Trash /></button>
-            <button className="btn btn-secondary btn-icon" onClick={() => setEditing(!editing)} style={editing ? { borderColor: 'var(--accent)', color: 'var(--accent)' } : {}}><Icon.Edit /></button>
-            <button className="btn btn-ghost btn-icon" onClick={handleClose}><Icon.Close /></button>
+            <button className="btn btn-danger btn-icon" onClick={() => onDelete(trade.id)} title="Delete"><Icon.Trash /></button>
+            <button className="btn btn-secondary btn-icon" onClick={() => setEditing(!editing)} title="Edit"
+              style={editing ? { borderColor: 'var(--accent)', color: 'var(--accent)' } : {}}><Icon.Edit /></button>
+            <button className="btn btn-ghost btn-icon" onClick={handleClose} title="Close"><Icon.Close /></button>
           </div>
         </div>
 
@@ -381,26 +376,25 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
           </span>
           {editing ? (
             <select value={localTrade.tradeResult} onChange={e => setLocalTrade(p => ({ ...p, tradeResult: e.target.value }))}
-              className="form-input" style={{ padding: '6px 12px', width: 'auto' }}>
+              className="form-input" style={{ padding: '7px 12px', width: 'auto' }}>
               {['On going', 'Win', 'Loss', 'Breakeven'].map(r => <option key={r}>{r}</option>)}
             </select>
           ) : (
             <ResultBadge result={localTrade.tradeResult} />
           )}
           <span className="text-muted text-sm">{localTrade.tradeDate}</span>
+          {localTrade.riskReward && <span className="text-purple text-sm font-bold">R:R {localTrade.riskReward}</span>}
         </div>
 
-        {/* Score bars */}
         <div style={{ marginBottom: 20 }}>
-          <StatBar label="Setup Score" value={score.percentage} color={scoreColor} />
-          <div className="bonus-bar-wrap">
+          <StatBar label="Setup score" value={score.percentage} color={scoreColor} />
+          <div className="bonus-row" style={{ margin: '12px 0 0' }}>
             <span className="bonus-label">Bonus</span>
             <div className="bonus-track"><div className="bonus-fill" style={{ width: `${score.bonusPercentage}%` }} /></div>
             <span className="bonus-pct">{score.bonusPercentage}%</span>
           </div>
         </div>
 
-        {/* Checklist items */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
           {SECTIONS.map(section => (
             <div key={section.title}>
@@ -412,7 +406,7 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
                   return (
                     <label key={id}
                       className={`check-item ${isChecked ? (item.isBonus ? 'checked-bonus' : 'checked') : ''}`}
-                      style={{ cursor: editing ? 'pointer' : 'default', opacity: editing ? 1 : 0.8 }}
+                      style={{ cursor: editing ? 'pointer' : 'default', opacity: editing ? 1 : 0.85 }}
                       onClick={() => editing && toggleItem(id, !isChecked)}>
                       <div className={`check-box ${isChecked ? (item.isBonus ? 'checked-bonus' : 'checked') : ''}`}>
                         <Icon.Check />
@@ -429,28 +423,26 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
         <div className="divider" />
 
         <div className="form-group mb-4">
-          <label className="form-label">Note</label>
+          <label className="form-label">Notes</label>
           <textarea className="form-input" rows={4} disabled={!editing}
             style={{ resize: 'vertical', opacity: editing ? 1 : 0.7 }}
             value={localTrade.note || ''}
             onChange={e => setLocalTrade(p => ({ ...p, note: e.target.value }))}
-            placeholder="Note despre acest trade..." />
+            placeholder="Add notes about this trade..." />
         </div>
 
-        {editing && (
-          <button className="btn btn-primary btn-lg btn-full" onClick={handleSave}>Salveaza modificarile</button>
-        )}
+        {editing && <button className="btn btn-primary btn-lg btn-full" onClick={handleSave}>Save changes</button>}
       </div>
 
       {showUnsaved && (
         <div className="modal-overlay" style={{ zIndex: 300 }}>
           <div className="modal modal-sm">
-            <h3 style={{ marginBottom: 10 }}>Modificari nesalvate</h3>
-            <p className="text-secondary text-sm" style={{ marginBottom: 24 }}>Vrei sa salvezi inainte de a inchide?</p>
-            <div className="flex gap-3" style={{ justifyContent: 'center' }}>
-              <button className="btn btn-primary" onClick={async () => { await handleSave(); setShowUnsaved(false); onClose(); }}>Salveaza</button>
-              <button className="btn btn-danger" onClick={() => { setShowUnsaved(false); onClose(); }}>Renunta</button>
-              <button className="btn btn-secondary" onClick={() => setShowUnsaved(false)}>Anuleaza</button>
+            <h3 style={{ marginBottom: 10 }}>Unsaved changes</h3>
+            <p className="text-secondary text-sm" style={{ marginBottom: 24 }}>Do you want to save before closing?</p>
+            <div className="flex gap-3" style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button className="btn btn-primary" onClick={async () => { await handleSave(); setShowUnsaved(false); onClose(); }}>Save</button>
+              <button className="btn btn-danger" onClick={() => { setShowUnsaved(false); onClose(); }}>Discard</button>
+              <button className="btn btn-secondary" onClick={() => setShowUnsaved(false)}>Cancel</button>
             </div>
           </div>
         </div>
@@ -481,9 +473,10 @@ function HistoryPage({ trades, setSavedTrades, mode }) {
   return (
     <>
       {filtered.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-          <p className="text-muted" style={{ fontSize: 14 }}>Niciun trade salvat inca.</p>
-          <p className="text-muted text-sm mt-2">Completeaza checklist-ul si salveaza primul trade.</p>
+        <div className="card empty-state">
+          <Icon.Inbox />
+          <p>No trades saved yet</p>
+          <p className="sub">Complete the checklist and save your first trade.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
@@ -493,18 +486,15 @@ function HistoryPage({ trades, setSavedTrades, mode }) {
                 <div className="trade-pair">{trade.pair}</div>
                 <div className="trade-date">{trade.tradeDate}</div>
               </div>
-              <span style={{ color: trade.tradeDirection === 'Long' ? 'var(--accent)' : 'var(--red)', fontWeight: 700, fontSize: 12 }}>
+              <span className="trade-dir" style={{ color: trade.tradeDirection === 'Long' ? 'var(--accent)' : 'var(--red)' }}>
                 {trade.tradeDirection === 'Long' ? '📈' : '📉'} {trade.tradeDirection}
               </span>
               <ResultBadge result={trade.tradeResult} />
               <span style={{ fontSize: 13, fontWeight: 700, color: parseInt(trade.percentage) >= 80 ? 'var(--accent)' : parseInt(trade.percentage) >= 60 ? 'var(--yellow)' : 'var(--red)' }}>
                 {trade.percentage}%
               </span>
-              {mode === 'backtest' && trade.riskReward && (
-                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>RR: {trade.riskReward}</span>
-              )}
               <div className="flex gap-2">
-                <button className="btn btn-danger btn-icon btn-sm" onClick={() => setDeleteId(trade.id)}><Icon.Trash /></button>
+                <button className="btn btn-danger btn-icon btn-sm" onClick={() => setDeleteId(trade.id)} title="Delete"><Icon.Trash /></button>
                 <button className="btn btn-secondary btn-sm" onClick={() => setOpenedId(trade.id)}><Icon.Eye /> View</button>
               </div>
             </div>
@@ -515,11 +505,11 @@ function HistoryPage({ trades, setSavedTrades, mode }) {
       {openedTrade && (
         <TradeDetailModal trade={openedTrade} onClose={() => setOpenedId(null)}
           onDelete={(id) => { setDeleteId(id); setOpenedId(null); }}
-          onSave={async (u) => { await handleSave(u); setSavedTrades(prev => prev.map(t => t.id === u.id ? u : t)); }} />
+          onSave={handleSave} />
       )}
 
       {deleteId && (
-        <ConfirmModal title="Sterge trade" message="Esti sigur ca vrei sa stergi acest trade? Actiunea este ireversibila."
+        <ConfirmModal title="Delete trade" message="Are you sure you want to delete this trade? This action cannot be undone."
           onConfirm={() => handleDelete(deleteId)} onCancel={() => setDeleteId(null)} />
       )}
     </>
@@ -542,78 +532,65 @@ function DashboardPage({ trades, mode }) {
 
   const s = useMemo(() => calcStats(filtered), [filtered]);
 
-  const accent = mode === 'backtest' ? 'var(--purple)' : 'var(--accent)';
+  // KPI cards — NO loss rate, NO breakeven (per request)
+  const kpis = [
+    { label: 'Total trades', value: s.total, accent: 'var(--text-primary)', sub: 'closed' },
+    { label: 'Win rate', value: `${s.winRate}%`, accent: 'var(--accent)', sub: `${s.wins} wins` },
+    { label: 'On going', value: s.ongoing, accent: 'var(--blue)', sub: 'open trades' },
+    { label: 'Avg score', value: `${s.avgScore}%`, accent: s.avgScore >= 80 ? 'var(--accent)' : s.avgScore >= 60 ? 'var(--yellow)' : 'var(--red)', sub: 'setup quality' },
+    ...(mode === 'backtest' ? [{ label: 'Avg R:R', value: s.avgRR, accent: 'var(--purple)', sub: 'risk:reward' }] : []),
+  ];
 
   return (
     <>
       {/* Filters */}
-      <div className="flex gap-3 mb-4" style={{ flexWrap: 'wrap' }}>
-        <div className="filter-bar" style={{ marginBottom: 0 }}>
-          {[['all', 'Tot timpul'], ['30', '30 zile'], ['7', '7 zile']].map(([v, l]) => (
+      <div className="flex flex-col gap-3 mb-4">
+        <div className="filter-bar">
+          {PERIOD_OPTIONS.map(([v, l]) => (
             <button key={v} className={`filter-chip ${period === v ? 'active' : ''}`} onClick={() => setPeriod(v)}>{l}</button>
           ))}
         </div>
-        <div className="filter-bar" style={{ marginBottom: 0 }}>
-          <button className={`filter-chip ${pairFilter === 'all' ? 'active' : ''}`} onClick={() => setPairFilter('all')}>Toate pair-urile</button>
-          {pairs.map(p => (
-            <button key={p} className={`filter-chip ${pairFilter === p ? 'active' : ''}`} onClick={() => setPairFilter(p)}>{p}</button>
-          ))}
-        </div>
+        {pairs.length > 0 && (
+          <div className="filter-bar">
+            <button className={`filter-chip ${pairFilter === 'all' ? 'active' : ''}`} onClick={() => setPairFilter('all')}>All pairs</button>
+            {pairs.map(p => (
+              <button key={p} className={`filter-chip ${pairFilter === p ? 'active' : ''}`} onClick={() => setPairFilter(p)}>{p}</button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* KPI Row */}
       <div className="kpi-grid mb-4">
-        {[
-          { label: 'Total trades', value: s.total, color: 'var(--text-primary)', sub: 'closed' },
-          { label: 'Win Rate', value: `${s.winRate}%`, color: 'var(--accent)', sub: `${s.wins} wins` },
-          { label: 'Loss Rate', value: `${s.lossRate}%`, color: 'var(--red)', sub: `${s.losses} losses` },
-          { label: 'Breakeven', value: s.be, color: 'var(--yellow)', sub: `${s.beRate}%` },
-          { label: 'On Going', value: s.ongoing, color: 'var(--blue)', sub: 'in desfasurare' },
-          { label: 'Avg Score', value: `${s.avgScore}%`, color: s.avgScore >= 80 ? 'var(--accent)' : s.avgScore >= 60 ? 'var(--yellow)' : 'var(--red)', sub: 'setup quality' },
-          ...(mode === 'backtest' ? [{ label: 'Avg R:R', value: s.avgRR, color: 'var(--purple)', sub: 'risk:reward' }] : []),
-        ].map(k => (
-          <div className="kpi-card" key={k.label}>
+        {kpis.map(k => (
+          <div className="kpi-card" key={k.label} style={{ '--kpi-accent': k.accent }}>
             <div className="kpi-label">{k.label}</div>
-            <div className="kpi-value" style={{ color: k.color }}>{k.value}</div>
+            <div className="kpi-value" style={{ color: k.accent }}>{k.value}</div>
             <div className="kpi-sub">{k.sub}</div>
           </div>
         ))}
       </div>
 
-      {/* Charts Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-        {/* Direction */}
+      {/* Win rate per setup score — MOVED UP, right under KPIs */}
+      <div className="card mb-4">
+        <div className="card-title">Win rate per setup score</div>
+        <StatBar label="Weak (<60%)" value={s.wrWeak} color="var(--red)" sub={`${s.weakCount} trades`} />
+        <StatBar label="Good (60–79%)" value={s.wrGood} color="var(--yellow)" sub={`${s.goodCount} trades`} />
+        <StatBar label="Strong (≥80%)" value={s.wrStrong} color="var(--accent)" sub={`${s.strongCount} trades`} />
+      </div>
+
+      {/* Other charts */}
+      <div className="charts-grid">
         <div className="card">
-          <div className="card-title">Directie — Long vs Short</div>
-          <StatBar label="📈 Long" value={s.longPct} color="var(--accent)" sub={`${filtered.filter(t=>t.tradeDirection==='Long').length} trades`} />
-          <StatBar label="📉 Short" value={s.shortPct} color="var(--red)" sub={`${filtered.filter(t=>t.tradeDirection==='Short').length} trades`} />
+          <div className="card-title">Direction — Long vs Short</div>
+          <StatBar label="📈 Long" value={s.longPct} color="var(--accent)" sub={`${s.longCount} trades`} />
+          <StatBar label="📉 Short" value={s.shortPct} color="var(--red)" sub={`${s.shortCount} trades`} />
         </div>
 
-        {/* Win rate direction */}
         <div className="card">
-          <div className="card-title">Win Rate: Long vs Short</div>
+          <div className="card-title">Win rate — Long vs Short</div>
           <StatBar label="📈 Long win rate" value={s.wrLong} color="var(--accent)" />
           <StatBar label="📉 Short win rate" value={s.wrShort} color="var(--red)" />
-        </div>
-
-        {/* Win rate per score */}
-        <div className="card">
-          <div className="card-title">Win Rate per Setup Score</div>
-          <StatBar label={`Weak <60%`} value={s.wrWeak} color="var(--red)" sub={`${s.weakCount} trades`} />
-          <StatBar label={`Good 60–79%`} value={s.wrGood} color="var(--yellow)" sub={`${s.goodCount} trades`} />
-          <StatBar label={`Strong ≥80%`} value={s.wrStrong} color="var(--accent)" sub={`${s.strongCount} trades`} />
-        </div>
-
-        {/* Results distribution */}
-        <div className="card">
-          <div className="card-title">Distributie rezultate</div>
-          {[
-            ['Win', s.winRate, 'var(--accent)', s.wins],
-            ['Loss', s.lossRate, 'var(--red)', s.losses],
-            ['Breakeven', s.beRate, 'var(--yellow)', s.be],
-          ].map(([l, v, c, n]) => (
-            <StatBar key={l} label={l} value={v} color={c} sub={`${n} trades`} />
-          ))}
         </div>
       </div>
     </>
@@ -625,8 +602,8 @@ function AICoachPage({ user }) {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: 'Salut! Sunt AI-ul tau de trading. Poți sa îmi explici strategia ta de Forex — cum identifici trend-ul, S/R, entry-urile. Cu cat imi explici mai mult, cu atat voi fi mai precis in semnale.',
-      time: new Date().toLocaleTimeString('ro', { hour: '2-digit', minute: '2-digit' }),
+      content: "Hi! I'm your AI trading coach. Tell me about your Forex strategy — how you identify trend, support/resistance, and entries. The more you explain, the more accurate my signals will be.",
+      time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
     }
   ]);
   const [input, setInput] = useState('');
@@ -643,12 +620,12 @@ function AICoachPage({ user }) {
 
   const getStrategyContext = () => {
     const userMsgs = messages.filter(m => m.role === 'user').map(m => m.content).join('\n');
-    return userMsgs || 'Strategia nu a fost definita inca.';
+    return userMsgs || 'Strategy not defined yet.';
   };
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
-    const userMsg = { role: 'user', content: input.trim(), time: new Date().toLocaleTimeString('ro', { hour: '2-digit', minute: '2-digit' }) };
+    const userMsg = { role: 'user', content: input.trim(), time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setLoading(true);
@@ -659,21 +636,21 @@ function AICoachPage({ user }) {
         .filter(m => m.role === 'user' || m.role === 'assistant')
         .map(m => ({ role: m.role, content: m.content }));
 
-      const systemPrompt = `Esti un trading coach expert in Forex. Asculti strategia utilizatorului, pui intrebari pertinente pentru a intelege mai bine abordarea sa, si memorezi totul pentru a putea genera semnale precise. Esti concis, profesionist si vorbesti in romana.`;
+      const systemPrompt = `You are an expert Forex trading coach. You listen to the user's strategy, ask relevant questions to understand their approach better, and memorize everything so you can generate precise signals. Be concise and professional.`;
       const result = await aiChat({ messages: apiMessages, systemPrompt });
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: result.data.reply,
-        time: new Date().toLocaleTimeString('ro', { hour: '2-digit', minute: '2-digit' }),
+        time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
       }]);
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', content: '❌ Eroare: ' + err.message, time: '' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: '⚠ Error: ' + err.message, time: '' }]);
     }
     setLoading(false);
   };
 
   const generateSignal = async () => {
-    if (!signalPair) { alert('Introdu pair-ul.'); return; }
+    if (!signalPair) { alert('Enter a pair.'); return; }
     setSignalLoading(true); setSignal(null);
     try {
       const gen = httpsCallable(functions, 'generateSignal');
@@ -685,7 +662,7 @@ function AICoachPage({ user }) {
       });
       setSignal(result.data);
     } catch (err) {
-      alert('Eroare la generarea semnalului: ' + err.message);
+      alert('Signal generation error: ' + err.message);
     }
     setSignalLoading(false);
   };
@@ -694,12 +671,11 @@ function AICoachPage({ user }) {
 
   return (
     <div className="chat-layout">
-      {/* Chat area */}
       <div className="chat-area">
         <div className="chat-messages">
           {messages.map((msg, i) => (
             <div key={i} className={`msg msg-${msg.role === 'user' ? 'user' : 'ai'}`}>
-              <div className="msg-avatar">{msg.role === 'user' ? 'TU' : 'AI'}</div>
+              <div className="msg-avatar">{msg.role === 'user' ? 'You' : 'AI'}</div>
               <div>
                 <div className="msg-bubble">{msg.content}</div>
                 {msg.time && <div className="msg-time">{msg.time}</div>}
@@ -709,7 +685,7 @@ function AICoachPage({ user }) {
           {loading && (
             <div className="msg msg-ai">
               <div className="msg-avatar">AI</div>
-              <div className="msg-bubble">
+              <div className="msg-bubble" style={{ color: 'var(--accent)' }}>
                 <div className="loading-dots"><span /><span /><span /></div>
               </div>
             </div>
@@ -718,32 +694,29 @@ function AICoachPage({ user }) {
         </div>
         <div className="chat-input-area">
           <textarea className="chat-input" rows={2}
-            placeholder="Explica-mi strategia ta... (ex: caut exhaustion pe weekly la S/R, confirm pe daily cu LH/HL...)"
+            placeholder="Explain your strategy... (e.g. I look for exhaustion on weekly at S/R, confirm on daily with LH/HL...)"
             value={input} onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }} />
-          <button className="btn btn-primary" onClick={sendMessage} disabled={loading}>
-            <Icon.Send />
-          </button>
+          <button className="btn btn-primary" onClick={sendMessage} disabled={loading}><Icon.Send /></button>
         </div>
       </div>
 
-      {/* Signal panel */}
       <div className="signal-panel">
-        <div className="signal-panel-header">⚡ Genereaza semnal</div>
+        <div className="signal-panel-header"><Icon.Bolt /> Generate signal</div>
         <div className="signal-panel-body">
           <div className="signal-form">
             <div className="form-group">
               <label className="form-label">Pair</label>
-              <input className="form-input" placeholder="ex: EURUSD" value={signalPair} onChange={e => setSignalPair(e.target.value)} />
+              <input className="form-input" placeholder="e.g. EURUSD" value={signalPair} onChange={e => setSignalPair(e.target.value)} />
             </div>
             <div className="form-group">
-              <label className="form-label">Timeframe principal</label>
+              <label className="form-label">Main timeframe</label>
               <select className="form-input" value={signalTF} onChange={e => setSignalTF(e.target.value)}>
                 {['W1', 'D1', 'H4', 'H2', 'H1', 'M30', 'M15'].map(tf => <option key={tf}>{tf}</option>)}
               </select>
             </div>
             <button className="btn btn-primary btn-full" onClick={generateSignal} disabled={signalLoading}>
-              {signalLoading ? <><div className="loading-dots"><span /><span /><span /></div></> : '⚡ Analizeaza setup'}
+              {signalLoading ? <span style={{ color: '#060b16' }}><div className="loading-dots"><span /><span /><span /></div></span> : <><Icon.Bolt /> Analyze setup</>}
             </button>
           </div>
 
@@ -756,62 +729,33 @@ function AICoachPage({ user }) {
                 </span>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
-                <div className="score-bar-wrap" style={{ flex: 1, marginTop: 0 }}>
-                  <div className="score-bar-fill" style={{ width: `${signal.score}%`, background: signalScoreColor }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div className="stat-track" style={{ flex: 1 }}>
+                  <div className="stat-fill" style={{ width: `${signal.score}%`, background: signalScoreColor }} />
                 </div>
                 <span style={{ color: signalScoreColor, fontWeight: 700, fontSize: 13 }}>{signal.score}%</span>
               </div>
 
-              <div className="signal-levels mt-3">
-                <div className="level-row">
-                  <span className="level-label">Entry</span>
-                  <span className="level-value" style={{ color: 'var(--accent)' }}>{signal.entry}</span>
-                </div>
-                <div className="level-row">
-                  <span className="level-label">Stop Loss</span>
-                  <span className="level-value" style={{ color: 'var(--red)' }}>{signal.stopLoss}</span>
-                </div>
-                <div className="level-row">
-                  <span className="level-label">Take Profit</span>
-                  <span className="level-value" style={{ color: 'var(--blue)' }}>{signal.takeProfit}</span>
-                </div>
-                <div className="level-row">
-                  <span className="level-label">R:R</span>
-                  <span className="level-value" style={{ color: 'var(--purple)' }}>{signal.riskReward}</span>
-                </div>
+              <div className="signal-levels">
+                <div className="level-row"><span className="level-label">Entry</span><span className="level-value" style={{ color: 'var(--accent)' }}>{signal.entry}</span></div>
+                <div className="level-row"><span className="level-label">Stop loss</span><span className="level-value" style={{ color: 'var(--red)' }}>{signal.stopLoss}</span></div>
+                <div className="level-row"><span className="level-label">Take profit</span><span className="level-value" style={{ color: 'var(--blue)' }}>{signal.takeProfit}</span></div>
+                <div className="level-row"><span className="level-label">R : R</span><span className="level-value" style={{ color: 'var(--purple)' }}>{signal.riskReward}</span></div>
               </div>
 
               {signal.confluences?.length > 0 && (
-                <div className="mt-3">
-                  <div className="form-label mb-2">Confluente</div>
+                <div>
+                  <div className="form-label mb-2">Confluences</div>
                   <div className="signal-confluences">
                     {signal.confluences.map((c, i) => <span key={i} className="confluence-tag">{c}</span>)}
                   </div>
                 </div>
               )}
 
-              <div className="mt-3">
-                <div className="form-label mb-2">Analiza AI</div>
+              <div>
+                <div className="form-label mb-2">AI analysis</div>
                 <p className="signal-reasoning">{signal.reasoning}</p>
               </div>
-
-              {signal.checkedItems?.length > 0 && (
-                <div className="mt-3">
-                  <div className="form-label mb-2">Checklist completat automat</div>
-                  <div className="flex flex-col gap-2">
-                    {ALL_ITEMS.slice(0, 6).map(item => {
-                      const isChecked = signal.checkedItems.includes(item.id);
-                      return (
-                        <div key={item.id} className={`check-item ${isChecked ? 'checked' : ''}`} style={{ cursor: 'default', padding: '8px 12px' }}>
-                          <div className={`check-box ${isChecked ? 'checked' : ''}`}><Icon.Check /></div>
-                          <span className="check-name" style={{ fontSize: 11 }}>{item.section} — {item.label}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -830,7 +774,7 @@ function AuthPage() {
   const [rememberMe, setRememberMe] = useState(true);
 
   const register = async () => {
-    if (password !== confirmPassword) { alert('Parolele nu coincid.'); return; }
+    if (password !== confirmPassword) { alert('Passwords do not match.'); return; }
     try { await createUserWithEmailAndPassword(auth, email, password); }
     catch (e) { alert(e.message); }
   };
@@ -851,25 +795,24 @@ function AuthPage() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-logo">
-          <div className="auth-logo-text">MyEdge</div>
+          <div className="auth-logo-icon">M</div>
+          <div className="auth-logo-text">My<span>Edge</span></div>
           <div className="auth-logo-sub">Trading Intelligence Platform</div>
         </div>
 
         <div className="auth-field">
           <input className="auth-input" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
         </div>
-        <div className="auth-field" style={{ position: 'relative' }}>
-          <input className="auth-input" type={showPw ? 'text' : 'password'} placeholder="Parola" value={password} onChange={e => setPassword(e.target.value)} style={{ paddingRight: 44 }} />
-          <button type="button" onClick={() => setShowPw(!showPw)}
-            style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex' }}>
+        <div className="auth-field">
+          <input className="auth-input" type={showPw ? 'text' : 'password'} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} style={{ paddingRight: 44 }} />
+          <button type="button" className="auth-pw-toggle" onClick={() => setShowPw(!showPw)}>
             {showPw ? <Icon.EyeOff /> : <Icon.Eye />}
           </button>
         </div>
 
         {isRegister && (
           <div className="auth-field">
-            <input className="auth-input"
-              type="password" placeholder="Confirma parola" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
+            <input className="auth-input" type="password" placeholder="Confirm password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
               style={{ borderColor: confirmPassword ? (confirmPassword === password ? 'var(--accent)' : 'var(--red)') : undefined }} />
           </div>
         )}
@@ -882,22 +825,19 @@ function AuthPage() {
         )}
 
         <button className="btn btn-primary btn-lg btn-full" onClick={isRegister ? register : login}>
-          {isRegister ? 'Creeaza cont' : 'Login'}
+          {isRegister ? 'Create account' : 'Log in'}
         </button>
 
-        <div className="auth-divider">sau</div>
+        <div className="auth-divider">or</div>
 
         <button className="btn-google" onClick={loginGoogle}>
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: 18, height: 18 }} />
-          Continua cu Google
+          Continue with Google
         </button>
 
         <div className="auth-switch">
-          {isRegister ? (
-            <>Ai deja cont? <a onClick={() => setIsRegister(false)}>Login</a></>
-          ) : (
-            <>Nu ai cont? <a onClick={() => setIsRegister(true)}>Creeaza unul</a></>
-          )}
+          {isRegister ? (<>Already have an account? <a onClick={() => setIsRegister(false)}>Log in</a></>)
+            : (<>Don't have an account? <a onClick={() => setIsRegister(true)}>Create one</a></>)}
         </div>
       </div>
     </div>
@@ -919,9 +859,7 @@ export default function App() {
     return unsub;
   }, []);
 
-  useEffect(() => {
-    if (user) loadTrades();
-  }, [user]);
+  useEffect(() => { if (user) loadTrades(); }, [user]);
 
   const loadTrades = async () => {
     const q = query(collection(db, 'trades'), where('userId', '==', user.uid));
@@ -932,7 +870,7 @@ export default function App() {
   };
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', fontWeight: 700, fontSize: 18 }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', fontWeight: 800, fontSize: 22, letterSpacing: '-0.5px' }}>
       MyEdge
     </div>
   );
@@ -940,7 +878,7 @@ export default function App() {
   if (!user) return <AuthPage />;
 
   const nav = [
-    { group: 'Trading Live', items: [
+    { group: 'Live Trading', items: [
       { id: 'checklist-live', label: 'Checklist', icon: <Icon.Checklist /> },
       { id: 'history-live', label: 'History', icon: <Icon.History /> },
       { id: 'dashboard-live', label: 'Dashboard', icon: <Icon.Dashboard /> },
@@ -950,19 +888,19 @@ export default function App() {
       { id: 'history-backtest', label: 'History', icon: <Icon.History /> },
       { id: 'dashboard-backtest', label: 'Dashboard', icon: <Icon.Dashboard /> },
     ]},
-    { group: 'AI Coach', items: [
+    { group: 'AI', items: [
       { id: 'ai', label: 'AI Coach', icon: <Icon.AI /> },
     ]},
   ];
 
   const pageTitles = {
-    'checklist-live': { title: 'Checklist', sub: 'Live Trading' },
-    'history-live': { title: 'Trade History', sub: 'Live Trading' },
-    'dashboard-live': { title: 'Dashboard', sub: 'Live Trading' },
+    'checklist-live': { title: 'Checklist', sub: 'Live' },
+    'history-live': { title: 'History', sub: 'Live' },
+    'dashboard-live': { title: 'Dashboard', sub: 'Live' },
     'checklist-backtest': { title: 'Checklist', sub: 'Backtest' },
-    'history-backtest': { title: 'Trade History', sub: 'Backtest' },
+    'history-backtest': { title: 'History', sub: 'Backtest' },
     'dashboard-backtest': { title: 'Dashboard', sub: 'Backtest' },
-    'ai': { title: 'AI Coach', sub: 'Antrenament & Semnale' },
+    'ai': { title: 'AI Coach', sub: 'Training & Signals' },
   };
 
   const { title, sub } = pageTitles[activePage] || {};
@@ -970,21 +908,16 @@ export default function App() {
 
   return (
     <div className="app-layout">
-      {/* Sidebar overlay (mobile) */}
       {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
 
-      {/* Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-logo">
-          <div className="logo-mark">MyEdge</div>
-          <div className="logo-sub">Trading Intelligence</div>
+          <div className="logo-icon">M</div>
+          <div className="logo-text">My<span>Edge</span></div>
         </div>
 
         <div className="sidebar-user">
-          {user.photoURL
-            ? <img src={user.photoURL} alt="" className="user-avatar" />
-            : <div className="user-avatar-placeholder">{initials}</div>
-          }
+          {user.photoURL ? <img src={user.photoURL} alt="" className="user-avatar" /> : <div className="user-avatar-placeholder">{initials}</div>}
           <div>
             <div className="user-name">{user.displayName || 'Trader'}</div>
             <div className="user-email">{user.email}</div>
@@ -1006,13 +939,10 @@ export default function App() {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="btn-logout" onClick={() => signOut(auth)}>
-            <Icon.Logout /> Logout
-          </button>
+          <button className="btn-logout" onClick={() => signOut(auth)}><Icon.Logout /> Log out</button>
         </div>
       </aside>
 
-      {/* Main */}
       <main className="main-content">
         <div className="topbar">
           <button className="topbar-menu-btn" onClick={() => setSidebarOpen(true)}><Icon.Menu /></button>
@@ -1023,26 +953,12 @@ export default function App() {
         </div>
 
         <div className="page-body">
-          {activePage === 'checklist-live' && (
-            <ChecklistPage checked={liveChecked} setChecked={setLiveChecked}
-              savedTrades={savedTrades} setSavedTrades={setSavedTrades} user={user} mode="live" />
-          )}
-          {activePage === 'checklist-backtest' && (
-            <ChecklistPage checked={backtestChecked} setChecked={setBacktestChecked}
-              savedTrades={savedTrades} setSavedTrades={setSavedTrades} user={user} mode="backtest" />
-          )}
-          {activePage === 'history-live' && (
-            <HistoryPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="live" />
-          )}
-          {activePage === 'history-backtest' && (
-            <HistoryPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />
-          )}
-          {activePage === 'dashboard-live' && (
-            <DashboardPage trades={savedTrades} mode="live" />
-          )}
-          {activePage === 'dashboard-backtest' && (
-            <DashboardPage trades={savedTrades} mode="backtest" />
-          )}
+          {activePage === 'checklist-live' && <ChecklistPage checked={liveChecked} setChecked={setLiveChecked} savedTrades={savedTrades} setSavedTrades={setSavedTrades} user={user} mode="live" />}
+          {activePage === 'checklist-backtest' && <ChecklistPage checked={backtestChecked} setChecked={setBacktestChecked} savedTrades={savedTrades} setSavedTrades={setSavedTrades} user={user} mode="backtest" />}
+          {activePage === 'history-live' && <HistoryPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="live" />}
+          {activePage === 'history-backtest' && <HistoryPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />}
+          {activePage === 'dashboard-live' && <DashboardPage trades={savedTrades} mode="live" />}
+          {activePage === 'dashboard-backtest' && <DashboardPage trades={savedTrades} mode="backtest" />}
           {activePage === 'ai' && <AICoachPage user={user} />}
         </div>
       </main>
