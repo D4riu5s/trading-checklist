@@ -177,7 +177,7 @@ function StatBar({ label, value, color, sub }) {
     <div className="stat-bar-row">
       <div className="stat-bar-header">
         <span style={{ color: 'var(--text-secondary)' }}>{label}</span>
-        <span style={{ color, fontWeight: 700 }}>{value}% {sub && <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>({sub})</span>}</span>
+        <span style={{ color, fontWeight: 600 }}>{value}% {sub && <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>({sub})</span>}</span>
       </div>
       <div className="stat-track">
         <div className="stat-fill" style={{ width: `${value}%`, background: color }} />
@@ -390,8 +390,8 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
         </div>
 
         <div className="flex gap-3 items-center mb-4" style={{ flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 22, fontWeight: 800 }}>{localTrade.pair}</span>
-          <span style={{ color: localTrade.tradeDirection === 'Long' ? 'var(--accent)' : 'var(--red)', fontWeight: 700 }}>
+          <span style={{ fontSize: 22, fontWeight: 600 }}>{localTrade.pair}</span>
+          <span style={{ color: localTrade.tradeDirection === 'Long' ? 'var(--accent)' : 'var(--red)', fontWeight: 600 }}>
             {localTrade.tradeDirection === 'Long' ? '📈 Long' : '📉 Short'}
           </span>
           {editing ? (
@@ -510,7 +510,7 @@ function HistoryPage({ trades, setSavedTrades, mode }) {
                 {trade.tradeDirection === 'Long' ? '📈' : '📉'} {trade.tradeDirection}
               </span>
               <ResultBadge result={trade.tradeResult} />
-              <span style={{ fontSize: 13, fontWeight: 700, color: parseInt(trade.percentage) >= 80 ? 'var(--accent)' : parseInt(trade.percentage) >= 60 ? 'var(--yellow)' : 'var(--red)' }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: parseInt(trade.percentage) >= 80 ? 'var(--accent)' : parseInt(trade.percentage) >= 60 ? 'var(--yellow)' : 'var(--red)' }}>
                 {trade.percentage}%
               </span>
               <div className="flex gap-2">
@@ -554,11 +554,11 @@ function DashboardPage({ trades, mode }) {
 
   // KPI cards — NO loss rate, NO breakeven (per request)
   const kpis = [
-    { label: 'Total trades', value: s.total, accent: 'var(--text-primary)', sub: 'closed' },
-    { label: 'Win rate', value: `${s.winRate}%`, accent: 'var(--accent)', sub: `${s.wins} wins` },
-    { label: 'On going', value: s.ongoing, accent: 'var(--blue)', sub: 'open trades' },
-    { label: 'Avg score', value: `${s.avgScore}%`, accent: s.avgScore >= 80 ? 'var(--accent)' : s.avgScore >= 60 ? 'var(--yellow)' : 'var(--red)', sub: 'setup quality' },
-    ...(mode === 'backtest' ? [{ label: 'Avg R:R', value: s.avgRR, accent: 'var(--purple)', sub: 'risk:reward' }] : []),
+    { label: 'Total trades', value: s.total, sub: 'closed' },
+    { label: 'Win rate', value: `${s.winRate}%`, sub: `${s.wins} wins · ${s.losses} losses` },
+    { label: 'On going', value: s.ongoing, sub: 'open trades' },
+    { label: 'Avg score', value: `${s.avgScore}%`, sub: 'setup quality' },
+    ...(mode === 'backtest' ? [{ label: 'Avg R:R', value: s.avgRR, sub: 'risk : reward' }] : []),
   ];
 
   return (
@@ -583,9 +583,9 @@ function DashboardPage({ trades, mode }) {
       {/* KPI Row */}
       <div className="kpi-grid mb-4">
         {kpis.map(k => (
-          <div className="kpi-card" key={k.label} style={{ '--kpi-accent': k.accent }}>
+          <div className="kpi-card" key={k.label}>
             <div className="kpi-label">{k.label}</div>
-            <div className="kpi-value" style={{ color: k.accent }}>{k.value}</div>
+            <div className="kpi-value">{k.value}</div>
             <div className="kpi-sub">{k.sub}</div>
           </div>
         ))}
@@ -753,7 +753,7 @@ function AICoachPage({ user }) {
                 <div className="stat-track" style={{ flex: 1 }}>
                   <div className="stat-fill" style={{ width: `${signal.score}%`, background: signalScoreColor }} />
                 </div>
-                <span style={{ color: signalScoreColor, fontWeight: 700, fontSize: 13 }}>{signal.score}%</span>
+                <span style={{ color: signalScoreColor, fontWeight: 600, fontSize: 14 }}>{signal.score}%</span>
               </div>
 
               <div className="signal-levels">
@@ -890,7 +890,7 @@ export default function App() {
   };
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', fontWeight: 800, fontSize: 22, letterSpacing: '-0.5px' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', fontWeight: 600, fontSize: 22, letterSpacing: '-0.5px' }}>
       MyEdge
     </div>
   );
