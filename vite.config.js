@@ -7,23 +7,28 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Trading Checklist',
-        short_name: 'Checklist',
-        description: 'Trading Checklist App',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        name: 'MyEdge — Trading Intelligence',
+        short_name: 'MyEdge',
+        description: 'Multi-timeframe trading checklist, journal, backtest and analytics.',
+        theme_color: '#08080a',
+        background_color: '#08080a',
         display: 'standalone',
+        orientation: 'portrait',
+        start_url: '/',
         icons: [
           {
-            src: '/logo-new.png',
+            src: '/logo192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           },
           {
-            src: '/logo.new.png',
+            src: '/logo512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           }
         ]
       }
