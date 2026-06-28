@@ -1,32 +1,113 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
+const { defineSecret } = require('firebase-functions/params');
+const { initializeApp } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
 
-const {setGlobalOptions} = require("firebase-functions");
-const {onRequest} = require("firebase-functions/https");
-const logger = require("firebase-functions/logger");
+initializeApp();
 
-// For cost control, you can set the maximum number of containers that can be
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
-setGlobalOptions({ maxInstances: 10 });
+const ANTHROPIC_KEY = defineSecret('ANTHROPIC_KEY');
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+// ─── AI CHAT (antrenare strategie) ───────────────────────────────────────────
+exports.aiChat = onCall(
+  { secrets: [ANTHROPIC_KEY] },
+  async (request) => {
+    if (!request.auth) throw new HttpsError('unauthenticated', 'Login required');
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+    const { messages, systemPrompt } = request.data;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY.value(),
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: systemPrompt || 'Esti un trading coach expert in Forex. Inveti strategia utilizatorului si o memorezi.',
+        messages,
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      throw new HttpsError('internal', `Anthropic error: ${err}`);
+    }
+
+    const data = await response.json();
+    return { reply: data.content[0].text };
+  }
+);
+
+// ─── GENERARE SEMNAL ─────────────────────────────────────────────────────────
+exports.generateSignal = onCall(
+  { secrets: [ANTHROPIC_KEY] },
+  async (request) => {
+    if (!request.auth) throw new HttpsError('unauthenticated', 'Login required');
+
+    const { pair, timeframe, strategyContext, checklistItems } = request.data;
+
+    const checklistText = checklistItems
+      .map((item) => `- ${item.section} | ${item.name} | Weight: ${item.weight}% | Bonus: ${item.isBonus}`)
+      .join('\n');
+
+    const systemPrompt = `Esti un trading coach expert in Forex care analizeaza setup-uri folosind strict strategia invatata de la utilizator.
+Strategia utilizatorului:
+${strategyContext}
+
+Checklist-ul aplicatiei (sectiuni si conditii):
+${checklistText}
+
+Raspunde DOAR in format JSON valid, fara text inainte sau dupa, exact asa:
+{
+  "isValidSetup": true/false,
+  "setupStrength": "Strong" / "Good" / "Weak" / "Invalid",
+  "score": <numar 0-100>,
+  "entry": "<pret sau descriere nivel>",
+  "stopLoss": "<pret sau descriere nivel>",
+  "takeProfit": "<pret sau descriere nivel>",
+  "riskReward": "<ex: 1:2.5>",
+  "checkedItems": ["Weekly-Exhaustion", "Daily-At S/R", ...],
+  "reasoning": "<explicatie scurta de 2-3 fraze de ce e valid sau nu>",
+  "confluences": ["confluenta 1", "confluenta 2", ...]
+}`;
+
+    const userMessage = `Analizeaza urmatorul setup:
+Pair: ${pair}
+Timeframe principal: ${timeframe}
+
+Pe baza strategiei mele, este acesta un setup valid? Completeaza checklist-ul, da-mi entry, SL, TP si explica-mi.`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY.value(),
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMessage }],
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      throw new HttpsError('internal', `Anthropic error: ${err}`);
+    }
+
+    const data = await response.json();
+    const raw = data.content[0].text;
+
+    try {
+      const clean = raw.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+      return parsed;
+    } catch (e) {
+      throw new HttpsError('internal', 'AI response parse error: ' + raw);
+    }
+  }
+);
