@@ -36,6 +36,9 @@ const Icon = {
   Search: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
   Filter: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>,
   Image: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
+  Zoom: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>,
+  ZoomIn: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+  ZoomOut: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>,
 };
 
 // ─── BRAND LOGO (the "MyEdge" upward blade) ──────────────────────────────────
@@ -499,7 +502,7 @@ const CHART_SLOTS = [
   { key: 'weekly', label: 'Weekly' },
   { key: 'daily', label: 'Daily' },
   { key: 'h4', label: 'H4' },
-  { key: 'lt', label: 'LT — Lower timeframe' },
+  { key: 'lt', label: 'LT' },
 ];
 
 // Compress + resize an image file client-side before upload (keeps storage light, loads fast)
@@ -532,14 +535,14 @@ function compressImage(file, maxDim = 1800, quality = 0.85) {
 }
 
 // Single chart slot — dropzone when empty, framed image with delete when filled
-function ChartUploader({ slot, url, uploading, onPick, onDelete, onView }) {
+function ChartUploader({ slot, url, uploading, editing, onPick, onDelete, onView, onLocked }) {
   const inputRef = useRef(null);
 
   return (
     <div className="chart-slot">
       <div className="chart-slot-label">
         <span>{slot.label}</span>
-        {url && !uploading && (
+        {url && !uploading && editing && (
           <button className="chart-replace" onClick={() => inputRef.current?.click()}>Replace</button>
         )}
       </div>
@@ -555,16 +558,88 @@ function ChartUploader({ slot, url, uploading, onPick, onDelete, onView }) {
       ) : url ? (
         <div className="chart-image-wrap">
           <img src={url} alt={`${slot.label} chart`} className="chart-img" onClick={() => onView(url)} />
-          <button className="chart-delete-btn" onClick={() => onDelete()} title="Delete image"><Icon.Trash /></button>
-          <div className="chart-view-hint"><Icon.Eye /> Click to enlarge</div>
+          {editing && (
+            <button className="chart-delete-btn" onClick={() => onDelete()} title="Delete image"><Icon.Trash /></button>
+          )}
+          <div className="chart-view-hint"><Icon.Zoom /> Click to zoom</div>
         </div>
-      ) : (
+      ) : editing ? (
         <button className="chart-dropzone" onClick={() => inputRef.current?.click()}>
           <Icon.Image />
           <span className="chart-dropzone-title">Upload {slot.label} chart</span>
           <span className="chart-dropzone-sub">PNG or JPG · click to browse</span>
         </button>
+      ) : (
+        <button className="chart-dropzone chart-dropzone-locked" onClick={() => onLocked()}>
+          <Icon.Image />
+          <span className="chart-dropzone-title">No {slot.label} chart</span>
+          <span className="chart-dropzone-sub">Enter edit mode to add</span>
+        </button>
       )}
+    </div>
+  );
+}
+
+// Zoomable lightbox — scroll/buttons to zoom, drag to pan
+function Lightbox({ url, onClose }) {
+  const [zoom, setZoom] = useState(1);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const dragRef = useRef(null);
+
+  const clampZoom = (z) => Math.min(5, Math.max(1, z));
+  const changeZoom = (delta) => {
+    setZoom(prev => {
+      const next = clampZoom(prev + delta);
+      if (next === 1) setPos({ x: 0, y: 0 });
+      return next;
+    });
+  };
+
+  const onWheel = (e) => { e.preventDefault(); changeZoom(e.deltaY < 0 ? 0.3 : -0.3); };
+
+  const onMouseDown = (e) => {
+    if (zoom <= 1) return;
+    dragRef.current = { startX: e.clientX - pos.x, startY: e.clientY - pos.y };
+  };
+  const onMouseMove = (e) => {
+    if (!dragRef.current) return;
+    setPos({ x: e.clientX - dragRef.current.startX, y: e.clientY - dragRef.current.startY });
+  };
+  const onMouseUp = () => { dragRef.current = null; };
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === '+' || e.key === '=') changeZoom(0.3);
+      if (e.key === '-') changeZoom(-0.3);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div className="lightbox" onClick={onClose} onMouseMove={onMouseMove} onMouseUp={onMouseUp} onMouseLeave={onMouseUp}>
+      <div className="lightbox-toolbar" onClick={(e) => e.stopPropagation()}>
+        <button className="lightbox-btn" onClick={() => changeZoom(-0.3)} title="Zoom out"><Icon.ZoomOut /></button>
+        <span className="lightbox-zoom-val">{Math.round(zoom * 100)}%</span>
+        <button className="lightbox-btn" onClick={() => changeZoom(0.3)} title="Zoom in"><Icon.ZoomIn /></button>
+        <span className="lightbox-tb-sep" />
+        <button className="lightbox-btn" onClick={onClose} title="Close"><Icon.Close /></button>
+      </div>
+      <img
+        src={url}
+        alt="Chart"
+        className="lightbox-img"
+        style={{
+          transform: `translate(${pos.x}px, ${pos.y}px) scale(${zoom})`,
+          cursor: zoom > 1 ? (dragRef.current ? 'grabbing' : 'grab') : 'default',
+        }}
+        onClick={(e) => e.stopPropagation()}
+        onWheel={onWheel}
+        onMouseDown={onMouseDown}
+        draggable={false}
+      />
+      <div className="lightbox-hint">Scroll to zoom · drag to pan · Esc to close</div>
     </div>
   );
 }
@@ -575,9 +650,19 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
   const [showUnsaved, setShowUnsaved] = useState(false);
   const [uploadingKey, setUploadingKey] = useState(null);
   const [lightboxUrl, setLightboxUrl] = useState(null);
+  const [toast, setToast] = useState('');
+  const toastTimer = useRef(null);
   const score = useMemo(() => calcScore(localTrade.checked || {}), [localTrade.checked]);
 
   const charts = localTrade.charts || {};
+
+  // Ghost toast — tells the user to enter edit mode
+  const showToast = (msg) => {
+    setToast(msg);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(''), 2400);
+  };
+  useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
 
   // Upload a chart image → compress → Firebase Storage → save URL to Firestore
   const handleChartUpload = async (key, file) => {
@@ -683,13 +768,13 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
                       const isChecked = localTrade.checked?.[id] || false;
                       return (
                         <label key={id}
-                          className={`check-item ${isChecked ? (item.isBonus ? 'checked-bonus' : 'checked') : ''}`}
-                          style={{ cursor: editing ? 'pointer' : 'default', opacity: editing ? 1 : 0.85 }}
-                          onClick={() => editing && toggleItem(id, !isChecked)}>
+                          className={`check-item modal-check ${isChecked ? (item.isBonus ? 'checked-bonus' : 'checked') : ''}`}
+                          style={{ cursor: 'pointer', opacity: editing ? 1 : 0.9 }}
+                          onClick={() => editing ? toggleItem(id, !isChecked) : showToast('Enter edit mode to change the checklist')}>
                           <div className={`check-box ${isChecked ? (item.isBonus ? 'checked-bonus' : 'checked') : ''}`}>
                             <Icon.Check />
                           </div>
-                          <span className="check-name" style={{ fontSize: 12 }}>{item.name}</span>
+                          <span className="check-name">{item.name}</span>
                         </label>
                       );
                     })}
@@ -702,10 +787,11 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
 
             <div className="form-group mb-4">
               <label className="form-label">Notes</label>
-              <textarea className="form-input" rows={5} disabled={!editing}
-                style={{ resize: 'vertical', opacity: editing ? 1 : 0.7 }}
+              <textarea className="form-input" rows={5} readOnly={!editing}
+                style={{ resize: 'vertical', opacity: editing ? 1 : 0.75, cursor: editing ? 'text' : 'pointer' }}
                 value={localTrade.note || ''}
                 onChange={e => setLocalTrade(p => ({ ...p, note: e.target.value }))}
+                onClick={() => { if (!editing) showToast('Enter edit mode to add notes'); }}
                 placeholder="Add notes about this trade..." />
             </div>
 
@@ -731,9 +817,11 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
                   slot={slot}
                   url={charts[slot.key]?.url}
                   uploading={uploadingKey === slot.key}
+                  editing={editing}
                   onPick={(file) => handleChartUpload(slot.key, file)}
                   onDelete={() => handleChartDelete(slot.key)}
                   onView={(url) => setLightboxUrl(url)}
+                  onLocked={() => showToast('Enter edit mode to manage charts')}
                 />
               ))}
             </div>
@@ -741,11 +829,14 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
         </div>
       </div>
 
-      {/* Lightbox for full-size chart viewing */}
-      {lightboxUrl && (
-        <div className="lightbox" onClick={() => setLightboxUrl(null)}>
-          <button className="lightbox-close" onClick={() => setLightboxUrl(null)}><Icon.Close /></button>
-          <img src={lightboxUrl} alt="Chart full size" className="lightbox-img" onClick={(e) => e.stopPropagation()} />
+      {/* Zoomable lightbox for full-size chart viewing */}
+      {lightboxUrl && <Lightbox url={lightboxUrl} onClose={() => setLightboxUrl(null)} />}
+
+      {/* Ghost toast — edit mode hint */}
+      {toast && (
+        <div className="ghost-toast">
+          <Icon.Edit />
+          <span>{toast}</span>
         </div>
       )}
 

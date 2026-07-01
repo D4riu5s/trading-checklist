@@ -369,6 +369,12 @@ body::after {
 .check-box.checked svg, .check-box.checked-bonus svg { display: block; }
 .check-name { font-size: 14px; color: var(--text-primary); flex: 1; transition: color 0.15s; opacity: 0.82; }
 .check-item.checked .check-name, .check-item.checked-bonus .check-name { opacity: 1; }
+
+/* Larger checklist inside trade detail modal */
+.modal-check { padding: 13px 15px; }
+.modal-check .check-box { width: 21px; height: 21px; }
+.modal-check .check-name { font-size: 14px; }
+.modal-split-left .card-title { font-size: 13px; margin-bottom: 12px; }
 .tag {
   font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
   padding: 3px 8px; border-radius: 99px; white-space: nowrap;
@@ -799,6 +805,8 @@ body::after {
 .chart-dropzone svg { width: 30px; height: 30px; opacity: 0.7; }
 .chart-dropzone-title { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
 .chart-dropzone-sub { font-size: 12px; color: var(--text-muted); }
+.chart-dropzone-locked { cursor: pointer; opacity: 0.6; }
+.chart-dropzone-locked:hover { border-color: var(--border-strong); background: var(--bg-elevated); opacity: 0.85; }
 
 /* Uploading state */
 .chart-uploading {
@@ -845,30 +853,66 @@ body::after {
 .chart-image-wrap:hover .chart-view-hint { opacity: 1; }
 .chart-view-hint svg { width: 12px; height: 12px; }
 
-/* Lightbox */
+/* Zoomable lightbox */
 .lightbox {
   position: fixed; inset: 0; z-index: 400;
-  background: rgba(0,0,0,0.92); backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.94); backdrop-filter: blur(8px);
   display: flex; align-items: center; justify-content: center;
-  padding: 40px; cursor: zoom-out;
+  padding: 40px; cursor: zoom-out; overflow: hidden;
   animation: fadeIn 0.18s var(--ease);
 }
 .lightbox-img {
-  max-width: 96vw; max-height: 92vh;
+  max-width: 92vw; max-height: 88vh;
   border-radius: var(--radius-md);
   box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-  cursor: default;
+  transition: transform 0.12s ease-out;
+  user-select: none; -webkit-user-drag: none;
 }
-.lightbox-close {
-  position: fixed; top: 24px; right: 24px;
-  width: 44px; height: 44px; border-radius: 12px;
-  background: rgba(20,20,26,0.8); border: 1px solid var(--border-strong);
-  color: var(--text-primary); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s var(--ease);
+.lightbox-toolbar {
+  position: fixed; top: 22px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 10px; border-radius: 14px;
+  background: rgba(20,20,26,0.9); backdrop-filter: blur(12px);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.5); z-index: 2;
 }
-.lightbox-close:hover { background: var(--bg-hover); }
-.lightbox-close svg { width: 20px; height: 20px; }
+.lightbox-btn {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: transparent; border: none; color: var(--text-primary);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.13s var(--ease);
+}
+.lightbox-btn:hover { background: var(--bg-hover); }
+.lightbox-btn svg { width: 18px; height: 18px; }
+.lightbox-zoom-val {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  color: var(--text-secondary); min-width: 46px; text-align: center;
+}
+.lightbox-tb-sep { width: 1px; height: 22px; background: var(--border-strong); margin: 0 4px; }
+.lightbox-hint {
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+  font-size: 12px; color: var(--text-muted);
+  background: rgba(20,20,26,0.8); backdrop-filter: blur(8px);
+  padding: 7px 14px; border-radius: 99px; border: 1px solid var(--border);
+  z-index: 2; pointer-events: none;
+}
+
+/* Ghost toast — edit mode hint */
+.ghost-toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 9px;
+  padding: 12px 18px; border-radius: 12px;
+  background: rgba(28,28,36,0.94); backdrop-filter: blur(14px);
+  border: 1px solid var(--border-strong); border-top-color: var(--border-top);
+  color: var(--text-primary); font-size: 13px; font-weight: 500;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5); z-index: 500;
+  animation: toastIn 0.3s var(--ease);
+}
+.ghost-toast svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; }
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, 14px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
 
 /* ─── REDUCED MOTION ───────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
