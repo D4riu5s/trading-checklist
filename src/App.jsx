@@ -645,11 +645,13 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
           </div>
         </div>
 
-        <div className="flex gap-3 items-center mb-4" style={{ flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 22, fontWeight: 600 }}>{localTrade.pair}</span>
-          <span style={{ color: localTrade.tradeDirection === 'Long' ? 'var(--accent)' : 'var(--red)', fontWeight: 600 }}>
+        <div className="trade-meta-bar">
+          <span className="trade-meta-pair">{localTrade.pair}</span>
+          <span className="trade-meta-sep" />
+          <span style={{ color: localTrade.tradeDirection === 'Long' ? 'var(--accent)' : 'var(--red)', fontWeight: 600, fontSize: 14 }}>
             {localTrade.tradeDirection === 'Long' ? '📈 Long' : '📉 Short'}
           </span>
+          <span className="trade-meta-sep" />
           {editing ? (
             <select value={localTrade.tradeResult} onChange={e => setLocalTrade(p => ({ ...p, tradeResult: e.target.value }))}
               className="form-input" style={{ padding: '7px 12px', width: 'auto' }}>
@@ -658,14 +660,15 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
           ) : (
             <ResultBadge result={localTrade.tradeResult} />
           )}
-          <span className="text-muted text-sm">{localTrade.tradeDate}</span>
-          {localTrade.riskReward && <span className="text-purple text-sm font-bold">R:R {localTrade.riskReward}</span>}
+          <span className="trade-meta-spacer" />
+          <span className="trade-meta-item"><span className="trade-meta-key">Date</span>{localTrade.tradeDate}</span>
+          {localTrade.riskReward && <span className="trade-meta-item"><span className="trade-meta-key">R:R</span>{localTrade.riskReward}</span>}
         </div>
 
         <div className="modal-split">
           {/* LEFT — score, checklist, notes */}
           <div className="modal-split-left">
-            <div style={{ marginBottom: 20 }}>
+            <div style={{ marginBottom: 22 }}>
               <StatBar label="Setup score" value={score.percentage} color={scoreColor} />
               <StatBar label="Bonus" value={score.bonusPercentage} color="var(--purple)" />
             </div>
@@ -709,6 +712,7 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
             {editing && <button className="btn btn-primary btn-lg btn-full" onClick={handleSave}>Save changes</button>}
           </div>
 
+          <div className="modal-split-rule" />
           <div className="modal-split-divider" />
 
           {/* RIGHT — multi-timeframe charts */}
