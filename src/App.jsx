@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { db, auth } from './firebase';
+import { db, auth, storage } from './firebase';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import {
+  ref as storageRef, uploadBytes, getDownloadURL, deleteObject,
+} from 'firebase/storage';
 import {
   collection, addDoc, getDocs, deleteDoc, updateDoc, doc, query, where,
 } from 'firebase/firestore';
@@ -32,6 +35,7 @@ const Icon = {
   Chevron: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>,
   Search: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
   Filter: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>,
+  Image: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
 };
 
 // ─── BRAND LOGO (the "MyEdge" upward blade) ──────────────────────────────────
@@ -491,11 +495,124 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
 }
 
 // ─── TRADE DETAIL MODAL ───────────────────────────────────────────────────────
+const CHART_SLOTS = [
+  { key: 'weekly', label: 'Weekly' },
+  { key: 'daily', label: 'Daily' },
+  { key: 'h4', label: 'H4' },
+  { key: 'lt', label: 'LT — Lower timeframe' },
+];
+
+// Compress + resize an image file client-side before upload (keeps storage light, loads fast)
+function compressImage(file, maxDim = 1800, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width >= height) { height = Math.round(height * maxDim / width); width = maxDim; }
+          else { width = Math.round(width * maxDim / height); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => blob ? resolve(blob) : reject(new Error('Compression failed')),
+          'image/jpeg', quality
+        );
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Single chart slot — dropzone when empty, framed image with delete when filled
+function ChartUploader({ slot, url, uploading, onPick, onDelete, onView }) {
+  const inputRef = useRef(null);
+
+  return (
+    <div className="chart-slot">
+      <div className="chart-slot-label">
+        <span>{slot.label}</span>
+        {url && !uploading && (
+          <button className="chart-replace" onClick={() => inputRef.current?.click()}>Replace</button>
+        )}
+      </div>
+
+      <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }}
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) onPick(f); e.target.value = ''; }} />
+
+      {uploading ? (
+        <div className="chart-uploading">
+          <div className="loading-dots" style={{ color: 'var(--accent)' }}><span /><span /><span /></div>
+          <span>Uploading…</span>
+        </div>
+      ) : url ? (
+        <div className="chart-image-wrap">
+          <img src={url} alt={`${slot.label} chart`} className="chart-img" onClick={() => onView(url)} />
+          <button className="chart-delete-btn" onClick={() => onDelete()} title="Delete image"><Icon.Trash /></button>
+          <div className="chart-view-hint"><Icon.Eye /> Click to enlarge</div>
+        </div>
+      ) : (
+        <button className="chart-dropzone" onClick={() => inputRef.current?.click()}>
+          <Icon.Image />
+          <span className="chart-dropzone-title">Upload {slot.label} chart</span>
+          <span className="chart-dropzone-sub">PNG or JPG · click to browse</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
   const [editing, setEditing] = useState(false);
   const [localTrade, setLocalTrade] = useState({ ...trade });
   const [showUnsaved, setShowUnsaved] = useState(false);
+  const [uploadingKey, setUploadingKey] = useState(null);
+  const [lightboxUrl, setLightboxUrl] = useState(null);
   const score = useMemo(() => calcScore(localTrade.checked || {}), [localTrade.checked]);
+
+  const charts = localTrade.charts || {};
+
+  // Upload a chart image → compress → Firebase Storage → save URL to Firestore
+  const handleChartUpload = async (key, file) => {
+    if (!file.type.startsWith('image/')) { alert('Please select an image file.'); return; }
+    setUploadingKey(key);
+    try {
+      const blob = await compressImage(file);
+      const path = `charts/${localTrade.userId}/${localTrade.id}/${key}_${Date.now()}.jpg`;
+      const sRef = storageRef(storage, path);
+      await uploadBytes(sRef, blob);
+      const url = await getDownloadURL(sRef);
+
+      // remove previous file for this slot (best effort)
+      const prev = charts[key];
+      if (prev?.path) { try { await deleteObject(storageRef(storage, prev.path)); } catch (_) {} }
+
+      const updatedCharts = { ...charts, [key]: { url, path } };
+      const updatedTrade = { ...localTrade, charts: updatedCharts };
+      setLocalTrade(updatedTrade);
+      await onSave(updatedTrade);
+    } catch (err) {
+      alert('Upload failed: ' + err.message);
+    }
+    setUploadingKey(null);
+  };
+
+  const handleChartDelete = async (key) => {
+    const entry = charts[key];
+    if (entry?.path) { try { await deleteObject(storageRef(storage, entry.path)); } catch (_) {} }
+    const updatedCharts = { ...charts };
+    delete updatedCharts[key];
+    const updatedTrade = { ...localTrade, charts: updatedCharts };
+    setLocalTrade(updatedTrade);
+    await onSave(updatedTrade);
+  };
 
   const handleClose = () => {
     if (editing) { setShowUnsaved(true); return; }
@@ -587,7 +704,38 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
         </div>
 
         {editing && <button className="btn btn-primary btn-lg btn-full" onClick={handleSave}>Save changes</button>}
+
+        {/* ─── Charts (multi-timeframe screenshots) ─── */}
+        <div className="divider" />
+        <div className="charts-header">
+          <div className="charts-header-title">
+            <Icon.Image />
+            <span>Charts</span>
+          </div>
+          <span className="charts-header-sub">Weekly → Daily → H4 → LT</span>
+        </div>
+        <div className="charts-stack">
+          {CHART_SLOTS.map(slot => (
+            <ChartUploader
+              key={slot.key}
+              slot={slot}
+              url={charts[slot.key]?.url}
+              uploading={uploadingKey === slot.key}
+              onPick={(file) => handleChartUpload(slot.key, file)}
+              onDelete={() => handleChartDelete(slot.key)}
+              onView={(url) => setLightboxUrl(url)}
+            />
+          ))}
+        </div>
       </div>
+
+      {/* Lightbox for full-size chart viewing */}
+      {lightboxUrl && (
+        <div className="lightbox" onClick={() => setLightboxUrl(null)}>
+          <button className="lightbox-close" onClick={() => setLightboxUrl(null)}><Icon.Close /></button>
+          <img src={lightboxUrl} alt="Chart full size" className="lightbox-img" onClick={(e) => e.stopPropagation()} />
+        </div>
+      )}
 
       {showUnsaved && (
         <div className="modal-overlay" style={{ zIndex: 300 }}>

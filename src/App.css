@@ -720,6 +720,118 @@ body::after {
 }
 .dashboard-history-count { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
 
+/* ─── TRADE CHARTS ─────────────────────────────────────────────────────────── */
+.charts-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.charts-header-title {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 15px; font-weight: 600; color: var(--text-primary);
+}
+.charts-header-title svg { width: 17px; height: 17px; color: var(--accent); }
+.charts-header-sub { font-size: 12px; color: var(--text-muted); }
+
+.charts-stack { display: flex; flex-direction: column; gap: 16px; }
+.chart-slot { display: flex; flex-direction: column; gap: 9px; }
+.chart-slot-label {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.chart-replace {
+  background: none; border: none; color: var(--accent);
+  font-size: 11px; font-weight: 600; cursor: pointer; font-family: var(--font);
+  text-transform: none; letter-spacing: 0; padding: 2px 6px; border-radius: 6px;
+  transition: background 0.13s;
+}
+.chart-replace:hover { background: var(--accent-dim); }
+
+/* Empty dropzone */
+.chart-dropzone {
+  width: 100%; padding: 32px 20px;
+  background: var(--bg-elevated);
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer; transition: all 0.15s var(--ease); font-family: var(--font);
+  color: var(--text-muted);
+}
+.chart-dropzone:hover { border-color: var(--accent-border); background: var(--bg-hover); color: var(--text-secondary); }
+.chart-dropzone svg { width: 30px; height: 30px; opacity: 0.7; }
+.chart-dropzone-title { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+.chart-dropzone-sub { font-size: 12px; color: var(--text-muted); }
+
+/* Uploading state */
+.chart-uploading {
+  width: 100%; padding: 40px 20px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  color: var(--text-secondary); font-size: 13px; font-weight: 500;
+}
+
+/* Filled image */
+.chart-image-wrap {
+  position: relative; border-radius: var(--radius-md); overflow: hidden;
+  border: 1px solid var(--border-strong); background: #000;
+  box-shadow: var(--shadow-card);
+}
+.chart-img {
+  display: block; width: 100%; height: auto; cursor: zoom-in;
+  transition: transform 0.3s var(--ease);
+}
+.chart-image-wrap:hover .chart-img { transform: scale(1.015); }
+.chart-delete-btn {
+  position: absolute; top: 10px; right: 10px;
+  width: 34px; height: 34px; border-radius: 9px;
+  background: rgba(10,10,12,0.82); backdrop-filter: blur(6px);
+  border: 1px solid var(--border-strong);
+  color: var(--red); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s var(--ease); opacity: 0; z-index: 2;
+}
+.chart-image-wrap:hover .chart-delete-btn { opacity: 1; }
+.chart-delete-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.chart-delete-btn svg { width: 16px; height: 16px; }
+.chart-view-hint {
+  position: absolute; bottom: 10px; left: 10px;
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 8px;
+  background: rgba(10,10,12,0.72); backdrop-filter: blur(6px);
+  border: 1px solid var(--border);
+  font-size: 11px; font-weight: 500; color: var(--text-secondary);
+  opacity: 0; transition: opacity 0.15s var(--ease); pointer-events: none;
+}
+.chart-image-wrap:hover .chart-view-hint { opacity: 1; }
+.chart-view-hint svg { width: 12px; height: 12px; }
+
+/* Lightbox */
+.lightbox {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,0.92); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px; cursor: zoom-out;
+  animation: fadeIn 0.18s var(--ease);
+}
+.lightbox-img {
+  max-width: 96vw; max-height: 92vh;
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+  cursor: default;
+}
+.lightbox-close {
+  position: fixed; top: 24px; right: 24px;
+  width: 44px; height: 44px; border-radius: 12px;
+  background: rgba(20,20,26,0.8); border: 1px solid var(--border-strong);
+  color: var(--text-primary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s var(--ease);
+}
+.lightbox-close:hover { background: var(--bg-hover); }
+.lightbox-close svg { width: 20px; height: 20px; }
+
 /* ─── REDUCED MOTION ───────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
