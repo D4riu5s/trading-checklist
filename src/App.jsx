@@ -634,7 +634,7 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
 
   return (
     <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}>
-      <div className="modal">
+      <div className="modal modal-wide">
         <div className="modal-header">
           <h2 className="modal-title">Trade details</h2>
           <div className="flex gap-2">
@@ -662,70 +662,78 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
           {localTrade.riskReward && <span className="text-purple text-sm font-bold">R:R {localTrade.riskReward}</span>}
         </div>
 
-        <div style={{ marginBottom: 20 }}>
-          <StatBar label="Setup score" value={score.percentage} color={scoreColor} />
-          <StatBar label="Bonus" value={score.bonusPercentage} color="var(--purple)" />
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
-          {SECTIONS.map(section => (
-            <div key={section.title}>
-              <div className="card-title">{section.title}</div>
-              <div className="flex flex-col gap-2">
-                {section.items.map(item => {
-                  const id = `${section.title}-${item.name}`;
-                  const isChecked = localTrade.checked?.[id] || false;
-                  return (
-                    <label key={id}
-                      className={`check-item ${isChecked ? (item.isBonus ? 'checked-bonus' : 'checked') : ''}`}
-                      style={{ cursor: editing ? 'pointer' : 'default', opacity: editing ? 1 : 0.85 }}
-                      onClick={() => editing && toggleItem(id, !isChecked)}>
-                      <div className={`check-box ${isChecked ? (item.isBonus ? 'checked-bonus' : 'checked') : ''}`}>
-                        <Icon.Check />
-                      </div>
-                      <span className="check-name" style={{ fontSize: 12 }}>{item.name}</span>
-                    </label>
-                  );
-                })}
-              </div>
+        <div className="modal-split">
+          {/* LEFT — score, checklist, notes */}
+          <div className="modal-split-left">
+            <div style={{ marginBottom: 20 }}>
+              <StatBar label="Setup score" value={score.percentage} color={scoreColor} />
+              <StatBar label="Bonus" value={score.bonusPercentage} color="var(--purple)" />
             </div>
-          ))}
-        </div>
 
-        <div className="divider" />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+              {SECTIONS.map(section => (
+                <div key={section.title}>
+                  <div className="card-title">{section.title}</div>
+                  <div className="flex flex-col gap-2">
+                    {section.items.map(item => {
+                      const id = `${section.title}-${item.name}`;
+                      const isChecked = localTrade.checked?.[id] || false;
+                      return (
+                        <label key={id}
+                          className={`check-item ${isChecked ? (item.isBonus ? 'checked-bonus' : 'checked') : ''}`}
+                          style={{ cursor: editing ? 'pointer' : 'default', opacity: editing ? 1 : 0.85 }}
+                          onClick={() => editing && toggleItem(id, !isChecked)}>
+                          <div className={`check-box ${isChecked ? (item.isBonus ? 'checked-bonus' : 'checked') : ''}`}>
+                            <Icon.Check />
+                          </div>
+                          <span className="check-name" style={{ fontSize: 12 }}>{item.name}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
 
-        <div className="form-group mb-4">
-          <label className="form-label">Notes</label>
-          <textarea className="form-input" rows={4} disabled={!editing}
-            style={{ resize: 'vertical', opacity: editing ? 1 : 0.7 }}
-            value={localTrade.note || ''}
-            onChange={e => setLocalTrade(p => ({ ...p, note: e.target.value }))}
-            placeholder="Add notes about this trade..." />
-        </div>
+            <div className="divider" />
 
-        {editing && <button className="btn btn-primary btn-lg btn-full" onClick={handleSave}>Save changes</button>}
+            <div className="form-group mb-4">
+              <label className="form-label">Notes</label>
+              <textarea className="form-input" rows={5} disabled={!editing}
+                style={{ resize: 'vertical', opacity: editing ? 1 : 0.7 }}
+                value={localTrade.note || ''}
+                onChange={e => setLocalTrade(p => ({ ...p, note: e.target.value }))}
+                placeholder="Add notes about this trade..." />
+            </div>
 
-        {/* ─── Charts (multi-timeframe screenshots) ─── */}
-        <div className="divider" />
-        <div className="charts-header">
-          <div className="charts-header-title">
-            <Icon.Image />
-            <span>Charts</span>
+            {editing && <button className="btn btn-primary btn-lg btn-full" onClick={handleSave}>Save changes</button>}
           </div>
-          <span className="charts-header-sub">Weekly → Daily → H4 → LT</span>
-        </div>
-        <div className="charts-stack">
-          {CHART_SLOTS.map(slot => (
-            <ChartUploader
-              key={slot.key}
-              slot={slot}
-              url={charts[slot.key]?.url}
-              uploading={uploadingKey === slot.key}
-              onPick={(file) => handleChartUpload(slot.key, file)}
-              onDelete={() => handleChartDelete(slot.key)}
-              onView={(url) => setLightboxUrl(url)}
-            />
-          ))}
+
+          <div className="modal-split-divider" />
+
+          {/* RIGHT — multi-timeframe charts */}
+          <div className="modal-split-right">
+            <div className="charts-header">
+              <div className="charts-header-title">
+                <Icon.Image />
+                <span>Charts</span>
+              </div>
+              <span className="charts-header-sub">W → D → H4 → LT</span>
+            </div>
+            <div className="charts-stack">
+              {CHART_SLOTS.map(slot => (
+                <ChartUploader
+                  key={slot.key}
+                  slot={slot}
+                  url={charts[slot.key]?.url}
+                  uploading={uploadingKey === slot.key}
+                  onPick={(file) => handleChartUpload(slot.key, file)}
+                  onDelete={() => handleChartDelete(slot.key)}
+                  onView={(url) => setLightboxUrl(url)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
