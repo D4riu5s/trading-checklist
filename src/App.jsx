@@ -644,8 +644,8 @@ function Lightbox({ url, onClose }) {
   );
 }
 
-function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
-  const [editing, setEditing] = useState(false);
+function TradeDetailModal({ trade, onClose, onDelete, onSave, startInEdit = false }) {
+  const [editing, setEditing] = useState(startInEdit);
   const [localTrade, setLocalTrade] = useState({ ...trade });
   const [showUnsaved, setShowUnsaved] = useState(false);
   const [uploadingKey, setUploadingKey] = useState(null);
@@ -794,8 +794,6 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
                 onClick={() => { if (!editing) showToast('Enter edit mode to add notes'); }}
                 placeholder="Add notes about this trade..." />
             </div>
-
-            {editing && <button className="btn btn-primary btn-lg btn-full" onClick={handleSave}>Save changes</button>}
           </div>
 
           <div className="modal-split-rule" />
@@ -827,6 +825,12 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
             </div>
           </div>
         </div>
+
+        {editing && (
+          <div className="modal-save-bar">
+            <button className="btn btn-primary btn-lg btn-full" onClick={handleSave}>Save changes</button>
+          </div>
+        )}
       </div>
 
       {/* Zoomable lightbox for full-size chart viewing */}
@@ -861,6 +865,7 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave }) {
 // ─── REUSABLE TRADE LIST (used in History + Dashboard) ────────────────────────
 function TradeList({ trades, setSavedTrades, emptyTitle = 'No trades saved yet', emptySub = 'Complete the checklist and save your first trade.' }) {
   const [openedId, setOpenedId] = useState(null);
+  const [openInEdit, setOpenInEdit] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
   const handleDelete = async (id) => {
@@ -874,11 +879,8 @@ function TradeList({ trades, setSavedTrades, emptyTitle = 'No trades saved yet',
     setSavedTrades(prev => prev.map(t => t.id === updated.id ? updated : t));
   };
 
-  const handleResultChange = async (trade, newResult) => {
-    const updated = { ...trade, tradeResult: newResult };
-    await updateDoc(doc(db, 'trades', trade.id), { tradeResult: newResult });
-    setSavedTrades(prev => prev.map(t => t.id === trade.id ? updated : t));
-  };
+  const openView = (id) => { setOpenInEdit(false); setOpenedId(id); };
+  const openEdit = (id) => { setOpenInEdit(true); setOpenedId(id); };
 
   const openedTrade = trades.find(t => t.id === openedId);
 
@@ -904,20 +906,21 @@ function TradeList({ trades, setSavedTrades, emptyTitle = 'No trades saved yet',
             <span className="trade-dir" style={{ color: trade.tradeDirection === 'Long' ? 'var(--accent)' : 'var(--red)' }}>
               {trade.tradeDirection === 'Long' ? '📈' : '📉'} {trade.tradeDirection}
             </span>
-            <ResultDropdown value={trade.tradeResult} onChange={(newResult) => handleResultChange(trade, newResult)} />
+            <ResultBadge result={trade.tradeResult} />
             <span className="num" style={{ fontSize: 14, fontWeight: 600, color: parseInt(trade.percentage) >= 80 ? 'var(--accent)' : parseInt(trade.percentage) >= 60 ? 'var(--yellow)' : 'var(--red)' }}>
               {trade.percentage}%
             </span>
             <div className="flex gap-2">
               <button className="btn btn-danger btn-icon btn-sm" onClick={() => setDeleteId(trade.id)} title="Delete"><Icon.Trash /></button>
-              <button className="btn btn-secondary btn-sm" onClick={() => setOpenedId(trade.id)}><Icon.Eye /> View</button>
+              <button className="btn btn-secondary btn-icon btn-sm" onClick={() => openEdit(trade.id)} title="Edit"><Icon.Edit /></button>
+              <button className="btn btn-secondary btn-sm" onClick={() => openView(trade.id)}><Icon.Eye /> View</button>
             </div>
           </div>
         ))}
       </div>
 
       {openedTrade && (
-        <TradeDetailModal trade={openedTrade} onClose={() => setOpenedId(null)}
+        <TradeDetailModal trade={openedTrade} startInEdit={openInEdit} onClose={() => setOpenedId(null)}
           onDelete={(id) => { setDeleteId(id); setOpenedId(null); }}
           onSave={handleSave} />
       )}
