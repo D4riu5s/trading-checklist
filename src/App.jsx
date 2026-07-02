@@ -39,6 +39,7 @@ const Icon = {
   Zoom: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>,
   ZoomIn: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
   ZoomOut: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+  Insight: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg>,
 };
 
 // ─── BRAND LOGO (the "MyEdge" upward blade) ──────────────────────────────────
@@ -169,6 +170,43 @@ function calcStats(trades) {
     weakCount: weak.length, goodCount: good.length, strongCount: strong.length,
     avgScore, avgRR,
   };
+}
+
+// ─── STRATEGY INSIGHTS: per-condition win-rate analysis ───────────────────────
+// For each checklist condition, compares win rate WHEN checked vs the overall
+// win rate, so you can see which conditions actually help vs drag your results.
+function analyzeConditions(trades) {
+  const decided = trades.filter(t => t.tradeResult === 'Win' || t.tradeResult === 'Loss');
+  const totalWins = decided.filter(t => t.tradeResult === 'Win').length;
+  const baseWinRate = decided.length ? totalWins / decided.length : 0;
+
+  const rows = [];
+  SECTIONS.forEach(section => {
+    section.items.forEach(item => {
+      if (item.weight === 0 && !item.isBonus) return; // skip pure context items (e.g. "Trend")
+      const id = `${section.title}-${item.name}`;
+      const withCond = decided.filter(t => t.checked?.[id]);
+      const withoutCond = decided.filter(t => !t.checked?.[id]);
+      const winsWith = withCond.filter(t => t.tradeResult === 'Win').length;
+      const winsWithout = withoutCond.filter(t => t.tradeResult === 'Win').length;
+
+      const wrWith = withCond.length ? winsWith / withCond.length : null;
+      const wrWithout = withoutCond.length ? winsWithout / withoutCond.length : null;
+
+      rows.push({
+        id, section: section.title, name: item.name, isBonus: item.isBonus,
+        countWith: withCond.length,
+        winsWith, lossesWith: withCond.length - winsWith,
+        wrWith,
+        wrWithout,
+        // "lift" = how much this condition changes your win rate vs. not having it
+        lift: (wrWith !== null && wrWithout !== null) ? wrWith - wrWithout : null,
+        vsBase: (wrWith !== null) ? wrWith - baseWinRate : null,
+      });
+    });
+  });
+
+  return { decidedCount: decided.length, baseWinRate, totalWins, totalLosses: decided.length - totalWins, rows };
 }
 
 // ─── PERIOD FILTER (7d, 1mo, 6mo, 1y, 2y, 5y) ─────────────────────────────────
@@ -1023,6 +1061,154 @@ function DashboardPage({ trades, setSavedTrades, mode }) {
   );
 }
 
+// ─── STRATEGY INSIGHTS PAGE ───────────────────────────────────────────────────
+const MIN_SAMPLE = 4; // below this, a condition doesn't have enough trades to trust
+
+function ConditionRow({ row, baseWinRate }) {
+  const wr = Math.round(row.wrWith * 100);
+  const vs = Math.round(row.vsBase * 100);
+  const vsClass = vs > 0 ? 'up' : vs < 0 ? 'down' : 'flat';
+  const barColor = wr >= 60 ? 'var(--accent)' : wr >= 45 ? 'var(--yellow)' : 'var(--red)';
+
+  return (
+    <div className="cond-row">
+      <div className="cond-info">
+        <div className="cond-name">
+          {row.name}
+          {row.isBonus && <span className="cond-bonus-tag">Bonus</span>}
+        </div>
+        <div className="cond-section">{row.section}</div>
+      </div>
+      <div className="cond-bar-area">
+        <div className="cond-bar-track">
+          <div className="cond-bar-fill" style={{ width: `${wr}%`, background: barColor }} />
+        </div>
+        <div className="cond-bar-meta">
+          <span className="cond-wr num">{wr}%</span>
+          <span className="cond-count">{row.winsWith}W · {row.lossesWith}L · n={row.countWith}</span>
+        </div>
+      </div>
+      <div className={`cond-vs ${vsClass}`}>
+        {vs > 0 ? '↑' : vs < 0 ? '↓' : '='} {vs > 0 ? '+' : ''}{vs}%
+      </div>
+    </div>
+  );
+}
+
+function InsightsPage({ trades }) {
+  const [mode, setMode] = useState('live');
+  const modeTrades = useMemo(() => trades.filter(t => t.tradeMode === mode), [trades, mode]);
+  const analysis = useMemo(() => analyzeConditions(modeTrades), [modeTrades]);
+
+  const { decidedCount, baseWinRate, totalWins, totalLosses, rows } = analysis;
+
+  // Split conditions into working / dragging / not-enough-data
+  const enough = rows.filter(r => r.countWith >= MIN_SAMPLE);
+  const notEnough = rows.filter(r => r.countWith > 0 && r.countWith < MIN_SAMPLE);
+  const working = enough.filter(r => r.vsBase >= 0.001).sort((a, b) => b.vsBase - a.vsBase);
+  const dragging = enough.filter(r => r.vsBase < -0.001).sort((a, b) => a.vsBase - b.vsBase);
+  const neutral = enough.filter(r => Math.abs(r.vsBase) < 0.001);
+
+  const baseWR = Math.round(baseWinRate * 100);
+
+  return (
+    <div className="fade-in">
+      <div className="insights-toolbar">
+        <div className="mode-toggle">
+          <button className={`mode-toggle-btn ${mode === 'live' ? 'active' : ''}`} onClick={() => setMode('live')}>Live</button>
+          <button className={`mode-toggle-btn ${mode === 'backtest' ? 'active' : ''}`} onClick={() => setMode('backtest')}>Backtest</button>
+        </div>
+      </div>
+
+      {decidedCount < 5 ? (
+        <div className="card empty-state">
+          <Icon.Insight />
+          <p>Not enough trades yet</p>
+          <p className="sub">Log at least 5 decided trades (Win or Loss) in {mode} mode to unlock condition analysis. You have {decidedCount}.</p>
+        </div>
+      ) : (
+        <>
+          {/* Summary */}
+          <div className="insights-summary">
+            <div className="insights-sum-item">
+              <div className="insights-sum-label">Decided trades</div>
+              <div className="insights-sum-value num">{decidedCount}</div>
+              <div className="insights-sum-sub">{totalWins}W · {totalLosses}L</div>
+            </div>
+            <div className="insights-sum-item">
+              <div className="insights-sum-label">Base win rate</div>
+              <div className="insights-sum-value num" style={{ color: baseWR >= 50 ? 'var(--accent)' : 'var(--red)' }}>{baseWR}%</div>
+              <div className="insights-sum-sub">your average across all setups</div>
+            </div>
+            <div className="insights-sum-item">
+              <div className="insights-sum-label">Conditions tracked</div>
+              <div className="insights-sum-value num">{enough.length}</div>
+              <div className="insights-sum-sub">{notEnough.length} need more data</div>
+            </div>
+          </div>
+
+          <p className="insights-hint">
+            Each bar shows your win rate <strong>when that condition was checked</strong>. The badge on the right compares it to your base win rate ({baseWR}%) — green means the condition lifts your results, red means it drags them down.
+          </p>
+
+          {/* Working conditions */}
+          {working.length > 0 && (
+            <div className="insights-group">
+              <div className="insights-group-header working">
+                <Icon.Check /> <span>Working — these lift your win rate</span>
+              </div>
+              <div className="cond-list">
+                {working.map(r => <ConditionRow key={r.id} row={r} baseWinRate={baseWinRate} />)}
+              </div>
+            </div>
+          )}
+
+          {/* Dragging conditions */}
+          {dragging.length > 0 && (
+            <div className="insights-group">
+              <div className="insights-group-header dragging">
+                <Icon.Close /> <span>Dragging — these lower your win rate</span>
+              </div>
+              <div className="cond-list">
+                {dragging.map(r => <ConditionRow key={r.id} row={r} baseWinRate={baseWinRate} />)}
+              </div>
+            </div>
+          )}
+
+          {/* Neutral */}
+          {neutral.length > 0 && (
+            <div className="insights-group">
+              <div className="insights-group-header neutral">
+                <span>≈ Neutral — little effect either way</span>
+              </div>
+              <div className="cond-list">
+                {neutral.map(r => <ConditionRow key={r.id} row={r} baseWinRate={baseWinRate} />)}
+              </div>
+            </div>
+          )}
+
+          {/* Not enough data */}
+          {notEnough.length > 0 && (
+            <div className="insights-group">
+              <div className="insights-group-header neutral">
+                <span>Not enough data ({MIN_SAMPLE}+ trades needed)</span>
+              </div>
+              <div className="cond-list-muted">
+                {notEnough.map(r => (
+                  <div key={r.id} className="cond-muted-item">
+                    <span>{r.section} · {r.name}</span>
+                    <span className="num">n={r.countWith}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── AI COACH PAGE ────────────────────────────────────────────────────────────
 function AICoachPage({ user }) {
   const [messages, setMessages] = useState([
@@ -1315,6 +1501,9 @@ export default function App() {
       { id: 'history-backtest', label: 'History', icon: <Icon.History /> },
       { id: 'dashboard-backtest', label: 'Dashboard', icon: <Icon.Dashboard /> },
     ]},
+    { group: 'Analysis', items: [
+      { id: 'insights', label: 'Strategy Insights', icon: <Icon.Insight /> },
+    ]},
     { group: 'AI', items: [
       { id: 'ai', label: 'AI Coach', icon: <Icon.AI /> },
     ]},
@@ -1327,6 +1516,7 @@ export default function App() {
     'checklist-backtest': { title: 'Checklist', sub: 'Backtest' },
     'history-backtest': { title: 'History', sub: 'Backtest' },
     'dashboard-backtest': { title: 'Dashboard', sub: 'Backtest' },
+    'insights': { title: 'Strategy Insights', sub: 'What works in your checklist' },
     'ai': { title: 'AI Coach', sub: 'Training & Signals' },
   };
 
@@ -1386,6 +1576,7 @@ export default function App() {
           {activePage === 'history-backtest' && <HistoryPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />}
           {activePage === 'dashboard-live' && <DashboardPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="live" />}
           {activePage === 'dashboard-backtest' && <DashboardPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />}
+          {activePage === 'insights' && <InsightsPage trades={savedTrades} />}
           {activePage === 'ai' && <AICoachPage user={user} />}
         </div>
       </main>
