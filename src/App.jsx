@@ -977,6 +977,271 @@ function HistoryPage({ trades, setSavedTrades, mode }) {
   return <TradeList trades={filtered} setSavedTrades={setSavedTrades} />;
 }
 
+// ─── WIN RATE EVOLUTION CHART (pure SVG, premium) ─────────────────────────────
+function WinRateChart({ trades }) {
+  const [hover, setHover] = useState(null);
+  const wrapRef = useRef(null);
+
+  const series = useMemo(() => {
+    const decided = trades
+      .filter(t => t.tradeResult === 'Win' || t.tradeResult === 'Loss')
+      .slice()
+      .sort((a, b) => new Date(a.tradeDate) - new Date(b.tradeDate));
+    let wins = 0;
+    return decided.map((t, i) => {
+      if (t.tradeResult === 'Win') wins++;
+      return { i, wr: (wins / (i + 1)) * 100, date: t.tradeDate, result: t.tradeResult };
+    });
+  }, [trades]);
+
+  const W = 760, H = 280, padL = 42, padR = 16, padT = 18, padB = 26;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const n = series.length;
+
+  if (n < 2) {
+    return (
+      <div className="card chart-card">
+        <div className="chart-head">
+          <div className="card-title" style={{ marginBottom: 0 }}>Win rate evolution</div>
+        </div>
+        <div className="chart-empty">Need at least 2 decided trades (Win or Loss) to plot your win rate evolution.</div>
+      </div>
+    );
+  }
+
+  const xFor = (i) => padL + (i / (n - 1)) * plotW;
+  const yFor = (wr) => padT + (1 - wr / 100) * plotH;
+  const linePts = series.map(p => `${xFor(p.i).toFixed(1)},${yFor(p.wr).toFixed(1)}`).join(' ');
+  const areaPts = `${xFor(0).toFixed(1)},${(padT + plotH).toFixed(1)} ${linePts} ${xFor(n - 1).toFixed(1)},${(padT + plotH).toFixed(1)}`;
+  const currentWR = Math.round(series[n - 1].wr);
+  const gridYs = [0, 25, 50, 75, 100];
+
+  const onMove = (e) => {
+    const rect = wrapRef.current.getBoundingClientRect();
+    const svgX = ((e.clientX - rect.left) / rect.width) * W;
+    let idx = Math.round(((svgX - padL) / plotW) * (n - 1));
+    idx = Math.max(0, Math.min(n - 1, idx));
+    setHover(idx);
+  };
+  const hp = hover !== null ? series[hover] : null;
+
+  return (
+    <div className="card chart-card">
+      <div className="chart-head">
+        <div>
+          <div className="card-title" style={{ marginBottom: 4 }}>Win rate evolution</div>
+          <div className="chart-sub">Cumulative · {n} decided trades</div>
+        </div>
+        <div className="chart-current">
+          <span className="chart-current-val num" style={{ color: currentWR >= 50 ? 'var(--accent)' : 'var(--red)' }}>{currentWR}%</span>
+          <span className="chart-current-label">current</span>
+        </div>
+      </div>
+      <div className="chart-svg-wrap" ref={wrapRef} onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
+        <svg viewBox={`0 0 ${W} ${H}`} className="chart-svg" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="wrGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#2de2a3" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#2de2a3" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {gridYs.map(g => (
+            <g key={g}>
+              <line x1={padL} y1={yFor(g)} x2={W - padR} y2={yFor(g)}
+                stroke={g === 50 ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.05)'}
+                strokeWidth="1" strokeDasharray={g === 50 ? '4 4' : ''} vectorEffect="non-scaling-stroke" />
+              <text x={padL - 8} y={yFor(g) + 4} textAnchor="end" className="chart-axis-label">{g}</text>
+            </g>
+          ))}
+          <polygon points={areaPts} fill="url(#wrGrad)" />
+          <polyline points={linePts} fill="none" stroke="#2de2a3" strokeWidth="2.5"
+            strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          {hp && (
+            <g>
+              <line x1={xFor(hp.i)} y1={padT} x2={xFor(hp.i)} y2={padT + plotH} stroke="rgba(255,255,255,0.22)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+              <circle cx={xFor(hp.i)} cy={yFor(hp.wr)} r="4.5" fill="#2de2a3" stroke="#08080a" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+            </g>
+          )}
+        </svg>
+        {hp && (
+          <div className="chart-tooltip" style={{ left: `${(xFor(hp.i) / W) * 100}%`, top: `${(yFor(hp.wr) / H) * 100}%` }}>
+            <div className="chart-tt-wr num">{Math.round(hp.wr)}%</div>
+            <div className="chart-tt-meta">Trade {hp.i + 1} · {hp.date}</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── TRADING CALENDAR (month grid + year heatmap, FTMO-style) ─────────────────
+const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+function buildDayStats(trades) {
+  const map = {};
+  trades.forEach(t => {
+    const k = (t.tradeDate || '').slice(0, 10);
+    if (!k) return;
+    if (!map[k]) map[k] = { win: 0, loss: 0, be: 0, ongoing: 0, total: 0 };
+    const r = t.tradeResult;
+    if (r === 'Win') map[k].win++;
+    else if (r === 'Loss') map[k].loss++;
+    else if (r === 'Breakeven') map[k].be++;
+    else map[k].ongoing++;
+    map[k].total++;
+  });
+  return map;
+}
+
+function dayClass(d) {
+  if (!d || d.total === 0) return null;
+  if (d.win > d.loss) return 'win';
+  if (d.loss > d.win) return 'loss';
+  if (d.win > 0 && d.win === d.loss) return 'mixed';
+  return 'neutral';
+}
+
+function heatStyle(d) {
+  if (!d || d.total === 0) return {};
+  const strong = Math.min(1, 0.42 + d.total * 0.16);
+  let base;
+  if (d.win > d.loss) base = '45,226,163';
+  else if (d.loss > d.win) base = '255,94,120';
+  else if (d.win > 0) base = '255,206,92';
+  else base = '122,126,143';
+  return { backgroundColor: `rgba(${base},${strong})` };
+}
+
+function TradingCalendar({ trades }) {
+  const today = new Date();
+  const [view, setView] = useState('month');
+  const [vY, setVY] = useState(today.getFullYear());
+  const [vM, setVM] = useState(today.getMonth());
+  const [hY, setHY] = useState(today.getFullYear());
+
+  const byDay = useMemo(() => buildDayStats(trades), [trades]);
+  const wrOf = (w, l) => (w + l) ? Math.round(w / (w + l) * 100) : null;
+
+  const agg = (predicate) => {
+    let win = 0, loss = 0, total = 0;
+    Object.entries(byDay).forEach(([k, d]) => {
+      if (predicate(new Date(k))) { win += d.win; loss += d.loss; total += d.total; }
+    });
+    return { win, loss, total };
+  };
+  const monthAgg = useMemo(() => agg(dt => dt.getFullYear() === vY && dt.getMonth() === vM), [byDay, vY, vM]);
+  const yearAgg = useMemo(() => agg(dt => dt.getFullYear() === hY), [byDay, hY]);
+  const allAgg = useMemo(() => agg(() => true), [byDay]);
+
+  const firstWeekday = ((new Date(vY, vM, 1).getDay()) + 6) % 7;
+  const daysInMonth = new Date(vY, vM + 1, 0).getDate();
+  const prevMonth = () => { if (vM === 0) { setVM(11); setVY(vY - 1); } else setVM(vM - 1); };
+  const nextMonth = () => { if (vM === 11) { setVM(0); setVY(vY + 1); } else setVM(vM + 1); };
+
+  const yearCells = useMemo(() => {
+    const arr = [];
+    const start = new Date(hY, 0, 1);
+    const offset = ((start.getDay()) + 6) % 7;
+    for (let i = 0; i < offset; i++) arr.push(null);
+    const end = new Date(hY, 11, 31);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      arr.push({ k, stats: byDay[k] });
+    }
+    return arr;
+  }, [hY, byDay]);
+
+  const StatPill = ({ label, a }) => {
+    const w = wrOf(a.win, a.loss);
+    return (
+      <div className="cal-stat">
+        <div className="cal-stat-label">{label}</div>
+        <div className="cal-stat-val num" style={{ color: w === null ? 'var(--text-muted)' : w >= 50 ? 'var(--accent)' : 'var(--red)' }}>
+          {w === null ? '—' : `${w}%`}
+        </div>
+        <div className="cal-stat-sub">{a.win}W · {a.loss}L</div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="card cal-card">
+      <div className="cal-toolbar">
+        <div className="card-title" style={{ marginBottom: 0 }}>Trading calendar</div>
+        <div className="cal-view-toggle">
+          <button className={`cal-view-btn ${view === 'month' ? 'active' : ''}`} onClick={() => setView('month')}>Month</button>
+          <button className={`cal-view-btn ${view === 'year' ? 'active' : ''}`} onClick={() => setView('year')}>Year</button>
+        </div>
+      </div>
+
+      <div className="cal-stats">
+        <StatPill label={`${MONTHS[vM].slice(0, 3)} ${vY}`} a={monthAgg} />
+        <StatPill label={`Year ${hY}`} a={yearAgg} />
+        <StatPill label="All time" a={allAgg} />
+      </div>
+
+      {view === 'month' ? (
+        <>
+          <div className="cal-nav">
+            <button className="cal-nav-btn" onClick={prevMonth}>‹</button>
+            <span className="cal-month-label">{MONTHS[vM]} {vY}</span>
+            <button className="cal-nav-btn" onClick={nextMonth}>›</button>
+          </div>
+          <div className="cal-weekdays">
+            {WEEKDAYS.map(w => <div key={w} className="cal-weekday">{w}</div>)}
+          </div>
+          <div className="cal-grid">
+            {Array.from({ length: firstWeekday }).map((_, i) => <div key={`e${i}`} className="cal-day cal-day-empty" />)}
+            {Array.from({ length: daysInMonth }).map((_, i) => {
+              const day = i + 1;
+              const k = `${vY}-${String(vM + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+              const d = byDay[k];
+              const cls = dayClass(d);
+              const w = d ? wrOf(d.win, d.loss) : null;
+              const isToday = today.getFullYear() === vY && today.getMonth() === vM && today.getDate() === day;
+              return (
+                <div key={k} className={`cal-day ${cls ? 'cal-' + cls : ''} ${isToday ? 'cal-today' : ''}`}
+                  title={d ? `${d.win}W · ${d.loss}L${w !== null ? ` · ${w}%` : ''}` : ''}>
+                  <span className="cal-day-num">{day}</span>
+                  {d && d.total > 0 && <span className="cal-day-count">{d.total} {d.total === 1 ? 'trade' : 'trades'}</span>}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="cal-nav">
+            <button className="cal-nav-btn" onClick={() => setHY(hY - 1)}>‹</button>
+            <span className="cal-month-label">{hY}</span>
+            <button className="cal-nav-btn" onClick={() => setHY(hY + 1)}>›</button>
+          </div>
+          <div className="heat-scroll">
+            <div className="heat-grid">
+              {yearCells.map((cell, i) => cell === null
+                ? <div key={`h${i}`} className="heat-cell heat-empty" style={{ visibility: 'hidden' }} />
+                : <div key={cell.k} className={`heat-cell ${cell.stats ? '' : 'heat-empty'}`} style={heatStyle(cell.stats)}
+                    title={cell.stats ? `${cell.k}: ${cell.stats.win}W · ${cell.stats.loss}L` : cell.k} />
+              )}
+            </div>
+          </div>
+          <div className="heat-legend">
+            <span>Less</span>
+            <span className="heat-cell heat-empty" />
+            <span className="heat-cell" style={{ backgroundColor: 'rgba(45,226,163,0.4)' }} />
+            <span className="heat-cell" style={{ backgroundColor: 'rgba(45,226,163,0.7)' }} />
+            <span className="heat-cell" style={{ backgroundColor: 'rgba(45,226,163,1)' }} />
+            <span>More</span>
+            <span className="heat-legend-sep" />
+            <span className="heat-cell" style={{ backgroundColor: 'rgba(255,94,120,0.7)' }} /> <span>Loss day</span>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── DASHBOARD PAGE ───────────────────────────────────────────────────────────
 function DashboardPage({ trades, setSavedTrades, mode }) {
   const [period, setPeriod] = useState('all');
@@ -1020,6 +1285,11 @@ function DashboardPage({ trades, setSavedTrades, mode }) {
         ))}
       </div>
 
+      {/* Win rate evolution chart */}
+      <div className="mb-4">
+        <WinRateChart trades={filtered} />
+      </div>
+
       {/* Win rate per setup score — MOVED UP, right under KPIs */}
       <div className="card mb-4">
         <div className="card-title">Win rate per setup score</div>
@@ -1041,6 +1311,11 @@ function DashboardPage({ trades, setSavedTrades, mode }) {
           <StatBar label="📈 Long win rate" value={s.wrLong} color="var(--accent)" />
           <StatBar label="📉 Short win rate" value={s.wrShort} color="var(--red)" />
         </div>
+      </div>
+
+      {/* Trading calendar — month grid + year heatmap (uses mode+pair, own time nav) */}
+      <div className="mt-4">
+        <TradingCalendar trades={pairFilter !== 'all' ? modeTrades.filter(t => t.pair === pairFilter) : modeTrades} />
       </div>
 
       {/* Trade history — follows the same period + pair filter */}
