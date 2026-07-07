@@ -40,6 +40,7 @@ const Icon = {
   ZoomIn: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
   ZoomOut: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>,
   Insight: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg>,
+  Calendar: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>,
 };
 
 // ─── BRAND LOGO (the "MyEdge" upward blade) ──────────────────────────────────
@@ -994,7 +995,7 @@ function WinRateChart({ trades }) {
     });
   }, [trades]);
 
-  const W = 760, H = 280, padL = 42, padR = 16, padT = 18, padB = 26;
+  const W = 900, H = 200, padL = 40, padR = 14, padT = 16, padB = 22;
   const plotW = W - padL - padR, plotH = H - padT - padB;
   const n = series.length;
 
@@ -1242,6 +1243,23 @@ function TradingCalendar({ trades }) {
   );
 }
 
+// ─── CALENDAR PAGE (standalone, own mode toggle) ──────────────────────────────
+function CalendarPage({ trades }) {
+  const [mode, setMode] = useState('live');
+  const modeTrades = useMemo(() => trades.filter(t => t.tradeMode === mode), [trades, mode]);
+  return (
+    <div className="fade-in">
+      <div className="insights-toolbar">
+        <div className="mode-toggle">
+          <button className={`mode-toggle-btn ${mode === 'live' ? 'active' : ''}`} onClick={() => setMode('live')}>Live</button>
+          <button className={`mode-toggle-btn ${mode === 'backtest' ? 'active' : ''}`} onClick={() => setMode('backtest')}>Backtest</button>
+        </div>
+      </div>
+      <TradingCalendar trades={modeTrades} />
+    </div>
+  );
+}
+
 // ─── DASHBOARD PAGE ───────────────────────────────────────────────────────────
 function DashboardPage({ trades, setSavedTrades, mode }) {
   const [period, setPeriod] = useState('all');
@@ -1311,11 +1329,6 @@ function DashboardPage({ trades, setSavedTrades, mode }) {
           <StatBar label="📈 Long win rate" value={s.wrLong} color="var(--accent)" />
           <StatBar label="📉 Short win rate" value={s.wrShort} color="var(--red)" />
         </div>
-      </div>
-
-      {/* Trading calendar — month grid + year heatmap (uses mode+pair, own time nav) */}
-      <div className="mt-4">
-        <TradingCalendar trades={pairFilter !== 'all' ? modeTrades.filter(t => t.pair === pairFilter) : modeTrades} />
       </div>
 
       {/* Trade history — follows the same period + pair filter */}
@@ -1777,6 +1790,7 @@ export default function App() {
       { id: 'dashboard-backtest', label: 'Dashboard', icon: <Icon.Dashboard /> },
     ]},
     { group: 'Analysis', items: [
+      { id: 'calendar', label: 'Calendar', icon: <Icon.Calendar /> },
       { id: 'insights', label: 'Strategy Insights', icon: <Icon.Insight /> },
     ]},
     { group: 'AI', items: [
@@ -1791,6 +1805,7 @@ export default function App() {
     'checklist-backtest': { title: 'Checklist', sub: 'Backtest' },
     'history-backtest': { title: 'History', sub: 'Backtest' },
     'dashboard-backtest': { title: 'Dashboard', sub: 'Backtest' },
+    'calendar': { title: 'Trading Calendar', sub: 'Your trades day by day' },
     'insights': { title: 'Strategy Insights', sub: 'What works in your checklist' },
     'ai': { title: 'AI Coach', sub: 'Training & Signals' },
   };
@@ -1851,6 +1866,7 @@ export default function App() {
           {activePage === 'history-backtest' && <HistoryPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />}
           {activePage === 'dashboard-live' && <DashboardPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="live" />}
           {activePage === 'dashboard-backtest' && <DashboardPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />}
+          {activePage === 'calendar' && <CalendarPage trades={savedTrades} />}
           {activePage === 'insights' && <InsightsPage trades={savedTrades} />}
           {activePage === 'ai' && <AICoachPage user={user} />}
         </div>
