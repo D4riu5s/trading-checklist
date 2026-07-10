@@ -824,10 +824,10 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave, startInEdit = fals
 
             <div className="divider" />
 
-            <div className="form-group mb-4">
+            <div className="form-group notes-fill">
               <label className="form-label">Notes</label>
-              <textarea className="form-input" rows={5} readOnly={!editing}
-                style={{ resize: 'vertical', opacity: editing ? 1 : 0.75, cursor: editing ? 'text' : 'pointer' }}
+              <textarea className="form-input notes-textarea" readOnly={!editing}
+                style={{ opacity: editing ? 1 : 0.75, cursor: editing ? 'text' : 'pointer' }}
                 value={localTrade.note || ''}
                 onChange={e => setLocalTrade(p => ({ ...p, note: e.target.value }))}
                 onClick={() => { if (!editing) showToast('Enter edit mode to add notes'); }}
@@ -1167,7 +1167,7 @@ function TradingCalendar({ trades }) {
   };
 
   return (
-    <div className="card cal-card">
+    <div className={`card cal-card ${view === 'month' ? 'cal-page-fill' : ''}`}>
       <div className="cal-toolbar">
         <div className="card-title" style={{ marginBottom: 0 }}>Trading calendar</div>
         <div className="cal-view-toggle">
