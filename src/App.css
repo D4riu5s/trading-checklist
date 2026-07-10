@@ -215,9 +215,9 @@ body::after {
 .main-content { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
 .topbar {
   height: var(--header-h);
-  background: rgba(13,13,16,0.75); backdrop-filter: blur(16px) saturate(140%);
+  background: rgba(11,11,14,0.72); backdrop-filter: blur(20px) saturate(150%);
   border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; padding: 0 28px; gap: 12px;
+  display: flex; align-items: center; padding: 0 30px; gap: 14px;
   position: sticky; top: 0; z-index: 50;
 }
 .topbar-menu-btn {
@@ -226,10 +226,12 @@ body::after {
 }
 .topbar-menu-btn svg { width: 20px; height: 20px; }
 .topbar-menu-btn:hover { background: var(--bg-card); color: var(--text-primary); }
-.topbar-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+.topbar-titlewrap { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.topbar-title { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; color: var(--text-primary); white-space: nowrap; }
+.topbar-divider { width: 1px; height: 16px; background: var(--border-strong); flex-shrink: 0; }
 .topbar-sub {
-  font-size: 10.5px; color: var(--accent); margin-top: 0;
-  font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em;
+  font-size: 12.5px; color: var(--text-muted); font-weight: 400;
+  letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .page-body { padding: 28px; flex: 1; max-width: 1320px; width: 100%; margin: 0 auto; }
 
@@ -633,6 +635,10 @@ body::after {
 .trade-meta-item { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--text-primary); }
 .trade-meta-key { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
 
+/* Day trades popup (from calendar) */
+.day-modal { max-width: 720px; }
+.day-modal-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
 /* Full-width Save bar at the very bottom of the detail modal */
 .modal-save-bar {
   margin-top: 28px; padding-top: 24px;
@@ -735,6 +741,8 @@ body::after {
   .sidebar-overlay { display: block; }
   .main-content { margin-left: 0; }
   .topbar-menu-btn { display: flex; }
+  .topbar { padding: 0 16px; }
+  .topbar-divider, .topbar-sub { display: none; }
   .page-body { padding: 16px; }
   .chat-layout { grid-template-columns: 1fr; height: auto; }
   .trade-row { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -1071,6 +1079,10 @@ body::after {
   cursor: default; overflow: hidden; min-height: 52px;
 }
 .cal-day:hover { transform: translateY(-2px); border-color: var(--text-muted); }
+.cal-day-clickable { cursor: pointer; }
+.cal-day-clickable:hover { transform: translateY(-2px); filter: brightness(1.15); }
+.heat-clickable { cursor: pointer; transition: transform 0.1s var(--ease); }
+.heat-clickable:hover { transform: scale(1.35); outline: 1px solid rgba(255,255,255,0.4); }
 .cal-day-empty { background: transparent; border-color: transparent; }
 .cal-day-empty:hover { transform: none; }
 .cal-day-num { font-size: 14px; font-weight: 600; color: var(--text-secondary); }

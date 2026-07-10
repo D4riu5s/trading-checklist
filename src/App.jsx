@@ -1114,15 +1114,25 @@ function heatStyle(d) {
   return { backgroundColor: `rgba(${base},${strong})` };
 }
 
-function TradingCalendar({ trades }) {
+function TradingCalendar({ trades, setSavedTrades }) {
   const today = new Date();
   const [view, setView] = useState('month');
   const [vY, setVY] = useState(today.getFullYear());
   const [vM, setVM] = useState(today.getMonth());
   const [hY, setHY] = useState(today.getFullYear());
+  const [dayPopup, setDayPopup] = useState(null);
 
   const byDay = useMemo(() => buildDayStats(trades), [trades]);
   const wrOf = (w, l) => (w + l) ? Math.round(w / (w + l) * 100) : null;
+
+  const dayTrades = useMemo(
+    () => dayPopup ? trades.filter(t => (t.tradeDate || '').slice(0, 10) === dayPopup) : [],
+    [dayPopup, trades]
+  );
+  const prettyDate = (k) => {
+    try { return new Date(k).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); }
+    catch { return k; }
+  };
 
   const agg = (predicate) => {
     let win = 0, loss = 0, total = 0;
@@ -1201,11 +1211,13 @@ function TradingCalendar({ trades }) {
               const cls = dayClass(d);
               const w = d ? wrOf(d.win, d.loss) : null;
               const isToday = today.getFullYear() === vY && today.getMonth() === vM && today.getDate() === day;
+              const hasTrades = d && d.total > 0;
               return (
-                <div key={k} className={`cal-day ${cls ? 'cal-' + cls : ''} ${isToday ? 'cal-today' : ''}`}
-                  title={d ? `${d.win}W · ${d.loss}L${w !== null ? ` · ${w}%` : ''}` : ''}>
+                <div key={k} className={`cal-day ${cls ? 'cal-' + cls : ''} ${isToday ? 'cal-today' : ''} ${hasTrades ? 'cal-day-clickable' : ''}`}
+                  title={d ? `${d.win}W · ${d.loss}L${w !== null ? ` · ${w}%` : ''}` : ''}
+                  onClick={() => { if (hasTrades) setDayPopup(k); }}>
                   <span className="cal-day-num">{day}</span>
-                  {d && d.total > 0 && <span className="cal-day-count">{d.total} {d.total === 1 ? 'trade' : 'trades'}</span>}
+                  {hasTrades && <span className="cal-day-count">{d.total} {d.total === 1 ? 'trade' : 'trades'}</span>}
                 </div>
               );
             })}
@@ -1222,8 +1234,9 @@ function TradingCalendar({ trades }) {
             <div className="heat-grid">
               {yearCells.map((cell, i) => cell === null
                 ? <div key={`h${i}`} className="heat-cell heat-empty" style={{ visibility: 'hidden' }} />
-                : <div key={cell.k} className={`heat-cell ${cell.stats ? '' : 'heat-empty'}`} style={heatStyle(cell.stats)}
-                    title={cell.stats ? `${cell.k}: ${cell.stats.win}W · ${cell.stats.loss}L` : cell.k} />
+                : <div key={cell.k} className={`heat-cell ${cell.stats ? 'heat-clickable' : 'heat-empty'}`} style={heatStyle(cell.stats)}
+                    title={cell.stats ? `${cell.k}: ${cell.stats.win}W · ${cell.stats.loss}L` : cell.k}
+                    onClick={() => { if (cell.stats) setDayPopup(cell.k); }} />
               )}
             </div>
           </div>
@@ -1239,12 +1252,27 @@ function TradingCalendar({ trades }) {
           </div>
         </>
       )}
+
+      {dayPopup && (
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setDayPopup(null); }}>
+          <div className="modal day-modal">
+            <div className="modal-header">
+              <div>
+                <h2 className="modal-title">{prettyDate(dayPopup)}</h2>
+                <p className="day-modal-sub">{dayTrades.length} {dayTrades.length === 1 ? 'trade' : 'trades'} on this day</p>
+              </div>
+              <button className="btn btn-ghost btn-icon" onClick={() => setDayPopup(null)} title="Close"><Icon.Close /></button>
+            </div>
+            <TradeList trades={dayTrades} setSavedTrades={setSavedTrades} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 // ─── CALENDAR PAGE (standalone, own mode toggle) ──────────────────────────────
-function CalendarPage({ trades }) {
+function CalendarPage({ trades, setSavedTrades }) {
   const [mode, setMode] = useState('live');
   const modeTrades = useMemo(() => trades.filter(t => t.tradeMode === mode), [trades, mode]);
   return (
@@ -1255,7 +1283,7 @@ function CalendarPage({ trades }) {
           <button className={`mode-toggle-btn ${mode === 'backtest' ? 'active' : ''}`} onClick={() => setMode('backtest')}>Backtest</button>
         </div>
       </div>
-      <TradingCalendar trades={modeTrades} />
+      <TradingCalendar trades={modeTrades} setSavedTrades={setSavedTrades} />
     </div>
   );
 }
@@ -1784,14 +1812,14 @@ export default function App() {
       { id: 'history-live', label: 'History', icon: <Icon.History /> },
       { id: 'dashboard-live', label: 'Dashboard', icon: <Icon.Dashboard /> },
     ]},
+    { group: 'Analysis', items: [
+      { id: 'calendar', label: 'Calendar', icon: <Icon.Calendar /> },
+      { id: 'insights', label: 'Strategy Insights', icon: <Icon.Insight /> },
+    ]},
     { group: 'Backtest', items: [
       { id: 'checklist-backtest', label: 'Checklist', icon: <Icon.Checklist /> },
       { id: 'history-backtest', label: 'History', icon: <Icon.History /> },
       { id: 'dashboard-backtest', label: 'Dashboard', icon: <Icon.Dashboard /> },
-    ]},
-    { group: 'Analysis', items: [
-      { id: 'calendar', label: 'Calendar', icon: <Icon.Calendar /> },
-      { id: 'insights', label: 'Strategy Insights', icon: <Icon.Insight /> },
     ]},
     { group: 'AI', items: [
       { id: 'ai', label: 'AI Coach', icon: <Icon.AI /> },
@@ -1853,9 +1881,9 @@ export default function App() {
       <main className="main-content">
         <div className="topbar">
           <button className="topbar-menu-btn" onClick={() => setSidebarOpen(true)}><Icon.Menu /></button>
-          <div>
-            <div className="topbar-title">{title}</div>
-            {sub && <div className="topbar-sub">{sub}</div>}
+          <div className="topbar-titlewrap">
+            <span className="topbar-title">{title}</span>
+            {sub && <><span className="topbar-divider" /><span className="topbar-sub">{sub}</span></>}
           </div>
         </div>
 
@@ -1866,7 +1894,7 @@ export default function App() {
           {activePage === 'history-backtest' && <HistoryPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />}
           {activePage === 'dashboard-live' && <DashboardPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="live" />}
           {activePage === 'dashboard-backtest' && <DashboardPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />}
-          {activePage === 'calendar' && <CalendarPage trades={savedTrades} />}
+          {activePage === 'calendar' && <CalendarPage trades={savedTrades} setSavedTrades={setSavedTrades} />}
           {activePage === 'insights' && <InsightsPage trades={savedTrades} />}
           {activePage === 'ai' && <AICoachPage user={user} />}
         </div>
