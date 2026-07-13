@@ -1114,9 +1114,8 @@ function heatStyle(d) {
   return { backgroundColor: `rgba(${base},${strong})` };
 }
 
-function TradingCalendar({ trades, setSavedTrades }) {
+function TradingCalendar({ trades, setSavedTrades, view = 'month' }) {
   const today = new Date();
-  const [view, setView] = useState('month');
   const [vY, setVY] = useState(today.getFullYear());
   const [vM, setVM] = useState(today.getMonth());
   const [hY, setHY] = useState(today.getFullYear());
@@ -1177,15 +1176,7 @@ function TradingCalendar({ trades, setSavedTrades }) {
   };
 
   return (
-    <div className={`card cal-card ${view === 'month' ? 'cal-page-fill' : ''}`}>
-      <div className="cal-toolbar">
-        <div className="card-title" style={{ marginBottom: 0 }}>Trading calendar</div>
-        <div className="cal-view-toggle">
-          <button className={`cal-view-btn ${view === 'month' ? 'active' : ''}`} onClick={() => setView('month')}>Month</button>
-          <button className={`cal-view-btn ${view === 'year' ? 'active' : ''}`} onClick={() => setView('year')}>Year</button>
-        </div>
-      </div>
-
+    <div className={`cal-bare ${view === 'month' ? 'cal-page-fill' : ''}`}>
       <div className="cal-stats">
         <StatPill label={`${MONTHS[vM].slice(0, 3)} ${vY}`} a={monthAgg} />
         <StatPill label={`Year ${hY}`} a={yearAgg} />
@@ -1274,16 +1265,21 @@ function TradingCalendar({ trades, setSavedTrades }) {
 // ─── CALENDAR PAGE (standalone, own mode toggle) ──────────────────────────────
 function CalendarPage({ trades, setSavedTrades }) {
   const [mode, setMode] = useState('live');
+  const [view, setView] = useState('month');
   const modeTrades = useMemo(() => trades.filter(t => t.tradeMode === mode), [trades, mode]);
   return (
-    <div className="fade-in">
-      <div className="insights-toolbar">
+    <div className="fade-in cal-page">
+      <div className="cal-page-toolbar">
+        <div className="mode-toggle">
+          <button className={`mode-toggle-btn ${view === 'month' ? 'active' : ''}`} onClick={() => setView('month')}>Month</button>
+          <button className={`mode-toggle-btn ${view === 'year' ? 'active' : ''}`} onClick={() => setView('year')}>Year</button>
+        </div>
         <div className="mode-toggle">
           <button className={`mode-toggle-btn ${mode === 'live' ? 'active' : ''}`} onClick={() => setMode('live')}>Live</button>
           <button className={`mode-toggle-btn ${mode === 'backtest' ? 'active' : ''}`} onClick={() => setMode('backtest')}>Backtest</button>
         </div>
       </div>
-      <TradingCalendar trades={modeTrades} setSavedTrades={setSavedTrades} />
+      <TradingCalendar trades={modeTrades} setSavedTrades={setSavedTrades} view={view} />
     </div>
   );
 }
