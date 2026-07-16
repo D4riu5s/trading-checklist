@@ -156,6 +156,20 @@ function calcStats(trades) {
   const rrs = closed.filter(t => t.riskReward).map(t => parseFloat(t.riskReward) || 0);
   const avgRR = rrs.length ? (rrs.reduce((a, b) => a + b, 0) / rrs.length).toFixed(2) : 'N/A';
 
+  // Current streaks — consecutive W/L from the most recent decided trade
+  const decidedWL = closed
+    .filter(t => t.tradeResult === 'Win' || t.tradeResult === 'Loss')
+    .slice()
+    .sort((a, b) => new Date(b.tradeDate) - new Date(a.tradeDate));
+  let curWinStreak = 0, curLossStreak = 0;
+  if (decidedWL.length) {
+    const recent = decidedWL[0].tradeResult;
+    for (const t of decidedWL) {
+      if (t.tradeResult !== recent) break;
+      if (recent === 'Win') curWinStreak++; else curLossStreak++;
+    }
+  }
+
   return {
     total: closed.length, totalAll: trades.length,
     wins: wins.length, losses: losses.length, be: be.length, ongoing: ongoing.length,
@@ -169,7 +183,7 @@ function calcStats(trades) {
     wrGood: pct(good.filter(t => t.tradeResult === 'Win').length, good.length),
     wrStrong: pct(strong.filter(t => t.tradeResult === 'Win').length, strong.length),
     weakCount: weak.length, goodCount: good.length, strongCount: strong.length,
-    avgScore, avgRR,
+    avgScore, avgRR, curWinStreak, curLossStreak,
   };
 }
 
@@ -398,13 +412,19 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
   const [tradeDate, setTradeDate] = useState('');
   const [riskReward, setRiskReward] = useState('');
   const [showSticky, setShowSticky] = useState(false);
+  const stickyanchorRef = useRef(null);
 
   const score = useMemo(() => calcScore(checked), [checked]);
 
   useEffect(() => {
-    const onScroll = () => setShowSticky(window.scrollY > 260);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    const el = stickyanchorRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setShowSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0),
+      { threshold: 0 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
 
   const sectionProgress = (section) => {
@@ -470,6 +490,9 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
         <p className="score-meta">{score.checkedCount} conditions checked</p>
         <button className="btn btn-secondary btn-sm mt-3" onClick={() => setChecked({})}>Clear all</button>
       </div>
+
+      {/* Sentinel — when this scrolls above the viewport, the sticky score appears */}
+      <div ref={stickyanchorRef} aria-hidden="true" style={{ height: 1 }} />
 
       {/* Checklist Grid */}
       <div className="checklist-grid">
@@ -1120,9 +1143,31 @@ function TradingCalendar({ trades, setSavedTrades, view = 'month' }) {
   const [vM, setVM] = useState(today.getMonth());
   const [hY, setHY] = useState(today.getFullYear());
   const [dayPopup, setDayPopup] = useState(null);
+  const [summaryPopup, setSummaryPopup] = useState(null); // 'month' | 'year' | null
 
   const byDay = useMemo(() => buildDayStats(trades), [trades]);
   const wrOf = (w, l) => (w + l) ? Math.round(w / (w + l) * 100) : null;
+
+  // Rich summary (incl. average setup score) for a date predicate
+  const summaryFor = (predicate) => {
+    const inRange = trades.filter(t => { const k = (t.tradeDate || '').slice(0, 10); return k && predicate(new Date(k)); });
+    const wins = inRange.filter(t => t.tradeResult === 'Win').length;
+    const losses = inRange.filter(t => t.tradeResult === 'Loss').length;
+    const decided = wins + losses;
+    const scored = inRange.filter(t => t.percentage != null && t.percentage !== '');
+    const avgScore = scored.length ? Math.round(scored.reduce((s, t) => s + parseFloat(t.percentage || 0), 0) / scored.length) : null;
+    return {
+      total: inRange.length, wins, losses,
+      winRate: decided ? Math.round(wins / decided * 100) : null,
+      avgScore,
+    };
+  };
+  const summaryData = summaryPopup === 'month'
+    ? summaryFor(dt => dt.getFullYear() === vY && dt.getMonth() === vM)
+    : summaryPopup === 'year'
+      ? summaryFor(dt => dt.getFullYear() === hY)
+      : null;
+  const summaryTitle = summaryPopup === 'month' ? `${MONTHS[vM]} ${vY}` : summaryPopup === 'year' ? `${hY}` : '';
 
   const dayTrades = useMemo(
     () => dayPopup ? trades.filter(t => (t.tradeDate || '').slice(0, 10) === dayPopup) : [],
@@ -1244,6 +1289,60 @@ function TradingCalendar({ trades, setSavedTrades, view = 'month' }) {
         </>
       )}
 
+      {/* Summary buttons — below the calendar */}
+      <div className="cal-summary-btns">
+        <button className="btn btn-secondary btn-lg" onClick={() => setSummaryPopup('month')}>
+          <Icon.Calendar /> Month summary
+        </button>
+        <button className="btn btn-secondary btn-lg" onClick={() => setSummaryPopup('year')}>
+          <Icon.Insight /> Year summary
+        </button>
+      </div>
+
+      {summaryPopup && summaryData && (
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setSummaryPopup(null); }}>
+          <div className="modal summary-modal">
+            <div className="modal-header">
+              <div>
+                <h2 className="modal-title">{summaryPopup === 'month' ? 'Month summary' : 'Year summary'}</h2>
+                <p className="day-modal-sub">{summaryTitle}</p>
+              </div>
+              <button className="btn btn-ghost btn-icon" onClick={() => setSummaryPopup(null)} title="Close"><Icon.Close /></button>
+            </div>
+            {summaryData.total === 0 ? (
+              <div className="summary-empty">No trades in this period.</div>
+            ) : (
+              <div className="summary-grid">
+                <div className="summary-stat">
+                  <div className="summary-stat-label">Total trades</div>
+                  <div className="summary-stat-value num">{summaryData.total}</div>
+                </div>
+                <div className="summary-stat">
+                  <div className="summary-stat-label">Total wins</div>
+                  <div className="summary-stat-value num" style={{ color: 'var(--accent)' }}>{summaryData.wins}</div>
+                </div>
+                <div className="summary-stat">
+                  <div className="summary-stat-label">Total losses</div>
+                  <div className="summary-stat-value num" style={{ color: 'var(--red)' }}>{summaryData.losses}</div>
+                </div>
+                <div className="summary-stat">
+                  <div className="summary-stat-label">Win rate</div>
+                  <div className="summary-stat-value num" style={{ color: summaryData.winRate === null ? 'var(--text-muted)' : summaryData.winRate >= 50 ? 'var(--accent)' : 'var(--red)' }}>
+                    {summaryData.winRate === null ? '—' : `${summaryData.winRate}%`}
+                  </div>
+                </div>
+                <div className="summary-stat summary-stat-wide">
+                  <div className="summary-stat-label">Average setup score</div>
+                  <div className="summary-stat-value num" style={{ color: summaryData.avgScore === null ? 'var(--text-muted)' : 'var(--text-primary)' }}>
+                    {summaryData.avgScore === null ? '—' : `${summaryData.avgScore}%`}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {dayPopup && (
         <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setDayPopup(null); }}>
           <div className="modal day-modal">
@@ -1306,6 +1405,8 @@ function DashboardPage({ trades, setSavedTrades, mode }) {
     { label: 'On going', value: s.ongoing, sub: 'open trades' },
     { label: 'Avg score', value: `${s.avgScore}%`, sub: 'setup quality' },
     ...(mode === 'backtest' ? [{ label: 'Avg R:R', value: s.avgRR, sub: 'risk : reward' }] : []),
+    { label: 'Winning streak', value: s.curWinStreak, sub: 'current', color: s.curWinStreak > 0 ? 'var(--accent)' : 'var(--text-muted)' },
+    { label: 'Losing streak', value: s.curLossStreak, sub: 'current', color: s.curLossStreak > 0 ? 'var(--red)' : 'var(--text-muted)' },
   ];
 
   return (
@@ -1321,7 +1422,7 @@ function DashboardPage({ trades, setSavedTrades, mode }) {
         {kpis.map(k => (
           <div className="kpi-card" key={k.label}>
             <div className="kpi-label">{k.label}</div>
-            <div className="kpi-value">{k.value}</div>
+            <div className="kpi-value" style={k.color ? { color: k.color } : undefined}>{k.value}</div>
             <div className="kpi-sub">{k.sub}</div>
           </div>
         ))}
