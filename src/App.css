@@ -650,7 +650,7 @@ body::after {
 /* Calendar summary buttons + summary popup */
 .cal-summary-btns { display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-shrink: 0; flex-wrap: wrap; }
 .cal-summary-btns .btn { min-width: 190px; }
-.summary-modal { max-width: 520px; }
+.summary-modal { max-width: 760px; }
 .summary-empty { padding: 32px 20px; text-align: center; color: var(--text-muted); font-size: 14px; }
 .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .summary-stat {
@@ -661,6 +661,9 @@ body::after {
 .summary-stat-wide { grid-column: 1 / -1; }
 .summary-stat-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 .summary-stat-value { font-size: 38px; font-weight: 600; letter-spacing: -1.5px; line-height: 1; margin-top: 10px; color: var(--text-primary); }
+.summary-trades { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--border); }
+.summary-trades-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.summary-trades-count { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--text-muted); background: var(--bg-elevated); border: 1px solid var(--border); padding: 2px 9px; border-radius: 99px; }
 
 /* Full-width Save bar at the very bottom of the detail modal */
 .modal-save-bar {

@@ -1169,6 +1169,18 @@ function TradingCalendar({ trades, setSavedTrades, view = 'month' }) {
       : null;
   const summaryTitle = summaryPopup === 'month' ? `${MONTHS[vM]} ${vY}` : summaryPopup === 'year' ? `${hY}` : '';
 
+  // Trades within the summarized period (for the list shown in the summary popup)
+  const summaryTrades = useMemo(() => {
+    if (!summaryPopup) return [];
+    const pred = summaryPopup === 'month'
+      ? (dt) => dt.getFullYear() === vY && dt.getMonth() === vM
+      : (dt) => dt.getFullYear() === hY;
+    return trades
+      .filter(t => { const k = (t.tradeDate || '').slice(0, 10); if (!k) return false; return pred(new Date(k)); })
+      .slice()
+      .sort((a, b) => new Date(b.tradeDate) - new Date(a.tradeDate));
+  }, [summaryPopup, trades, vY, vM, hY]);
+
   const dayTrades = useMemo(
     () => dayPopup ? trades.filter(t => (t.tradeDate || '').slice(0, 10) === dayPopup) : [],
     [dayPopup, trades]
@@ -1337,6 +1349,16 @@ function TradingCalendar({ trades, setSavedTrades, view = 'month' }) {
                     {summaryData.avgScore === null ? '—' : `${summaryData.avgScore}%`}
                   </div>
                 </div>
+              </div>
+            )}
+
+            {summaryTrades.length > 0 && (
+              <div className="summary-trades">
+                <div className="summary-trades-title">
+                  {summaryPopup === 'month' ? 'Trades this month' : 'Trades this year'}
+                  <span className="summary-trades-count">{summaryTrades.length}</span>
+                </div>
+                <TradeList trades={summaryTrades} setSavedTrades={setSavedTrades} />
               </div>
             )}
           </div>
