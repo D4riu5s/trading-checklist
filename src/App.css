@@ -1084,13 +1084,23 @@ body::after {
   .cal-page-fill { flex: none; }
   .cal-grid { grid-auto-rows: minmax(56px, 1fr); flex: none; }
 
-  /* Year overview: 3 compact months per row, fits the phone with no horizontal scroll */
-  .year-months { grid-template-columns: repeat(3, 1fr); gap: 14px 10px; }
-  .mini-month-name { font-size: 12px; margin-bottom: 5px; }
-  .mini-wd { font-size: 8px; }
-  .mini-grid { gap: 2px; }
-  .mini-day { height: 15px; font-size: 9px; border-radius: 4px; }
-  .year-legend { gap: 14px; margin-top: 14px; font-size: 11px; }
+  /* Year overview: 3 compact months per row, fits the phone with no scroll at all */
+  .year-months { grid-template-columns: repeat(3, 1fr); gap: 8px 7px; }
+  .mini-month-name { font-size: 10px; margin-bottom: 2px; }
+  .mini-weekdays { margin-bottom: 2px; }
+  .mini-wd { font-size: 7px; }
+  .mini-grid { gap: 1px; }
+  .mini-day { height: 11px; font-size: 8px; border-radius: 2px; }
+  .year-legend { gap: 12px; margin-top: 10px; font-size: 10px; }
+
+  /* Compact the shared header just for the year view to reclaim vertical space */
+  .cal-view-year .cal-stats { gap: 7px; margin-bottom: 10px; }
+  .cal-view-year .cal-stat { padding: 8px 6px; }
+  .cal-view-year .cal-stat-val { font-size: 18px; margin: 3px 0 2px; }
+  .cal-view-year .cal-stat-label { font-size: 9px; }
+  .cal-view-year .cal-stat-sub { font-size: 9px; }
+  .cal-view-year .cal-nav { margin-bottom: 8px; }
+  .cal-view-year .cal-summary-btns { margin-top: 12px; }
 
   /* Summary buttons: compact, centered, own space below the calendar */
   .cal-summary-btns {

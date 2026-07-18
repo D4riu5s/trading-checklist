@@ -1273,7 +1273,7 @@ function TradingCalendar({ trades, setSavedTrades, view = 'month' }) {
   };
 
   return (
-    <div className={`cal-bare ${view === 'month' ? 'cal-page-fill' : ''}`}>
+    <div className={`cal-bare ${view === 'month' ? 'cal-page-fill' : 'cal-view-year'}`}>
       <div className="cal-stats">
         <StatPill label={`${MONTHS[vM].slice(0, 3)} ${vY}`} a={monthAgg} />
         <StatPill label={`Year ${hY}`} a={yearAgg} />
