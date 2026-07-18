@@ -1137,6 +1137,37 @@ function heatStyle(d) {
   return { backgroundColor: `rgba(${base},${strong})` };
 }
 
+// Compact single-month grid for the year overview
+function MiniMonth({ year, month, byDay, onDayClick, today }) {
+  const firstWeekday = ((new Date(year, month, 1).getDay()) + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < firstWeekday; i++) cells.push(<span key={`e${i}`} className="mini-day mini-empty" />);
+  for (let d = 1; d <= daysInMonth; d++) {
+    const k = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const stats = byDay[k];
+    const cls = dayClass(stats);
+    const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+    cells.push(
+      <span key={k}
+        className={`mini-day ${cls ? 'mini-' + cls : ''} ${isToday ? 'mini-today' : ''} ${stats ? 'mini-clickable' : ''}`}
+        onClick={() => { if (stats) onDayClick(k); }}
+        title={stats ? `${k}: ${stats.win}W · ${stats.loss}L` : ''}>
+        {d}
+      </span>
+    );
+  }
+  return (
+    <div className="mini-month">
+      <div className="mini-month-name">{MONTHS[month].slice(0, 3)}</div>
+      <div className="mini-weekdays">
+        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((w, i) => <span key={i} className="mini-wd">{w}</span>)}
+      </div>
+      <div className="mini-grid">{cells}</div>
+    </div>
+  );
+}
+
 function TradingCalendar({ trades, setSavedTrades, view = 'month' }) {
   const today = new Date();
   const [vY, setVY] = useState(today.getFullYear());
@@ -1287,25 +1318,15 @@ function TradingCalendar({ trades, setSavedTrades, view = 'month' }) {
             <span className="cal-month-label">{hY}</span>
             <button className="cal-nav-btn" onClick={() => setHY(hY + 1)}>›</button>
           </div>
-          <div className="heat-scroll">
-            <div className="heat-grid">
-              {yearCells.map((cell, i) => cell === null
-                ? <div key={`h${i}`} className="heat-cell heat-empty" style={{ visibility: 'hidden' }} />
-                : <div key={cell.k} className={`heat-cell ${cell.stats ? 'heat-clickable' : 'heat-empty'}`} style={heatStyle(cell.stats)}
-                    title={cell.stats ? `${cell.k}: ${cell.stats.win}W · ${cell.stats.loss}L` : cell.k}
-                    onClick={() => { if (cell.stats) setDayPopup(cell.k); }} />
-              )}
-            </div>
+          <div className="year-months">
+            {Array.from({ length: 12 }).map((_, m) => (
+              <MiniMonth key={m} year={hY} month={m} byDay={byDay} today={today} onDayClick={setDayPopup} />
+            ))}
           </div>
-          <div className="heat-legend">
-            <span>Less</span>
-            <span className="heat-cell heat-empty" />
-            <span className="heat-cell" style={{ backgroundColor: 'rgba(45,226,163,0.4)' }} />
-            <span className="heat-cell" style={{ backgroundColor: 'rgba(45,226,163,0.7)' }} />
-            <span className="heat-cell" style={{ backgroundColor: 'rgba(45,226,163,1)' }} />
-            <span>More</span>
-            <span className="heat-legend-sep" />
-            <span className="heat-cell" style={{ backgroundColor: 'rgba(255,94,120,0.7)' }} /> <span>Loss day</span>
+          <div className="year-legend">
+            <span className="year-legend-item"><span className="year-legend-dot win" /> Win day</span>
+            <span className="year-legend-item"><span className="year-legend-dot loss" /> Loss day</span>
+            <span className="year-legend-item"><span className="year-legend-dot mixed" /> Mixed</span>
           </div>
         </>
       )}
