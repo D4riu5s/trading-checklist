@@ -1077,13 +1077,16 @@ body::after {
 /* ─── TRADING CALENDAR (full-page, no card) ────────────────────────────────── */
 .cal-page { display: flex; flex-direction: column; height: calc(100vh - var(--header-h) - 56px); min-height: 560px; }
 
-/* Mobile: let the calendar flow naturally and stack the summary buttons full-width */
+/* Mobile: let the calendar flow naturally; keep summary buttons small and side by side */
 @media (max-width: 768px) {
   .cal-page { height: auto; min-height: 0; }
   .cal-page-fill { flex: none; }
   .cal-grid { grid-auto-rows: minmax(52px, auto); }
-  .cal-summary-btns { flex-direction: column; margin-top: 20px; }
-  .cal-summary-btns .btn { min-width: 0; width: 100%; }
+  .cal-summary-btns { flex-direction: row; gap: 8px; margin-top: 18px; flex-wrap: nowrap; }
+  .cal-summary-btns .btn {
+    min-width: 0; flex: 1; padding: 10px 8px; font-size: 12px; border-radius: var(--radius-sm);
+  }
+  .cal-summary-btns .btn svg { width: 14px; height: 14px; }
 }
 .cal-page-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-shrink: 0; gap: 12px; flex-wrap: wrap; }
 .cal-bare { display: flex; flex-direction: column; }
