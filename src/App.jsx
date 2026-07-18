@@ -58,7 +58,7 @@ const SECTIONS = [
   {
     title: 'Weekly',
     items: [
-      { name: 'Trend', weight: 0, isBonus: false, isRequired: false },
+      { name: 'Trend', weight: 0, isBonus: false, isRequired: true },
       { name: 'Exhaustion', weight: 7.1428571429, isBonus: false, isRequired: false },
       { name: 'At S/R - rejected', weight: 7.1428571429, isBonus: false, isRequired: false },
       { name: 'Candlestick formation', weight: 7.1428571429, isBonus: false, isRequired: false },
@@ -71,7 +71,7 @@ const SECTIONS = [
   {
     title: 'Daily',
     items: [
-      { name: 'Trend', weight: 0, isBonus: false, isRequired: false },
+      { name: 'Trend', weight: 0, isBonus: false, isRequired: true },
       { name: 'Exhaustion', weight: 7.1428571429, isBonus: false, isRequired: false },
       { name: 'At S/R', weight: 7.1428571429, isBonus: false, isRequired: false },
       { name: 'Candlestick formation', weight: 7.1428571429, isBonus: false, isRequired: false },
