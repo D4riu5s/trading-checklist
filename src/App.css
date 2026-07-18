@@ -1077,15 +1077,23 @@ body::after {
 /* ─── TRADING CALENDAR (full-page, no card) ────────────────────────────────── */
 .cal-page { display: flex; flex-direction: column; height: calc(100vh - var(--header-h) - 56px); min-height: 560px; }
 
-/* Mobile: let the calendar flow naturally; keep summary buttons compact & centered (like desktop) */
+/* Mobile: fill the viewport, fit the year heatmap, push summary buttons to the bottom (both views) */
 @media (max-width: 768px) {
-  .cal-page { height: auto; min-height: 0; }
-  .cal-page-fill { flex: none; }
-  .cal-grid { grid-auto-rows: minmax(52px, auto); }
-  .cal-summary-btns { flex-direction: row; gap: 10px; justify-content: center; flex-wrap: nowrap; margin-top: 18px; }
-  .cal-summary-btns .btn {
-    min-width: 0; flex: 0 0 auto; padding: 11px 16px; font-size: 13px;
+  .cal-page { height: auto; min-height: calc(100vh - var(--header-h) - 40px); }
+  .cal-bare { flex: 1; }
+  .cal-page-fill { flex: 1; }
+  .cal-grid { grid-auto-rows: minmax(52px, auto); flex: none; }
+
+  /* Year heatmap fits the page width — no horizontal scroll */
+  .heat-scroll { overflow-x: visible; padding-bottom: 0; }
+  .heat-grid { min-width: 0; gap: 2px; }
+
+  /* Summary buttons: pushed to the bottom, compact & centered, same in month and year */
+  .cal-summary-btns {
+    margin-top: auto; margin-bottom: 4px;
+    flex-direction: row; gap: 10px; justify-content: center; flex-wrap: nowrap;
   }
+  .cal-summary-btns .btn { min-width: 0; flex: 0 0 auto; padding: 11px 16px; font-size: 13px; }
   .cal-summary-btns .btn svg { width: 15px; height: 15px; }
 }
 .cal-page-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-shrink: 0; gap: 12px; flex-wrap: wrap; }
