@@ -1116,6 +1116,7 @@ body::after {
 }
 .cal-day:hover { transform: translateY(-2px); border-color: var(--text-muted); }
 .cal-day-clickable { cursor: pointer; }
+.cal-day-tappable { cursor: pointer; }
 .cal-day-clickable:hover { transform: translateY(-2px); filter: brightness(1.15); }
 .heat-clickable { cursor: pointer; transition: transform 0.1s var(--ease); }
 .heat-clickable:hover { transform: scale(1.35); outline: 1px solid rgba(255,255,255,0.4); }

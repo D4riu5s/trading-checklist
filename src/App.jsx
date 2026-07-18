@@ -1144,6 +1144,15 @@ function TradingCalendar({ trades, setSavedTrades, view = 'month' }) {
   const [hY, setHY] = useState(today.getFullYear());
   const [dayPopup, setDayPopup] = useState(null);
   const [summaryPopup, setSummaryPopup] = useState(null); // 'month' | 'year' | null
+  const [toast, setToast] = useState('');
+  const toastTimer = useRef(null);
+
+  const showToast = (msg) => {
+    setToast(msg);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(''), 2200);
+  };
+  useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
 
   const byDay = useMemo(() => buildDayStats(trades), [trades]);
   const wrOf = (w, l) => (w + l) ? Math.round(w / (w + l) * 100) : null;
@@ -1261,9 +1270,9 @@ function TradingCalendar({ trades, setSavedTrades, view = 'month' }) {
               const isToday = today.getFullYear() === vY && today.getMonth() === vM && today.getDate() === day;
               const hasTrades = d && d.total > 0;
               return (
-                <div key={k} className={`cal-day ${cls ? 'cal-' + cls : ''} ${isToday ? 'cal-today' : ''} ${hasTrades ? 'cal-day-clickable' : ''}`}
+                <div key={k} className={`cal-day cal-day-tappable ${cls ? 'cal-' + cls : ''} ${isToday ? 'cal-today' : ''} ${hasTrades ? 'cal-day-clickable' : ''}`}
                   title={d ? `${d.win}W · ${d.loss}L${w !== null ? ` · ${w}%` : ''}` : ''}
-                  onClick={() => { if (hasTrades) setDayPopup(k); }}>
+                  onClick={() => { if (hasTrades) setDayPopup(k); else showToast('No trades on this day'); }}>
                   <span className="cal-day-num">{day}</span>
                   {hasTrades && <span className="cal-day-count">{d.total} {d.total === 1 ? 'trade' : 'trades'}</span>}
                 </div>
@@ -1377,6 +1386,13 @@ function TradingCalendar({ trades, setSavedTrades, view = 'month' }) {
             </div>
             <TradeList trades={dayTrades} setSavedTrades={setSavedTrades} />
           </div>
+        </div>
+      )}
+
+      {toast && (
+        <div className="ghost-toast">
+          <Icon.Calendar />
+          <span>{toast}</span>
         </div>
       )}
     </div>
@@ -1644,173 +1660,6 @@ function InsightsPage({ trades }) {
   );
 }
 
-// ─── AI COACH PAGE ────────────────────────────────────────────────────────────
-function AICoachPage({ user }) {
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: "Hi! I'm your AI trading coach. Tell me about your Forex strategy — how you identify trend, support/resistance, and entries. The more you explain, the more accurate my signals will be.",
-      time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
-    }
-  ]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [signalPair, setSignalPair] = useState('');
-  const [signalTF, setSignalTF] = useState('H4');
-  const [signalLoading, setSignalLoading] = useState(false);
-  const [signal, setSignal] = useState(null);
-  const messagesEndRef = useRef(null);
-
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
-
-  const functions = getFunctions();
-
-  const getStrategyContext = () => {
-    const userMsgs = messages.filter(m => m.role === 'user').map(m => m.content).join('\n');
-    return userMsgs || 'Strategy not defined yet.';
-  };
-
-  const sendMessage = async () => {
-    if (!input.trim() || loading) return;
-    const userMsg = { role: 'user', content: input.trim(), time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) };
-    setMessages(prev => [...prev, userMsg]);
-    setInput('');
-    setLoading(true);
-
-    try {
-      const aiChat = httpsCallable(functions, 'aiChat');
-      const apiMessages = [...messages, userMsg]
-        .filter(m => m.role === 'user' || m.role === 'assistant')
-        .map(m => ({ role: m.role, content: m.content }));
-
-      const systemPrompt = `You are an expert Forex trading coach. You listen to the user's strategy, ask relevant questions to understand their approach better, and memorize everything so you can generate precise signals. Be concise and professional.`;
-      const result = await aiChat({ messages: apiMessages, systemPrompt });
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: result.data.reply,
-        time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
-      }]);
-    } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', content: '⚠ Error: ' + err.message, time: '' }]);
-    }
-    setLoading(false);
-  };
-
-  const generateSignal = async () => {
-    if (!signalPair) { alert('Enter a pair.'); return; }
-    setSignalLoading(true); setSignal(null);
-    try {
-      const gen = httpsCallable(functions, 'generateSignal');
-      const result = await gen({
-        pair: signalPair.toUpperCase(),
-        timeframe: signalTF,
-        strategyContext: getStrategyContext(),
-        checklistItems: ALL_ITEMS,
-      });
-      setSignal(result.data);
-    } catch (err) {
-      alert('Signal generation error: ' + err.message);
-    }
-    setSignalLoading(false);
-  };
-
-  const signalScoreColor = signal ? (signal.score >= 80 ? 'var(--accent)' : signal.score >= 60 ? 'var(--yellow)' : 'var(--red)') : 'var(--text-muted)';
-
-  return (
-    <div className="chat-layout">
-      <div className="chat-area">
-        <div className="chat-messages">
-          {messages.map((msg, i) => (
-            <div key={i} className={`msg msg-${msg.role === 'user' ? 'user' : 'ai'}`}>
-              <div className="msg-avatar">{msg.role === 'user' ? 'You' : 'AI'}</div>
-              <div>
-                <div className="msg-bubble">{msg.content}</div>
-                {msg.time && <div className="msg-time">{msg.time}</div>}
-              </div>
-            </div>
-          ))}
-          {loading && (
-            <div className="msg msg-ai">
-              <div className="msg-avatar">AI</div>
-              <div className="msg-bubble" style={{ color: 'var(--accent)' }}>
-                <div className="loading-dots"><span /><span /><span /></div>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-        <div className="chat-input-area">
-          <textarea className="chat-input" rows={2}
-            placeholder="Explain your strategy... (e.g. I look for exhaustion on weekly at S/R, confirm on daily with LH/HL...)"
-            value={input} onChange={e => setInput(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }} />
-          <button className="btn btn-primary" onClick={sendMessage} disabled={loading}><Icon.Send /></button>
-        </div>
-      </div>
-
-      <div className="signal-panel">
-        <div className="signal-panel-header"><Icon.Bolt /> Generate signal</div>
-        <div className="signal-panel-body">
-          <div className="signal-form">
-            <div className="form-group">
-              <label className="form-label">Pair</label>
-              <input className="form-input" placeholder="e.g. EURUSD" value={signalPair} onChange={e => setSignalPair(e.target.value)} />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Main timeframe</label>
-              <select className="form-input" value={signalTF} onChange={e => setSignalTF(e.target.value)}>
-                {['W1', 'D1', 'H4', 'H2', 'H1', 'M30', 'M15'].map(tf => <option key={tf}>{tf}</option>)}
-              </select>
-            </div>
-            <button className="btn btn-primary btn-full" onClick={generateSignal} disabled={signalLoading}>
-              {signalLoading ? <span style={{ color: '#060b16' }}><div className="loading-dots"><span /><span /><span /></div></span> : <><Icon.Bolt /> Analyze setup</>}
-            </button>
-          </div>
-
-          {signal && (
-            <div className="signal-result mt-4">
-              <div className="signal-header">
-                <span className="signal-pair">{signalPair.toUpperCase()}</span>
-                <span className="result-badge" style={{ background: signal.isValidSetup ? 'var(--accent-dim)' : 'var(--red-dim)', color: signal.isValidSetup ? 'var(--accent)' : 'var(--red)' }}>
-                  {signal.setupStrength}
-                </span>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div className="stat-track" style={{ flex: 1 }}>
-                  <div className="stat-fill" style={{ width: `${signal.score}%`, background: signalScoreColor }} />
-                </div>
-                <span style={{ color: signalScoreColor, fontWeight: 600, fontSize: 14 }}>{signal.score}%</span>
-              </div>
-
-              <div className="signal-levels">
-                <div className="level-row"><span className="level-label">Entry</span><span className="level-value" style={{ color: 'var(--accent)' }}>{signal.entry}</span></div>
-                <div className="level-row"><span className="level-label">Stop loss</span><span className="level-value" style={{ color: 'var(--red)' }}>{signal.stopLoss}</span></div>
-                <div className="level-row"><span className="level-label">Take profit</span><span className="level-value" style={{ color: 'var(--blue)' }}>{signal.takeProfit}</span></div>
-                <div className="level-row"><span className="level-label">R : R</span><span className="level-value" style={{ color: 'var(--purple)' }}>{signal.riskReward}</span></div>
-              </div>
-
-              {signal.confluences?.length > 0 && (
-                <div>
-                  <div className="form-label mb-2">Confluences</div>
-                  <div className="signal-confluences">
-                    {signal.confluences.map((c, i) => <span key={i} className="confluence-tag">{c}</span>)}
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <div className="form-label mb-2">AI analysis</div>
-                <p className="signal-reasoning">{signal.reasoning}</p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─── AUTH PAGE ────────────────────────────────────────────────────────────────
 function AuthPage() {
   const [isRegister, setIsRegister] = useState(false);
@@ -1940,9 +1789,6 @@ export default function App() {
       { id: 'history-backtest', label: 'History', icon: <Icon.History /> },
       { id: 'dashboard-backtest', label: 'Dashboard', icon: <Icon.Dashboard /> },
     ]},
-    { group: 'AI', items: [
-      { id: 'ai', label: 'AI Coach', icon: <Icon.AI /> },
-    ]},
   ];
 
   const pageTitles = {
@@ -1954,7 +1800,6 @@ export default function App() {
     'dashboard-backtest': { title: 'Dashboard', sub: 'Backtest' },
     'calendar': { title: 'Trading Calendar', sub: 'Your trades day by day' },
     'insights': { title: 'Strategy Insights', sub: 'What works in your checklist' },
-    'ai': { title: 'AI Coach', sub: 'Training & Signals' },
   };
 
   const { title, sub } = pageTitles[activePage] || {};
@@ -2015,7 +1860,6 @@ export default function App() {
           {activePage === 'dashboard-backtest' && <DashboardPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />}
           {activePage === 'calendar' && <CalendarPage trades={savedTrades} setSavedTrades={setSavedTrades} />}
           {activePage === 'insights' && <InsightsPage trades={savedTrades} />}
-          {activePage === 'ai' && <AICoachPage user={user} />}
         </div>
       </main>
     </div>
