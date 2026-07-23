@@ -249,11 +249,11 @@ const FX_PAIRS = [
 ];
 
 // ─── SMALL COMPONENTS ────────────────────────────────────────────────────────
-function StatBar({ label, value, color, sub }) {
+function StatBar({ label, value, color, sub, labelColor }) {
   return (
     <div className="stat-bar-row">
       <div className="stat-bar-header">
-        <span style={{ color: 'var(--text-secondary)' }}>{label}</span>
+        <span style={{ color: labelColor || 'var(--text-secondary)', fontWeight: labelColor ? 600 : 400 }}>{label}</span>
         <span style={{ color, fontWeight: 600 }}>{value}% {sub && <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>({sub})</span>}</span>
       </div>
       <div className="stat-track">
@@ -810,7 +810,16 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave, startInEdit = fals
             <ResultBadge result={localTrade.tradeResult} />
           )}
           <span className="trade-meta-spacer" />
-          <span className="trade-meta-item"><span className="trade-meta-key">Date</span>{localTrade.tradeDate}</span>
+          {editing ? (
+            <span className="trade-meta-item">
+              <span className="trade-meta-key">Date</span>
+              <input type="date" className="form-input" style={{ padding: '6px 10px', width: 'auto' }}
+                value={localTrade.tradeDate || ''}
+                onChange={e => setLocalTrade(p => ({ ...p, tradeDate: e.target.value }))} />
+            </span>
+          ) : (
+            <span className="trade-meta-item"><span className="trade-meta-key">Date</span>{localTrade.tradeDate}</span>
+          )}
           {localTrade.riskReward && <span className="trade-meta-item"><span className="trade-meta-key">R:R</span>{localTrade.riskReward}</span>}
         </div>
 
@@ -818,7 +827,7 @@ function TradeDetailModal({ trade, onClose, onDelete, onSave, startInEdit = fals
           {/* LEFT — score, checklist, notes */}
           <div className="modal-split-left">
             <div style={{ marginBottom: 22 }}>
-              <StatBar label="Setup score" value={score.percentage} color={scoreColor} />
+              <StatBar label={score.setupLabel} labelColor={scoreColor} value={score.percentage} color={scoreColor} />
               <StatBar label="Bonus" value={score.bonusPercentage} color="var(--purple)" />
             </div>
 
@@ -940,7 +949,9 @@ function TradeList({ trades, setSavedTrades, emptyTitle = 'No trades saved yet',
 
   const handleSave = async (updated) => {
     await updateDoc(doc(db, 'trades', updated.id), updated);
-    setSavedTrades(prev => prev.map(t => t.id === updated.id ? updated : t));
+    setSavedTrades(prev => prev
+      .map(t => t.id === updated.id ? updated : t)
+      .sort((a, b) => new Date(b.tradeDate) - new Date(a.tradeDate)));
   };
 
   const openView = (id) => { setOpenInEdit(false); setOpenedId(id); };
