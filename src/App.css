@@ -956,6 +956,38 @@ body::after {
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
+/* PWA update prompt — sits above everything, never steals focus */
+.update-banner {
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 18px; border-radius: 15px;
+  background: rgba(19,19,24,0.97); backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid var(--border-strong); border-top-color: var(--border-top);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.62);
+  z-index: 600; max-width: calc(100vw - 28px);
+  animation: toastIn 0.35s var(--ease);
+}
+.update-banner-icon {
+  width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+  background: var(--accent-dim); color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+}
+.update-banner-icon svg { width: 17px; height: 17px; }
+.update-banner-text { min-width: 0; }
+.update-banner-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.update-banner-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.update-banner-actions { display: flex; gap: 8px; flex-shrink: 0; margin-left: 4px; }
+
+@media (max-width: 600px) {
+  .update-banner {
+    left: 14px; right: 14px; bottom: 14px; transform: none;
+    max-width: none; flex-wrap: wrap; gap: 12px;
+    animation: none;
+  }
+  .update-banner-text { flex: 1; }
+  .update-banner-actions { width: 100%; justify-content: flex-end; margin-left: 0; }
+}
+
 /* ─── REDUCED MOTION ───────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
