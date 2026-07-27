@@ -43,6 +43,9 @@ const Icon = {
   Insight: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg>,
   Calendar: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>,
   Refresh: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>,
+  Info: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
+  ChevronLeft: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="15 18 9 12 15 6"/></svg>,
+  ChevronRight: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="9 18 15 12 9 6"/></svg>,
 };
 
 // ─── BRAND LOGO (the "MyEdge" upward blade) ──────────────────────────────────
@@ -408,12 +411,79 @@ function ConfirmModal({ title, message, onConfirm, onCancel }) {
 }
 
 // ─── CHECKLIST PAGE ───────────────────────────────────────────────────────────
+// ─── CONDITION GUIDE ──────────────────────────────────────────────────────────
+// Explanation + example chart images for each checklist condition, keyed by
+// "Section-Condition" (e.g. 'Weekly-Exhaustion') so the SAME condition name can
+// have a DIFFERENT explanation and images per timeframe. Images live in the app's
+// public/guide/ folder. A condition only shows the ⓘ button once it has an entry.
+const CONDITION_GUIDE = {
+  // 'Weekly-Exhaustion': {
+  //   explanation: 'What exhaustion looks like on the WEEKLY chart...',
+  //   images: ['/guide/weekly-exhaustion-1.jpg', '/guide/weekly-exhaustion-2.jpg'],
+  // },
+  // 'Daily-Exhaustion': {
+  //   explanation: 'What exhaustion looks like on the DAILY chart...',
+  //   images: ['/guide/daily-exhaustion-1.jpg'],
+  // },
+};
+
+// Zoomable-free image carousel + explanation for a single condition
+function ConditionGuideModal({ name, guide, onClose }) {
+  const [idx, setIdx] = useState(0);
+  const images = guide.images || [];
+  const hasImages = images.length > 0;
+  const many = images.length > 1;
+  const prev = () => setIdx(i => (i - 1 + images.length) % images.length);
+  const next = () => setIdx(i => (i + 1) % images.length);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (many && e.key === 'ArrowLeft') prev();
+      if (many && e.key === 'ArrowRight') next();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [many, images.length]);
+
+  return (
+    <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="modal guide-modal">
+        <div className="modal-header">
+          <h2 className="modal-title">{name}</h2>
+          <button className="btn btn-ghost btn-icon" onClick={onClose} title="Close"><Icon.Close /></button>
+        </div>
+
+        <div className="guide-explanation">{guide.explanation}</div>
+
+        {hasImages && (
+          <div className="guide-carousel">
+            <div className="guide-image-wrap">
+              {many && <button className="guide-arrow guide-arrow-left" onClick={prev} title="Previous"><Icon.ChevronLeft /></button>}
+              <img src={images[idx]} alt={`${name} example ${idx + 1}`} className="guide-image" />
+              {many && <button className="guide-arrow guide-arrow-right" onClick={next} title="Next"><Icon.ChevronRight /></button>}
+            </div>
+            {many && (
+              <div className="guide-dots">
+                {images.map((_, i) => (
+                  <button key={i} className={`guide-dot ${i === idx ? 'active' : ''}`} onClick={() => setIdx(i)} aria-label={`Image ${i + 1}`} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user, mode }) {
   const [pair, setPair] = useState('');
   const [tradeDirection, setTradeDirection] = useState('Long');
   const [tradeDate, setTradeDate] = useState('');
   const [riskReward, setRiskReward] = useState('');
   const [showSticky, setShowSticky] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(null);
   const stickyanchorRef = useRef(null);
 
   const score = useMemo(() => calcScore(checked), [checked]);
@@ -462,6 +532,13 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
   return (
     <>
       {/* Sticky score — appears when scrolling */}
+      {guideOpen && CONDITION_GUIDE[guideOpen] && (
+        <ConditionGuideModal
+          name={guideOpen.substring(guideOpen.indexOf('-') + 1)}
+          guide={CONDITION_GUIDE[guideOpen]}
+          onClose={() => setGuideOpen(null)} />
+      )}
+
       {showSticky && score.checkedCount > 0 && (
         <div className="sticky-score" style={{ borderColor: scoreColor }}>
           <div className="sticky-score-top">
@@ -510,14 +587,21 @@ function ChecklistPage({ checked, setChecked, savedTrades, setSavedTrades, user,
                 const isChecked = checked[id] || false;
                 const cls = isChecked ? (item.isBonus ? 'check-item checked-bonus' : 'check-item checked') : 'check-item';
                 return (
-                  <label key={id} className={cls} onClick={() => toggleCheck(id)}>
-                    <div className={`check-box ${isChecked ? (item.isBonus ? 'checked-bonus' : 'checked') : ''}`}>
-                      <Icon.Check />
+                  <div key={id} className={cls}>
+                    <div className="check-item-main" onClick={() => toggleCheck(id)}>
+                      <div className={`check-box ${isChecked ? (item.isBonus ? 'checked-bonus' : 'checked') : ''}`}>
+                        <Icon.Check />
+                      </div>
+                      <span className="check-name">{item.name}</span>
+                      {item.isRequired && <span className="tag tag-required">Required</span>}
+                      {item.isBonus && !item.isRequired && <span className="tag tag-bonus">Bonus</span>}
                     </div>
-                    <span className="check-name">{item.name}</span>
-                    {item.isRequired && <span className="tag tag-required">Required</span>}
-                    {item.isBonus && !item.isRequired && <span className="tag tag-bonus">Bonus</span>}
-                  </label>
+                    {CONDITION_GUIDE[id] && (
+                      <button className="check-info-btn"
+                        onClick={() => setGuideOpen(id)}
+                        title="How this looks on the chart">i</button>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -1580,8 +1664,9 @@ function ConditionRow({ row, baseWinRate }) {
   );
 }
 
-function InsightsPage({ trades }) {
-  const [mode, setMode] = useState('live');
+function InsightsPage({ trades, lockedMode }) {
+  const [modeState, setMode] = useState('live');
+  const mode = lockedMode || modeState;
   const modeTrades = useMemo(() => trades.filter(t => t.tradeMode === mode), [trades, mode]);
   const analysis = useMemo(() => analyzeConditions(modeTrades), [modeTrades]);
 
@@ -1599,10 +1684,12 @@ function InsightsPage({ trades }) {
   return (
     <div className="fade-in">
       <div className="insights-toolbar">
+        {!lockedMode && (
         <div className="mode-toggle">
           <button className={`mode-toggle-btn ${mode === 'live' ? 'active' : ''}`} onClick={() => setMode('live')}>Live</button>
           <button className={`mode-toggle-btn ${mode === 'backtest' ? 'active' : ''}`} onClick={() => setMode('backtest')}>Backtest</button>
         </div>
+        )}
       </div>
 
       {decidedCount < 5 ? (
@@ -1855,6 +1942,7 @@ export default function App() {
       { id: 'checklist-backtest', label: 'Checklist', icon: <Icon.Checklist /> },
       { id: 'history-backtest', label: 'History', icon: <Icon.History /> },
       { id: 'dashboard-backtest', label: 'Dashboard', icon: <Icon.Dashboard /> },
+      { id: 'insights-backtest', label: 'Insights', icon: <Icon.Insight /> },
     ]},
   ];
 
@@ -1867,6 +1955,7 @@ export default function App() {
     'dashboard-backtest': { title: 'Dashboard', sub: 'Backtest' },
     'calendar': { title: 'Trading Calendar', sub: 'Your trades day by day' },
     'insights': { title: 'Strategy Insights', sub: 'What works in your checklist' },
+    'insights-backtest': { title: 'Backtest Insights', sub: 'What works in your backtests' },
   };
 
   const { title, sub } = pageTitles[activePage] || {};
@@ -1928,6 +2017,7 @@ export default function App() {
           {activePage === 'dashboard-backtest' && <DashboardPage trades={savedTrades} setSavedTrades={setSavedTrades} mode="backtest" />}
           {activePage === 'calendar' && <CalendarPage trades={savedTrades} setSavedTrades={setSavedTrades} />}
           {activePage === 'insights' && <InsightsPage trades={savedTrades} />}
+          {activePage === 'insights-backtest' && <InsightsPage trades={savedTrades} lockedMode="backtest" />}
         </div>
       </main>
     </div>

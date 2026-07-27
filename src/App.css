@@ -358,11 +358,15 @@ body::after {
 .section-progress { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); font-weight: 500; }
 .section-items { padding: 13px; display: flex; flex-direction: column; gap: 7px; }
 .check-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px; border-radius: var(--radius-sm);
-  cursor: pointer; transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
+  display: flex; align-items: center; gap: 0;
+  padding: 0 14px 0 0; border-radius: var(--radius-sm);
+  transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
   border: 1px solid var(--border); background: var(--bg-elevated);
   user-select: none;
+}
+.check-item-main {
+  display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;
+  padding: 12px 0 12px 14px; cursor: pointer;
 }
 .check-item:hover { background: var(--bg-hover); border-color: var(--border-strong); }
 .check-item.checked { background: var(--accent-dim); border-color: var(--accent-border); }
@@ -381,7 +385,7 @@ body::after {
 .check-item.checked .check-name, .check-item.checked-bonus .check-name { opacity: 1; }
 
 /* Larger checklist inside trade detail modal */
-.modal-check { padding: 13px 15px; }
+.modal-check { padding: 13px 15px; gap: 12px; cursor: pointer; }
 .modal-check .check-box { width: 21px; height: 21px; }
 .modal-check .check-name { font-size: 14px; }
 .modal-split-left .card-title { font-size: 13px; margin-bottom: 12px; }
@@ -955,6 +959,54 @@ body::after {
   from { opacity: 0; transform: translate(-50%, 14px); }
   to { opacity: 1; transform: translate(-50%, 0); }
 }
+
+/* ─── CONDITION GUIDE (ⓘ button + explanation + image carousel) ─────────────── */
+.check-info-btn {
+  flex: 0 0 auto; margin-left: 10px;
+  width: 24px; height: 24px; min-width: 24px; min-height: 24px;
+  box-sizing: border-box; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; border: 1.5px solid var(--border-strong);
+  color: var(--text-secondary); cursor: pointer;
+  font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-weight: 700;
+  font-size: 14px; line-height: 1; padding: 0; text-indent: -1px;
+  transition: color 0.14s var(--ease), border-color 0.14s var(--ease);
+}
+.check-info-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+.guide-modal { max-width: 640px; }
+.guide-explanation {
+  font-size: 14px; line-height: 1.7; color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+.guide-carousel { margin-top: 22px; }
+.guide-image-wrap {
+  position: relative; border-radius: var(--radius-md); overflow: hidden;
+  background: var(--bg-base); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  min-height: 200px;
+}
+.guide-image { width: 100%; height: auto; display: block; max-height: 60vh; object-fit: contain; }
+.guide-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(13,13,16,0.82); backdrop-filter: blur(6px);
+  border: 1px solid var(--border-strong); color: var(--text-primary);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.14s var(--ease); z-index: 2;
+}
+.guide-arrow:hover { background: var(--bg-hover); }
+.guide-arrow svg { width: 20px; height: 20px; }
+.guide-arrow-left { left: 12px; }
+.guide-arrow-right { right: 12px; }
+.guide-dots { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+.guide-dot {
+  width: 8px; height: 8px; border-radius: 50%; padding: 0;
+  background: var(--bg-elevated); border: 1px solid var(--border-strong);
+  cursor: pointer; transition: all 0.15s var(--ease);
+}
+.guide-dot:hover { background: var(--bg-hover); }
+.guide-dot.active { background: var(--accent); border-color: var(--accent); width: 22px; border-radius: 99px; }
 
 /* PWA update prompt — sits above everything, never steals focus */
 .update-banner {
